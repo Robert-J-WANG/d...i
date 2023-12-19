@@ -34,4 +34,4 @@
 
     ##### [笔记](./06.%20框架-vue%20从入门到手撕/demo1/index.html)
 
-    ##### 视频
+    ##### [视频](https://www.youtube.com/watch?v=ZZM9qE7hyyo)
