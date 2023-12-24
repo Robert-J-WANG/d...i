@@ -2,7 +2,7 @@
 
 ### [01. 补充重要知识](https://www.youtube.com/watch?v=m-47rcPYSXk)
 
-### 	[02. 表单进阶-HTML](https://www.youtube.com/watch?v=PKY5WT5P9NU)
+### [02. 表单进阶-HTML](https://www.youtube.com/watch?v=PKY5WT5P9NU)
 
 ### [03. 表单进阶-CSS.mp4](https://www.youtube.com/watch?v=_bHQTzIvMpY)
 
