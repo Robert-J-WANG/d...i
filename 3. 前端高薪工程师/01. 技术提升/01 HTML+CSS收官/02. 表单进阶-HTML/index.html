@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>02. 表单进阶-HTML</title>
+  <link rel="stylesheet" href="css/index.css">
+</head>
+
+<body>
+  <!-- 1. 使用<form>标签代替div -->
+  <form>
+    <h1>用户注册</h1>
+    <!-- 2. 表单项多嵌套一层div，用于设置通用样式form-item -->
+    <div class="form-item">
+      <!-- 3. 使用placeholder属性，设置提示文本 -->
+      <!-- 4. 使用maxlength设置长度 -->
+      <input type="text" placeholder="请输入11位手机号" maxlength="11">
+    </div>
+    <div class="form-item">
+      <input type="text" placeholder="请输入验证码">
+      <!-- 5. 使用button标签，代替input -->
+      <!-- 6.默认是提交按钮， type="button" 为普通按钮 -->
+      <button type="button">
+        <!-- button内部可以嵌套其他标签 -->
+        <span>发送验证码</span>
+        <!-- 甚至可以嵌套图片 -->
+        <img src="" alt="">
+      </button>
+    </div>
+    <div class="form-item">
+      <input type="password" placeholder="请输入密码">
+    </div>
+    <div class="form-item">
+      <input type="password" placeholder="请确认密码">
+    </div>
+    <div class="form-item">
+      <select multiple>
+        <!-- 生成多个标签的快捷键：
+        方法1：标签名*个数>{标签内容$(自动编号)} 
+        方法2：标签名*个数>lorem4 (4个占位字符)
+      -->
+        <option selected>Lorem, ipsum dolor.</option>
+        <option>Hic, expedita commodi?</option>
+        <option>Architecto, quia eveniet.</option>
+        <option>Voluptates, quaerat vel.</option>
+        <option>Harum, dicta omnis.</option>
+      </select>
+    </div>
+
+    <div class="form-item">
+      <div>性别：</div>
+      <div>
+        <!--label使用 方法1： -->
+        <input type="radio" name="sex" id="male" />
+        <label for="male">男</label>
+        <!--label使用 方法2： -->
+        <label>
+          <input type="radio" name="sex" />
+          <span>女</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="form-item">
+      <textarea placeholder="请输入个人简介"></textarea>
+    </div>
+
+    <div class="form-item">
+      <label>
+        <input type="checkbox">
+        <span>同意注册</span>
+      </label>
+    </div>
+
+    <div class="form-item">
+      <!-- 默认的提交按钮 -->
+      <button>提交注册</button>
+      <!-- 重置按钮 -->
+      <button type="reset">点击重置</button>
+    </div>
+  </form>
+</body>
+
+</html>

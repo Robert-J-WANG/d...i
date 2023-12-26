@@ -1,3 +1,5 @@
+
+
 ## 01 HTML+CSS收官
 
 ### [01. 补充重要知识](https://www.youtube.com/watch?v=m-47rcPYSXk)
@@ -85,6 +87,160 @@
     
 
 ### [02. 表单进阶-HTML](https://www.youtube.com/watch?v=PKY5WT5P9NU)
+
+1. 使用form标签代替div
+
+    - form标签内置了表单的提交功能：点击提交按钮，或者enter键时，都会触发提交功能
+    - 同时，会自动清空input表单域里填写的内容
+    - 同时页面有刷新的动作，提示用户表单已经提交。
+    - 使用div的话，需要通过js手动设置
+
+2. 给表单元素多嵌套一层div
+
+    - 用于统一设置每一项表单元素的通用样式, 比如 “form-item”
+
+    ```html
+    <div class="form-item">
+          <input type="text" >
+        </div>
+    ```
+
+3. 使用placeholder属性，设置提示文本
+
+    ```html
+    <div class="form-item">
+          <input type="text" placeholder="请输入11位手机号">
+        </div>
+    ```
+
+    
+
+4. 使用maxlength属性，设置输入的最大长度
+
+    ```html
+     <div class="form-item">
+          <input type="text" placeholder="请输入11位手机号" maxlength="11">
+        </div>
+    ```
+
+    - 注意：需要输入的格式要使用js和正则表达式限制
+
+5. 使用button标签代替<input type="buttont"/>
+
+    - 更具语义化
+    - 是一个正常标签，可以在其内部嵌套其他标签，用于设置格外的样式
+
+    ```html
+    <button>
+            <!-- button内部可以嵌套其他标签 -->
+            <span>发送验证码</span>
+            <!-- 甚至可以嵌套图片 -->
+            <img src="" alt="">
+    </button>
+    ```
+
+    
+
+6. button标签类型设置
+
+    - 默认是提交（submit）按钮
+    - 一般一个表单只有一个提交按钮
+    - 其他功能的按钮可以通过type属性来设置
+
+    ```html
+        <!--type="button" 为普通按钮 -->
+    <button type="button">
+            <span>发送验证码</span>
+            <!-- 甚至可以嵌套图片 -->
+            <img src="" alt="">
+    </button>
+      <!--还有reset, menu等其他类型的按钮 -->
+    
+    ```
+
+    
+
+7. 表单的布尔属性
+
+    - 布尔属性用来设置两种状态，添加属性，表示有这个状态，不写表示没有
+    - 常见的布尔属性有：
+
+    | 属性     | 标签                     | 状态                     |
+    | -------- | ------------------------ | ------------------------ |
+    | multiple | select下拉标签           | 下拉标签里的选项可以多选 |
+    | selected | option选项标签           | 默认选中的               |
+    | checked  | Input 单选/多选框        | 默认选中的               |
+    | disabled | button按钮或Input 输入框 | 不可用                   |
+    |          |                          |                          |
+
+    - 一键生成多个标签快捷键
+
+        1. 标签名\*个数>{标签内容$(自动编号)}
+
+        ```html
+         <select multiple>
+              <option  selected value="">爱好1</option>
+              <option value="">爱好2</option>
+              <option value="">爱好3</option>
+              <option value="">爱好4</option>  
+         </select>
+        ```
+
+        2. 标签名\*个数>lorem4 (4个占位字符)
+
+        ```html
+          <select multiple>
+            <option selected>Lorem, ipsum dolor.</option>
+            <option>Hic, expedita commodi?</option>
+            <option>Architecto, quia eveniet.</option>
+            <option>Voluptates, quaerat vel.</option>
+            <option>Harum, dicta omnis.</option>
+          </select>
+        ```
+
+8. label标签的使用
+
+    - 用途：点击文字内容是选中单选框或多选框
+
+    - 方法：
+
+        1. 使用label的for属性，配合单选框或多选框的id (label标签的文字内容不一定要和标签在一起)
+
+        ```html
+        <div class="form-item">
+          <div>性别：</div>
+          <div>
+            <!--label使用 方法1： -->
+            <input type="radio" name="sex" id="male" />
+            <label for="male">男</label>
+          </div>
+        </div>
+        ```
+
+        
+
+        2. 使用label标签包裹整个单选框/多选框及对应的文字 （推荐）
+
+        ```html
+        <div class="form-item">
+          <div>性别：</div>
+          <div>
+            <!--label使用 方法2： -->
+            <label >
+              <input type="radio" name="sex" />
+              <span>女</span>
+            </label>
+          </div>
+        </div>
+        ```
+
+9. 多行文本textarea标签
+
+    - 一般使用css设置宽高，不用属性cols**=**"30" rows**=**"10"来设置
+
+    - css样式中使用{resize:none} 设置文本域不可以拉升
+
+        
 
 ### [03. 表单进阶-CSS.mp4](https://www.youtube.com/watch?v=_bHQTzIvMpY)
 

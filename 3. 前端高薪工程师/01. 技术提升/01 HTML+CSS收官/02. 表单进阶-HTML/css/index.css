@@ -1,0 +1,81 @@
+
+/* ------------------- 1. 设置box-sizing ------------------ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  /* 这样盒子的款和高尺寸将包含margin，padding以及border尺寸 */
+}
+.box {
+  width: 200px;
+  height: 200px;
+  margin: 20px;
+  padding: 20px;
+  background-color: yellow;
+  border: 10px solid lightgreen;
+  /* 外边框尺寸不参加计算 */
+  outline: 1px solid ; 
+}
+/* 盒子内容的实际尺寸是140px x 140px */
+
+/* -------------------- 2. 颜色的alpha通道 ------------------- */
+/* 使用rgba设置颜色透明度 */
+.rgba{
+  /* 使用alpha通道控制 */
+  color: rgba(16, 72, 240, 0.5);
+
+  /* 使用opacity控制 */
+  /* color: rgb(11, 23, 242);
+  opacity: 0.5; */
+  
+}
+
+/* 总结： */
+  /* alpha通道 比opacity更精确 */
+  /* opacity控制整盒子，包括背景颜色和文字颜色 */
+  /* rgba能控制单个属性。比如只控制文字颜色 */
+
+/* ---------------------- 3.尺寸的百分比 ---------------------- */
+
+/* 普通元素 */
+.container1{
+  width: 500px;
+  height: 300px;
+  padding: 50px;
+  border: 25px solid;
+}
+.box1{
+  outline: 1px solid red; /* 外边线不占用尺寸 */
+  width: 50%;  /* width相对于父元素内容宽度:(500-50*2-25*2)*50%=175px */ 
+  height: 50%; /* height相对于父元素内容高度:(300-50*2-25*2)*50%=75px*/
+}
+/* 绝对定位元素 */
+.container2{
+  width: 500px;
+  height: 300px;
+  padding: 50px;    
+  border: 25px solid green;
+  position: relative;
+}
+.father{
+  width: 300px;
+  height: 200px;
+  outline: 1px solid blue;
+}
+.box2{
+  position: absolute;
+  left: 100px;
+  top: 100px;
+  width: 50%;/* width相对于 第一个定位父元素宽度(包含padding):(500-25*2)*50%=225px */ 
+  height: 50%;/* height相对于 第一个定位父元素高度(包含padding):(300-25*2)*50%=125px */ 
+  outline: 2px solid yellow;
+}
+
+/* ----------------------- 最大最小宽高 ----------------------- */
+html{
+  min-width: 1226px;
+}
+/* 给图片设置最大宽度。让图片不超过容器 */
+img{
+  max-width: 100%;
+}
