@@ -110,7 +110,7 @@
     ```html
     <div class="form-item">
           <input type="text" placeholder="请输入11位手机号">
-        </div>
+     </div>
     ```
 
     
@@ -120,12 +120,12 @@
     ```html
      <div class="form-item">
           <input type="text" placeholder="请输入11位手机号" maxlength="11">
-        </div>
+    </div>
     ```
 
     - 注意：需要输入的格式要使用js和正则表达式限制
 
-5. 使用button标签代替<input type="buttont"/>
+5. 使用button标签代替“ <input type="buttont"/>”
 
     - 更具语义化
     - 是一个正常标签，可以在其内部嵌套其他标签，用于设置格外的样式
@@ -242,7 +242,202 @@
 
         
 
-### [03. 表单进阶-CSS.mp4](https://www.youtube.com/watch?v=_bHQTzIvMpY)
+### [03. 表单进阶-CSS](https://www.youtube.com/watch?v=_bHQTzIvMpY)
+
+1. 设置html通用样式
+
+    ```css
+    *{
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html{
+      background-color: #1c1e26;
+      color: #333;
+    }
+    ```
+
+2. 设置标题样式
+
+    - text-align**:** **center**; 表示元素标签内容在容器里的居中
+    - 标签内容可以是文字，也可以是图片，或者其他div盒子
+
+    ```css
+    /* 标题样式 */
+    .container h1{
+      /* outline: 1px solid ; */
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    ```
+
+    
+
+3. 设置表单项通用样式
+
+    - *去掉外边框* outline: none;
+    - *input字体需要单独设置，不能继承html默认字体*
+    - *单独设置input表单项聚焦时的样式*
+
+    ```css
+    /* 设置表单项通用样式 */
+    .txt{
+      /* 去掉外边框 */
+      outline: none;
+      border: 1px solid #ccc;
+      width: 100%;
+      height: 40px;
+      margin-bottom: 10px;
+      padding:0 10px;
+      /* input字体需要单独设置，不能继承html默认字体 */
+      font-size: 14px;
+      border-radius: 5px;
+    }
+    /* input表单项聚焦时的样式 */
+    .txt:focus{
+      border: 1px solid #0a47f0;
+    }
+    
+    ```
+
+4. 设置特殊表单选样式
+
+    - 标签名+类名（中间没有空格，表示并且）精确选中元素
+
+    - 文本域设置不能拉伸
+
+    ```css
+    /* 设置表单特殊样式 */
+    /* 下拉框 */
+    select.txt{
+      height: 100px;
+      padding: 10px;
+    }
+    textarea.txt{
+      height: 100px;
+      padding: 10px;
+      /* 不能拉伸 */
+      resize: none;
+    }
+    ```
+
+5. 设置按钮通用样式
+
+    - 去掉默认的边框
+    - 单独设置字体大小
+
+    ```css
+    /* 设置按钮通用样式 */
+    button{
+      width: 150px;
+      height: 40px;
+      /* 去掉默认的边框 */
+      border:none;
+      outline: none;
+      background-color: #0a47f0;
+      color: white;
+      /* 按钮字体需要单独设置，不能继续html默认字体 */
+      font-size: 14px;
+      border-radius: 5px;
+      /* 鼠标样式 */
+      cursor: pointer;
+    }
+    ```
+
+6. 设置按钮不同状态时的样式
+
+    - 鼠标移入时
+    - 按钮禁用时
+
+    ```css
+    /* 设置按钮的其他状态： */
+    /* 鼠标移入 */
+    button:hover{
+      background-color: #7898f0;
+    }
+    /* 按钮禁用 */
+    button:disabled{
+      background-color: #b6c2e3;
+      /* 鼠标样式为不允许的 */
+      cursor: not-allowed;
+    }
+    ```
+
+7. 同意处理浮动样式
+
+    - css3之前，大量使用浮动，之后几乎不用了
+    - 设置浮动样式
+    - 清除浮动的样式
+    -  给需要浮动的元素添加浮动样式
+    - 给浮动元素的父元素添加清理浮动的样式
+
+     ```css
+     /* 统一设置浮动的样式 */
+     /* 左浮动 */
+     .left{
+       float: left;
+     }
+     /* 右浮动 */
+     .right{
+       float: right;
+     }
+     /* 清除浮动，解决浮动元素父容器高度坍塌问题 */
+     .clearfix::after{
+       content: "";
+       display: block;
+       clear: both;
+     }
+     ```
+
+    
+
+8. 设置特殊样式
+
+    - 特殊input 框设置宽度
+    - “同意协议”字体单独设置
+    - 注意：一个容器里的**2个行盒**或行内盒**垂直方向不对齐**时，给任意一个行盒设置**vertical-align: 3px;** （可以自行调整数值）来实现2个2个行盒的对齐
+
+9. 如何选中兄弟元素
+
+    - 场景：未选中时：让单选框或多选框后面的文字变浅。选中是：文字变深色
+    - 使用~符号选择兄弟元素
+    - 使用：checked伪类选择选中的单选框/多选框
+
+    ```css
+    /* 设置单选、多选框选中时，其后面span元素文本的样式*/
+    
+    /* 单选、多选框未选中时 */
+    label span{
+      color: #ccc;
+    }
+    /* 单选、多选框未选中时选中时 */
+    /* ~ 选择兄弟元素 */
+    label input:checked ~ span
+      {
+        color: #333;
+      }
+    ```
+
+10. placeholder的设置
+
+    - 通过伪元素获取
+
+    ```css
+    /* 设置placeholder样式：通过伪元素 */
+    .txt::placeholder{
+      color:#ccc
+    }
+    ```
+
+    
+
+11. 总结常用的伪类
+
+    - 鼠标经过：hover
+    - 鼠标聚焦：focus
+    - 按钮禁用：disabled
+    - 选框选中：checked
 
 ### [04. 精灵图](https://www.youtube.com/watch?v=6sCslBcSV_Q)
 
