@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>04. 精灵图</title>
+  <style>
+    .box{
+      width: 100px;
+      height: 100px;
+      outline: 1px solid black;
+      margin: 100px auto;
+      /* 精灵图要以背景图片的形式加载，不能在img标签中使用 */
+      background: url('./sprite.jpg') no-repeat;
+      /* 通过移动background-position来显示不同的图标 */
+      background-position:-100px -100px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="box"></div>
+</body>
+
+</html>

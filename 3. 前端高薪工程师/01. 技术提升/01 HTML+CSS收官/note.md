@@ -125,7 +125,7 @@
 
     - 注意：需要输入的格式要使用js和正则表达式限制
 
-5. 使用button标签代替“ <input type="buttont"/>”
+5. 使用button标签代替 input type="buttont"
 
     - 更具语义化
     - 是一个正常标签，可以在其内部嵌套其他标签，用于设置格外的样式
@@ -440,6 +440,46 @@
     - 选框选中：checked
 
 ### [04. 精灵图](https://www.youtube.com/watch?v=6sCslBcSV_Q)
+
+1. 核心原理
+    -  将所有的小图标放置在一张大图中
+    - 将这张大图作为**背景图片**加载，注意：不能是img元素
+    - 调整背景图片的位置来显示不同的小图标
+
+2. 好处：浏览器这加载一次图片，提高了性能
+
+3. 用法举例：
+
+    ```html
+    <!DOCTYPE html>
+    <html lang="en">
+    
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>04. 精灵图</title>
+      <style>
+        .box{
+          width: 100px;
+          height: 100px;
+          outline: 1px solid black;
+          margin: 100px auto;
+          /* 精灵图要以背景图片的形式加载，不能在img标签中使用 */
+          background: url('./sprite.jpg') no-repeat;
+          /* 通过移动background-position来显示不同的图标 */
+          background-position:-100px -100px;
+        }
+      </style>
+    </head>
+    
+    <body>
+      <div class="box"></div>
+    </body>
+    
+    </html>
+    ```
+
+    
 
 ### [05. 绝对定位收官](https://www.youtube.com/watch?v=h8V7RPASnzg)
 
