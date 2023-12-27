@@ -592,5 +592,36 @@
 
 ### [07. 拓展知识](https://www.youtube.com/watch?v=g2_QMpHHDYg)
 
-#### 	
+1.  伪类选择器
+
+    - css伪类选择器大全：[https://developer.mozilla.org/zh-CN/docs/Web/CSS/Pseudo-classes](https://gitee.com/link?target=https%3A%2F%2Fdeveloper.mozilla.org%2Fzh-CN%2Fdocs%2FWeb%2FCSS%2FPseudo-classes)
+
+    | 伪类               | 含义                                                         |
+    | ------------------ | ------------------------------------------------------------ |
+    | :link              | 选中未访问过的超链接                                         |
+    | :visited           | 选中已访问过的超链接                                         |
+    | :hover             | 选中鼠标移入的元素                                           |
+    | :active            | 选中鼠标按下的元素                                           |
+    | :focus             | 选中聚焦的表单元素                                           |
+    | :disabled          | 选中被禁用的表单元素                                         |
+    | :checked           | 选中被选中的表单元素                                         |
+    | :first-child       | 选中第一个子元素                                             |
+    | :last-child        | 选中最后一个子元素                                           |
+    | :nth-child(an+b)   | 选中第「an+b」个子元素 a和b是常量，n的值会从0开始依次递增    |
+    | :first-of-type     | 选中第一个指定类型的子元素                                   |
+    | :last-of-type      | 选中最后一个指定类型的子元素                                 |
+    | :nth-of-type(an+b) | 选中第「an+b」个指定类型的子元素 a和b是常量，n的值会从0开始依次递增 |
+
+    - a链接相关
+        - :link，:visited， :hover， :active
+        - 使用顺序：爱恨原则（**L**o**V**e**H**Ate)
+    - 其他
+
+2. contenteditable
+
+    - 常用于富文本，了解即可
+
+3. table表单
+
+    - 前端开发中不常用：浏览器渲染效率低，一般使用第三方库
 
