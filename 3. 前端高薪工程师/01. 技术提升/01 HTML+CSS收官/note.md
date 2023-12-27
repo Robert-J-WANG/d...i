@@ -530,6 +530,66 @@
 
 ### [06. 属性值的计算过程](https://www.youtube.com/watch?v=KVpn7qpefDo)
 
+1. 任何一个html元素的所有属性必须要有值，浏览器才能渲染，如果某一个属性没有值，或者值不确定，浏览器就不知道如何渲染
+2. 从属性没有值到每一个属性都有值，这个过程就是属性值的计算过程	![shuxing1](markdownAssets/shuxing1.png)
+
+3. 渲染到浏览器中的样式是计算后的样式，而不一定是代码中css书写的样式![shuxing3](markdownAssets/shuxing3.png)
+
+4. 计算过程的4个阶段
+
+    ![shuxing2](markdownAssets/shuxing2.png)
+
+    1. 确定声明值
+
+    ![shuxing4](markdownAssets/shuxing4.png)
+
+    2. 层叠冲突
+
+    ![shuxing5](markdownAssets/shuxing5.png)
+
+    - 比较重要性：作者书写的比浏览器默认的重要
+
+    ![shuxing6](markdownAssets/shuxing6.png)
+
+    - 比较特殊性：权重
+
+    ![shuxing7](markdownAssets/shuxing7.png)
+
+    - 比较原次序：代码的书写顺序，后面的覆盖前面的
+
+    ![shuxing8](markdownAssets/shuxing8.png)
+
+    3. 使用继承
+
+    ![shuxing9](markdownAssets/shuxing9.png)
+
+    - 最终结果
+
+    ![shuxing10](markdownAssets/shuxing10.png)
+
+    4. 使用默认值
+
+    ![shuxing11](markdownAssets/shuxing11.png)
+
+5. **对于a标签**
+
+    1. 浏览器设置了默认的颜色属性
+
+    2. 如果不在a标签里单独设置颜色，就会使用浏览器默认颜色
+
+    3. 可以设置{color:inherit}，让它继承父容器的颜色，这样就可以像普通盒子一样，能在父容器中设置了
+
+    4. 开发中通常做通用设置
+
+        ```css
+        a{
+          text-decoration: none;
+          color: inherit;
+        }
+        ```
+
+        
+
 ### [07. 拓展知识](https://www.youtube.com/watch?v=g2_QMpHHDYg)
 
 #### 	
