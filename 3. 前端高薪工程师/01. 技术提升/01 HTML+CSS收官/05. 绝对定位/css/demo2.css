@@ -1,0 +1,71 @@
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+.item{
+  width: 230px;
+  height: 140px;
+  /* outline: 1px solid red; */
+  margin: 100px auto;
+  position: relative;
+}
+.item img{
+  width: 100%;
+  height: 100%;
+}
+/* 绝对定位 */
+.aside{
+  width: 100%;
+  height: 20px;
+  line-height: 20px;
+  background-color: rgba(0,0,0,0.5);
+  color: white;
+  font-size: 14px;
+  padding: 0 10px;
+
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+.aside .left{
+  float: left;
+}
+.aside .right{
+  float: right;
+}
+.aside .left::before{
+ content: "";
+ width: 14px;
+ height: 14px;
+ /* outline: 1px solid red; */
+ display: inline-block;
+ background: url(../assets/icons.png) -256px -63px;
+ vertical-align: -3px;
+}
+
+/* 蒙层 */
+.modal{
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
+.modal .icon{
+  /* outline: 1px solid; */
+  width: 44px;
+  height: 44px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-top: -22px;
+  margin-left: -22px;
+background: url(../assets/icons.png) -190px -62px
+}
+
+.item:hover .modal{
+  z-index: 99;
+}

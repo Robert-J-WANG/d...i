@@ -483,6 +483,51 @@
 
 ### [05. 绝对定位收官](https://www.youtube.com/watch?v=h8V7RPASnzg)
 
+1.  什么时候使用？
+
+    - 元素出现在一个天马行空的位置
+
+    ![position1](markdownAssets/position1.png)
+
+    - 元素是否存在，都不影响其他元素的排列
+
+    ![position2](markdownAssets/position2.png)
+
+    - 单个元素在某个区域内水平垂直居中
+
+    ![position3](markdownAssets/position3.png)
+
+2. fixed和absolute的区别
+
+    - fixed是绝对定位的一种特殊情况，他们的参考系不一样
+
+    | 绝对定位类型 | 参考系               | 使用                                               |
+    | ------------ | -------------------- | -------------------------------------------------- |
+    | absolute     | 第一个有定位的父元素 | 给参考父元素设为position：relative。口诀：子绝父相 |
+    | fixed        | 整个视口(viewport)   | 不需要设置参考父元素                               |
+
+3. 使用绝对定位让子元素居中
+
+    1. 子元素必须定宽高
+    2. 固定套路
+
+    ```css
+      /* 相对参考系 */
+      left: 50%;
+      top: 50%;
+      /* 移动自身宽高的一半 */
+      margin-left: -200px;
+      margin-top: -100px;
+    ```
+
+4. 定位元素的层级
+
+    - 一般情况，后面的定位元素会覆盖前面的定位元素
+    - 使用z-index 属性来调整层级
+    - 通常z-index只对定位元素有效
+
+    
+
 ### [06. 属性值的计算过程](https://www.youtube.com/watch?v=KVpn7qpefDo)
 
 ### [07. 拓展知识](https://www.youtube.com/watch?v=g2_QMpHHDYg)
