@@ -80,11 +80,154 @@
 
     
 
-    
-
 ### 	[02. 顶部导航-主区域](https://www.youtube.com/watch?v=PFPCxY6ociE&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=16)
 
+1. 根据设计稿，分析导航区布局结构
+
+    ![1](assets/topNav1.png)
+
+2. 编写顶部导航区html，使用通用样式类名和自定义顶部导航类名
+
+    ```html
+    <!-- 头部导航栏 -->
+      <div class="topNav">
+        <div class="container clearfix">
+          <!-- 左侧部分 -->
+          <ul class="fl topNav-menu">
+            <li class="fl"><a href="">小米商城</a></li>
+            <li class="fl"><a href="">MIUI</a></li>
+            <li class="fl"><a href="">IoT</a></li>
+            <li class="fl"><a href="">云服务</a></li>
+            <li class="fl"><a href="">天星数科</a></li>
+            <li class="fl"><a href="">有品</a></li>
+            <li class="fl"><a href="">小爱开放平台</a></li>
+            <li class="fl"><a href="">企业团购</a></li>
+            <li class="fl"><a href="">资质证照</a></li>
+            <li class="fl"><a href="">协议规则</a></li>
+            <li class="fl"><a href="">下载app</a></li>
+            <li class="fl"><a href="">智能生活</a></li>
+            <li class="fl"><a href="">Select Location</a></li>
+          </ul>
+          <!-- 右侧部分 -->
+          <div class="fr">
+            <!-- 登录注册通知部分 -->
+            <ul class="fl topNav-menu">
+              <li class="fl"><a href="">登录</a></li>
+              <li class="fl"><a href="">注册</a></li>
+              <li class="fl"><a href="">消息通知</a></li>
+            </ul>
+            <!-- 购物车部分 -->
+            <div class="fr"></div>
+          </div>
+        </div>
+      </div>
+    ```
+
+3. 根据设计文稿，获取样式数据
+
+    ![2](assets/topNav2.png)
+
+4. 编写顶部导航区样式
+
+    ```css
+    /* topNav.css文件中编写 */
+    
+    .topNav {
+      background: #333;
+      height: 40px;
+      color: #b0b0b0;
+      font-size: 12px;
+    }
+    .topNav-menu {
+      line-height: 40px;
+    }
+    .topNav-menu a {
+      padding: 0 7px;
+      border-right: 1px solid #424242;
+    }
+    .topNav-menu li:last-child a{
+      border-right: none;
+    }
+    .topNav-menu li:first-child a{
+      padding-left: 0;
+    }
+    .topNav-menu a:hover{
+      color: #fff;
+    }
+    ```
+
+
+
 ### 	[03. 顶部导航-购物车](https://www.youtube.com/watch?v=zZqlaWVORAo&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=17)
+
+1. 根据设局图分析购物车部分结构
+
+    ![2](assets/topNav3.png)
+
+2. 编写html结构
+
+    ```html
+     <!-- 购物车部分 -->
+            <div class="fl topNav-car">
+              <!-- 购物车图标部分 -->
+              <a href="" class="topNav-link">
+                <i class="iconfont i-car"></i>
+                <span>购物车(0)</span>
+              </a>
+              <!-- 鼠标hover时，显示的部分 -->
+              <div class="topNav-detail">
+                <span>购物车中还没有商品，赶紧选购吧！</span>
+              </div>
+    
+    ```
+
+3. 根据设计文稿，获取样式数据
+
+    ![1](assets/topNav4.png)
+
+4. 编写购物车样式
+
+    ```css
+    /* 购物车部分 */
+    .topNav-car {
+      width: 128px;
+      height: 40px;
+      background-color: #424242;
+      margin-left: 13px;
+      position: relative;
+    }
+    .topNav-link {
+      width: 100%;
+      height: 100%;
+      display: block;
+      text-align: center;
+      line-height: 40px;
+    }
+    .topNav-detail{
+      width: 320px;
+      height: 100px;
+      background-color: #fff;
+      color: #ccc;
+      text-align: center;
+      line-height: 100px;
+      border: 1px solid #333;
+      position: absolute;
+      right: 0;
+      top: 40px;
+      border-top: 0;
+      display: none;
+    }
+    
+    .topNav-car:hover .topNav-detail{
+      display: block;
+    }
+    
+    .topNav-car:hover .topNav-link{
+      background-color: #fff;
+    }
+    ```
+
+    
 
 ### 	[04. 头部-Logo和菜单](https://www.youtube.com/watch?v=H1DSo3lqNvg&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=8)
 
