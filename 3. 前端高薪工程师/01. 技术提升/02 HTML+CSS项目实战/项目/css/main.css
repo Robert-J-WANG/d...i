@@ -1,0 +1,14 @@
+.main{
+  padding: 20px 0;
+  background: #f5f5f5;
+}
+.banner3{
+  display: block;
+  /* background: #e90505; */
+}
+
+.banner3 img{
+  width: 100%;
+  /* 将img转换为块盒，这样可以消除图片对齐方式引起的下边缝隙情况 */
+  display: block;
+}

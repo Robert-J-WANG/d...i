@@ -863,9 +863,53 @@
 ### [10. 主区域-广告](https://www.youtube.com/watch?v=a8S352n9kH0&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=20)
 
 1. 根据设局图分析结构
+
+    ![2](assets/main1.png)
+
 2. 编写html结构
-3. 根据设计文稿，获取样式数据
-4. 编写样式
+
+    ```html
+     <!-- 主区域开始 -->
+    
+      <div class="main">
+        <!-- banner3区域 -->
+        <a class="container banner3">
+          <img src="./img/full-banner.webp" alt="">
+        </a>
+    
+      </div>
+    
+      <!-- 主区域结束 -->
+    ```
+
+3. 编写样式
+
+    ```css
+    .main{
+      padding: 20px 0;
+      background: #f5f5f5;
+    }
+    .banner3{
+      display: block;
+      /* background: #e90505; */
+    }
+    
+    .banner3 img{
+      width: 100%;
+      /* 将img转换为块盒，这样可以消除图片对齐方式引起的下边缝隙情况 */
+      display: block;
+    }
+    ```
+
+    
+
+4. **注意**：
+
+    - 图片默认的是行盒，其对齐方式类似于文字，所以当图片充满这个父容器时，其下边会有缝隙
+
+    ![2](assets/main2.png)
+
+    - 解决：将图片转为块盒
 
 ### [11. 主区域-橱窗](https://www.youtube.com/watch?v=udvHCUDU-_Y&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=21)
 
