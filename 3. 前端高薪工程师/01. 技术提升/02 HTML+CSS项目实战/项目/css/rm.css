@@ -67,3 +67,42 @@
 .rm-item:hover .rm-mention {
   display: block;
 }
+
+/* 弹出层 */
+
+.rm-mention {
+  width: 128px;
+  padding: 14px;
+  position: absolute;
+  right: 90px;
+  top: 0;
+  border: 1px solid #f5f5f5;
+  background: #fff;
+  display: none;
+}
+.rm-mention img {
+  width: 100px;
+  height: 100px;
+  display: block;
+  margin-bottom: 20px;
+}
+.rm-mention p {
+  color: #757575;
+}
+.rm-mention::after {
+  content: '';
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: #fff;
+  border: 1px solid #f5f5f5;
+  border-left: none;
+  border-bottom: none;
+  top: 30px;
+  right: -6px;
+  /* transform css3属性  变形，变换 */
+  transform: rotate(45deg);
+}
+.rm-item:hover .rm-mention {
+  display: block;
+}

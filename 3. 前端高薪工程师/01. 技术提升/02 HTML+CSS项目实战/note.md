@@ -1306,8 +1306,82 @@
 ### [14. 右侧二维码弹出](https://www.youtube.com/watch?v=Yxu8kmrxbss&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=24)
 
 1. 根据设局图分析结构
+
+    ![2](assets/aside3.png)
+
 2. 编写html结构
+
+    ```html
+       <!-- 右侧固定菜单 开始 -->
+          <div class="rm">
+            <a href="" class="rm-item">
+              <i class="iconfont i-tel"></i>
+              <span class="rm-title">手机APP</span>
+    
+              <!-- 右侧二维码弹出 -->
+              <div class="rm-mention">
+                <img src="./img/qrcode.png" alt="" />
+                <p>
+                  扫码领取新
+                  <br />
+                  人百元礼包
+                </p>
+              </div>
+            </a>
+            <a href="" class="rm-item">
+              <i class="iconfont i-yonghu"></i>
+              <span class="rm-title">个人中心</span>
+            </a>
+              ...
+    ```
+
 3. 根据设计文稿，获取样式数据
+
+    ![2](assets/aside4.png)
+
 4. 编写样式
+
+    ```css
+    /* 弹出层 */
+    
+    .rm-mention {
+      width: 128px;
+      padding: 14px;
+      position: absolute;
+      right: 90px;
+      top: 0;
+      border: 1px solid #f5f5f5;
+      background: #fff;
+      display: none;
+    }
+    .rm-mention img {
+      width: 100px;
+      height: 100px;
+      display: block;
+      margin-bottom: 20px;
+    }
+    .rm-mention p {
+      color: #757575;
+    }
+    .rm-mention::after {
+      content: '';
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: #fff;
+      border: 1px solid #f5f5f5;
+      border-left: none;
+      border-bottom: none;
+      top: 30px;
+      right: -6px;
+      /* transform css3属性  变形，变换 */
+      transform: rotate(45deg);
+    }
+    .rm-item:hover .rm-mention {
+      display: block;
+    }
+    ```
+
+    
 
 ### [15. 将你的页面分享给全世界](https://www.youtube.com/watch?v=AYo5FWk0vBY&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=25)
