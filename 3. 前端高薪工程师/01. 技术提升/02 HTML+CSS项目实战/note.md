@@ -314,7 +314,114 @@
 
 ### 	[05. 头部-二级菜单](https://www.youtube.com/watch?v=OaS2K4iNcBM&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=9)
 
+1. 根据设局图分析结构
 
+    ![2](assets/header3.png)
+
+2. 编写html结构
+
+    ```html
+     <!-- 头部菜单开始 -->
+      <div class=" header">
+        <div class="container clearfix">
+          <!-- logo -->
+          <a href="" class="header-logo fl">
+            <h1>小米商城</h1>
+          </a>
+          <!-- 菜单 -->
+          <div class="header-menu fl">
+            <a class="fl" href="">小米手机</a>
+         	...省略...
+            <a class="fl" href="">社区</a>
+    
+            <!-- 二级菜单区域 -->
+            <div class="header-submenu">
+              <div class="container clearfix">
+                <!-- 二级菜单 列表项 -->
+                <a href="" class="fl">
+                  <div class="cover">
+                    <img src="./img/product.webp" alt="">
+                    <div class="name">Redmi Note 11 5G</div>
+                    <div class="price">1199元起</div>
+                  </div>
+                </a>
+    
+         		... 共6个...
+    
+              </div>
+            </div>
+          </div>
+          <!-- 搜索 -->
+        </div>
+      </div>
+      <!-- 头部菜单结束 -->
+    ```
+
+    
+
+3. 根据设计文稿，获取样式数据
+
+    ![2](assets/header4.png)
+
+4. 编写样式: header.css文件中编写
+
+    ```css
+    /* topNav.css文件中编写 */
+    /* 给topNav添加相对定位 */
+    .topNav {
+      background: #333;
+      height: 40px;
+      color: #b0b0b0;
+      font-size: 12px;
+      /* 这里是设置二级菜单定位的参考系 */
+      position: relative;
+    }
+    
+    
+    /* header.css文件中编写 */
+    /* 鼠标hover，显示2级菜单 */
+    .header-menu:hover .header-submenu{
+      display: block;
+    }
+    /* 二级菜单 */
+    .header-submenu{
+      /* 注意：这里是相对于TopNav */
+      position: absolute;
+      /* background-color: #e23737; */
+      left: 0;
+      top: 140px;
+      width: 100%;
+      border-top: 1px solid #ccc;
+      border-bottom: 1px solid #ccc;
+      padding: 30px 0;
+      display: none;
+    }
+    
+    .header-submenu .cover{
+      width: 204px;
+      text-align: center;
+      
+    }
+    .header-submenu .cover img{
+      width: 160px;
+      height: 110px;
+      border-right: 1px solid #eee;
+    }
+    
+    .header-submenu a:last-child .cover img{
+      border-right: 0;
+    }
+    
+    .header-submenu .cover .name{
+      margin-top: 10px;
+    }
+    
+    .header-submenu .cover .price{
+      color: #ff6700;
+    }
+    ```
+
+    
 
 ### [06. 头部-搜索区域](https://www.youtube.com/watch?v=zLKQ0YYhJ1I&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=10)
 

@@ -1,7 +1,6 @@
 .header{
   height: 100px;
   /* background-color: lightskyblue; */
-  line-height: 100px;
 }
 .header-logo h1{
   display: none;
@@ -16,7 +15,51 @@
   background-size: 100% 100%;
 }
 
-.header-menu a{
+/* 直接子元素 */
+.header-menu>a{
   padding: 0 7px;
   font-size: 16px;
+  line-height: 100px;
+
+}
+
+/* 鼠标hover，显示2级菜单 */
+.header-menu:hover .header-submenu{
+  display: block;
+}
+/* 二级菜单 */
+.header-submenu{
+  /* 注意：这里是相对于TopNav */
+  position: absolute;
+  /* background-color: #e23737; */
+  left: 0;
+  top: 140px;
+  width: 100%;
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  padding: 30px 0;
+  display: none;
+}
+
+.header-submenu .cover{
+  width: 204px;
+  text-align: center;
+  
+}
+.header-submenu .cover img{
+  width: 160px;
+  height: 110px;
+  border-right: 1px solid #eee;
+}
+
+.header-submenu a:last-child .cover img{
+  border-right: 0;
+}
+
+.header-submenu .cover .name{
+  margin-top: 10px;
+}
+
+.header-submenu .cover .price{
+  color: #ff6700;
 }
