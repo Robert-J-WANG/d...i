@@ -720,14 +720,145 @@
     }
     ```
 
-    
+
 
 ### [09. 横幅2](https://www.youtube.com/watch?v=l1M20aY_9jY&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=19)
 
 1. 根据设局图分析结构
+
+    ![2](assets/banner-2-1.png)
+
 2. 编写html结构
+
+    ```html
+    <!-- 横幅2开始 -->
+      <div class="banner2 container clearfix">
+        <div class="banner2-service fl">
+          <a href="" class="fl">
+            <i class="iconfont i-shijian"></i>
+            保障服务
+          </a>
+          <a href="" class="fl">
+            <i class="iconfont i-qiye"></i>
+            企业团购
+          </a>
+          <a href="" class="fl">
+            <i class="iconfont i-Fma"></i>
+            F码通道
+          </a>
+          <a href="" class="fl">
+            <i class="iconfont i-Sim-Card"></i>
+            米粉卡
+          </a>
+          <a href="" class="fl">
+            <i class="iconfont i-yijiuhuanxin"></i>
+            以旧换新
+          </a>
+          <a href="" class="fl">
+            <i class="iconfont i-chongzhi"></i>
+            话费充值
+          </a>
+        </div>
+        <a href="" class="fl">
+          <img src="./img/banner1.jpg" alt="">
+        </a>
+        <a href="" class="fl">
+          <img src="./img/banner2.jpg" alt="">
+        </a>
+        <a href="" class="fl">
+          <img src="./img/banner3.jpg" alt="">
+        </a>
+      </div>
+      <!-- 横幅2结束 -->
+    ```
+
+    
+
 3. 根据设计文稿，获取样式数据
+
+    ![2](assets/banner-2-2.png)
+
 4. 编写样式
+
+    ```css
+    .banner2{
+      padding-top: 14px;
+      padding-bottom: 26px;
+      outline: 1px solid;
+    }
+    .banner2-service{
+      width: 234px;
+      height: 170px;
+      margin-right: 14px;
+      outline: 1px solid ;
+      padding: 3px;
+      background-color: #5f5750;
+      color:#ccc;
+      font-size: 12px;
+    }
+    .banner2-service i{
+      font-size: 26px;
+      display: block;
+    }
+    
+    .banner2-service a{
+      width: 76px;
+      height: 82px;
+      text-align: center;
+      padding-top: 10px;
+      position: relative;
+    }
+    
+    .banner2-service a:hover{
+    color:white;
+    }
+    /* 设置左边线 */
+    .banner2-service a::before{
+      content:'';
+      width: 1px;
+      height: 70px;
+      background: #8a7e75;
+      position: absolute;
+      top: 6px;
+      left:0;
+    }
+    
+    /* 设置右边线 */
+    .banner2-service a::after{
+      content:'';
+      width: 64px;
+      height: 1px;
+      background: #8a7e75;
+      position: absolute;
+      bottom: 0;
+      left: 6px;
+    }
+    
+    .banner2-service a:nth-child(3n+1)::before{
+      content:none;
+    }
+    
+    .banner2-service a:nth-child(n+4)::after{
+      content:none;
+    }
+    
+    
+    .banner2>a{
+      width: 316px;
+      height: 170px;
+      margin-right: 15px;
+    }
+    .banner2>a:last-child{
+      margin-right: 0;
+    }
+    
+    .banner2>a img{
+      width: 100%;
+      height: 100%;
+    }
+    ```
+
+    
 
 ### [10. 主区域-广告](https://www.youtube.com/watch?v=a8S352n9kH0&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=20)
 
