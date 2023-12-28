@@ -1028,9 +1028,197 @@
 ### [12. 页脚](https://www.youtube.com/watch?v=wDhjGE1XjVI&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=22)
 
 1. 根据设局图分析结构
+
+    ![2](assets/footer1.png)
+
 2. 编写html结构
+
+    ```html
+     <!-- 页脚区域 开始 -->
+        <div class="footer">
+          <div class="container">
+            <div class="footer-top clearfix">
+              <a class="fl" href="">
+                <i class="iconfont i-weixiu1"></i>
+                预约维修服务
+              </a>
+              <a class="fl" href="">
+                <i class="iconfont i-7tianwuliyoutuihuo"></i>
+                7天无理由退货
+              </a>
+              <a class="fl" href="">
+                <i class="iconfont i-tian"></i>
+                15天免费换货
+              </a>
+              <a class="fl" href="">
+                <i class="iconfont i-liwu"></i>
+                满69包邮
+              </a>
+              <a class="fl" href="">
+                <i class="iconfont i-didian"></i>
+                520余家售后网点
+              </a>
+            </div>
+            <div class="footer-bottom clearfix">
+              <div class="footer-links fl">
+                <h3>帮助中心</h3>
+                <a href="">账号管理</a>
+                <a href="">购物指南</a>
+                <a href="">订单操作</a>
+              </div>
+              <div class="footer-links fl">
+                <h3>服务支持</h3>
+                <a href="">售后政策</a>
+                <a href="">自助服务</a>
+                <a href="">相关下载</a>
+              </div>
+              <div class="footer-links fl">
+                <h3>线下门店</h3>
+                <a href="">小米之家</a>
+                <a href="">服务网点</a>
+                <a href="">授权体验店/专区</a>
+              </div>
+              <div class="footer-links fl">
+                <h3>关于小米</h3>
+                <a href="">了解小米</a>
+                <a href="">加入小米</a>
+                <a href="">投资者关系</a>
+                <a href="">企业社会责任</a>
+                <a href="">廉洁举报</a>
+              </div>
+              <div class="footer-links fl">
+                <h3>关注我们</h3>
+                <a href="">新浪微博</a>
+                <a href="">官方微信</a>
+                <a href="">联系我们</a>
+                <a href="">公益基金会</a>
+              </div>
+              <div class="footer-links fl">
+                <h3>特色服务</h3>
+                <a href="">F 码通道</a>
+                <a href="">礼物码</a>
+                <a href="">防伪查询</a>
+              </div>
+              <!-- 联系 -->
+              <div class="footer-contact fr">
+                <p class="footer-phone">400-100-5678</p>
+                <p class="footer-phone-desc">8:00-18:00（仅收市话费）</p>
+                <a href="" class="footer-support">
+                  <i class="iconfont i-liaotian"></i>
+                  人工客服
+                </a>
+                <p class="footer-subcribe">
+                  关注小米：
+                  <i class="iconfont i-xinlang"></i>
+                  <i class="iconfont i-weixin"></i>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- 页脚区域 结束 -->
+    ```
+
+    
+
 3. 根据设计文稿，获取样式数据
+
+    ![2](assets/footer2.png)
+
 4. 编写样式
+
+    ```css
+    /* 页脚-顶部 */
+    
+    .footer-top {
+      padding: 27px 0;
+      border-bottom: 1px solid #e0e0e0;
+      height: 75px;
+      color: #616161;
+    }
+    .footer-top a {
+      /* outline: 1px solid; */
+      width: 20%;
+      font-size: 16px;
+      text-align: center;
+      height: 20px;
+      line-height: 20px;
+      border-right: 1px solid #e0e0e0;
+    }
+    .footer-top .iconfont {
+      font-size: 26px;
+      vertical-align: -4px;
+    }
+    .footer-top a:last-child {
+      border-right: none;
+    }
+    
+    /* 页脚-底部 */
+    .footer-bottom {
+      padding: 40px 0;
+    }
+    .footer-links {
+      width: 160px;
+      color: #757575;
+    }
+    .footer-links h3 {
+      font-size: 14px;
+      font-weight: normal;
+      color: #424242;
+      margin-bottom: 17px;
+    }
+    .footer-links a {
+      display: block;
+      font-size: 12px;
+      margin-top: 10px;
+    }
+    
+    /* 页脚-联系 */
+    .footer-contact {
+      width: 245px;
+      text-align: center;
+      border-left: 1px solid #e0e0e0;
+      font-size: 12px;
+    }
+    .footer-phone {
+      font-size: 22px;
+      color: #ff6700;
+    }
+    .footer-phone-desc {
+      color: #616161;
+    }
+    .footer-support {
+      width: 118px;
+      border: 1px solid #ff6700;
+      color: #ff6700;
+      display: block;
+      margin: 6px auto;
+      height: 30px;
+      line-height: 30px;
+    }
+    .footer-support .iconfont {
+      vertical-align: -1px;
+      font-size: 14px;
+    }
+    .footer-support:hover {
+      background: #ff6700;
+      color: #fff;
+    }
+    .footer-subcribe {
+      color: #616161;
+    }
+    .footer-subcribe .iconfont {
+      font-size: 20px;
+      vertical-align: middle;
+      cursor: pointer;
+    }
+    .footer-subcribe .iconfont:hover {
+      color: #ff6700;
+    }
+    
+    ```
+
+    
 
 ### [13. 右侧固定菜单](https://www.youtube.com/watch?v=lOmbTBfUamY&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=23)
 
