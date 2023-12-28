@@ -1385,3 +1385,10 @@
     
 
 ### [15. 将你的页面分享给全世界](https://www.youtube.com/watch?v=AYo5FWk0vBY&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=25)
+
+1. 扫码登录腾讯云
+    - [https://cloud.tencent.com/login](https://gitee.com/link?target=https%3A%2F%2Fcloud.tencent.com%2Flogin)
+2. 进入存储桶管理
+3. 创建存储桶
+4. 上传页面、css文件到存储桶
+5. 找到页面的访问地址
