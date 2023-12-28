@@ -527,18 +527,145 @@
 
 ### [07. 横幅-主区域](https://www.youtube.com/watch?v=6xN_z9fwlf4&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=11)
 
+1. 根据设局图分析结构
+
+    ![2](assets/banner1.png)
+
+2. 编写html结构
+
+    ```html
+     <!-- 横幅开始 -->
+       <div class="banner container">
+        <a href="" class="banner-cover">
+          <img src="./img/banner.jpeg" alt="">
+        </a>
+        <div class="banner-pointer banner-pointer-left">
+          <i class="iconfont i-left"></i>
+        </div>
+        <div class="banner-pointer banner-pointer-right">
+          <i class="iconfont i-right"></i>
+        </div>
+        <div class="banner-dots">
+          <span class="fl"></span>
+          <span class="fl selected"></span>
+          <span class="fl"></span>
+        </div>
+       </div>
+        <!-- 横幅结束 -->
+    ```
+
+    
+
+3. 根据设计文稿，获取样式数据
+
+    ![2](assets/banner2.png)
+
+4. 编写样式
+
+    ```css
+    .banner{
+      height: 460px;
+      position: relative;
+    }
+    .banner-cover img{
+      width: 100%;
+      height: 100%;
+    }
+    .banner-pointer{
+      /* outline: 1px solid; */
+      width: 40px;
+      height: 70px;
+      position: absolute;
+      top: 50%;
+      margin-top:-35px ;
+      line-height: 70px;
+      text-align: center;
+      color: #b8c3cb;
+      font-size: 30px;
+    }
+    .banner-pointer i{
+      font-size:inherit;
+    }
+    .banner-pointer-left{
+      left: 234px;
+    }
+    .banner-pointer-right{
+      right: 0;
+    }
+    .banner-pointer:hover{
+      background-color: rgba(0,0,0,0.5);
+      color: white;
+    }
+    
+    .banner-dots{
+      position: absolute;
+      bottom: 30px;
+      right: 30px;
+      /* outline: 1px solid; */
+    }
+    .banner-dots span{
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin: 2px 8px;
+      background-color: rgba(0,0,0,0.4);
+      border: 2px solid rgba(255,255,255,0.3);
+    }
+    .banner-dots span.selected{
+      background-color: rgba(255,255,255,0.3);
+      border: 2px solid  rgba(0,0,0,0.4);
+    }
+    ```
+
+    
+
 ### [08. 横幅-菜单](https://www.youtube.com/watch?v=XbR62vX-lBI&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=18)
+
+1. 根据设局图分析结构
+2. 编写html结构
+3. 根据设计文稿，获取样式数据
+4. 编写样式
 
 ### [09. 横幅2](https://www.youtube.com/watch?v=l1M20aY_9jY&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=19)
 
+1. 根据设局图分析结构
+2. 编写html结构
+3. 根据设计文稿，获取样式数据
+4. 编写样式
+
 ### [10. 主区域-广告](https://www.youtube.com/watch?v=a8S352n9kH0&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=20)
+
+1. 根据设局图分析结构
+2. 编写html结构
+3. 根据设计文稿，获取样式数据
+4. 编写样式
 
 ### [11. 主区域-橱窗](https://www.youtube.com/watch?v=udvHCUDU-_Y&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=21)
 
+1. 根据设局图分析结构
+2. 编写html结构
+3. 根据设计文稿，获取样式数据
+4. 编写样式
+
 ### [12. 页脚](https://www.youtube.com/watch?v=wDhjGE1XjVI&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=22)
+
+1. 根据设局图分析结构
+2. 编写html结构
+3. 根据设计文稿，获取样式数据
+4. 编写样式
 
 ### [13. 右侧固定菜单](https://www.youtube.com/watch?v=lOmbTBfUamY&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=23)
 
+1. 根据设局图分析结构
+2. 编写html结构
+3. 根据设计文稿，获取样式数据
+4. 编写样式
+
 ### [14. 右侧二维码弹出](https://www.youtube.com/watch?v=Yxu8kmrxbss&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=24)
+
+1. 根据设局图分析结构
+2. 编写html结构
+3. 根据设计文稿，获取样式数据
+4. 编写样式
 
 ### [15. 将你的页面分享给全世界](https://www.youtube.com/watch?v=AYo5FWk0vBY&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=25)
