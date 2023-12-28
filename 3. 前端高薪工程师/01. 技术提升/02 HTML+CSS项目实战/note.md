@@ -1223,9 +1223,85 @@
 ### [13. 右侧固定菜单](https://www.youtube.com/watch?v=lOmbTBfUamY&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=23)
 
 1. 根据设局图分析结构
+
+    ![2](assets/aside1.png)
+
 2. 编写html结构
+
+    ```html
+     <!-- 右侧固定菜单 开始 -->
+        <div class="rm">
+          <a href="" class="rm-item">
+            <i class="iconfont i-tel"></i>
+            <span class="rm-title">手机APP</span>
+          </a>
+          <a href="" class="rm-item">
+            <i class="iconfont i-yonghu"></i>
+            <span class="rm-title">个人中心</span>
+          </a>
+          <a href="" class="rm-item">
+            <i class="iconfont i-weixiu1"></i>
+            <span class="rm-title">售后服务</span>
+          </a>
+          <a href="" class="rm-item">
+            <i class="iconfont i-kefu"></i>
+            <span class="rm-title">人工客服</span>
+          </a>
+          <a href="" class="rm-item">
+            <i class="iconfont i-car"></i>
+            <span class="rm-title">购物车</span>
+          </a>
+          <a href="javascript:scrollTo(0,0)" class="rm-item rm-to-top">
+            <i class="iconfont i-dingbu"></i>
+            <span class="rm-title">回到顶部</span>
+          </a>
+        </div>
+        <!-- 右侧固定菜单 结束 -->        
+    
+    ```
+
+    
+
 3. 根据设计文稿，获取样式数据
+
+    ![2](assets/aside2.png)
+
 4. 编写样式
+
+    ```css
+    .rm {
+      width: 84px;
+      position: fixed;
+      right: 0;
+      bottom: 70px;
+      z-index: 999;
+    }
+    .rm-item {
+      width: 100%;
+      height: 92px;
+      background: #fff;
+      border: 1px solid #f5f5f5;
+      border-top: none;
+      color: #757575;
+      text-align: center;
+      display: block;
+      padding-top: 14px;
+      position: relative;
+    }
+    .rm-item:first-child,
+    .rm-to-top {
+      border-top: 1px solid #f5f5f5;
+    }
+    .rm-to-top {
+      margin-top: 18px;
+    }
+    .rm-item .iconfont {
+      display: block;
+      font-size: 30px;
+    }
+    ```
+
+    
 
 ### [14. 右侧二维码弹出](https://www.youtube.com/watch?v=Yxu8kmrxbss&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=24)
 
