@@ -622,9 +622,105 @@
 ### [08. 横幅-菜单](https://www.youtube.com/watch?v=XbR62vX-lBI&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=18)
 
 1. 根据设局图分析结构
+
+    ![2](assets/banner3.png)
+
 2. 编写html结构
+
+    ```html
+    <!-- 横幅-菜单 -->
+        <ul class="banner-menu">
+          <li>
+            <div class="banner-menu-item clearfix">
+              <span class="fl">手机</span>
+              <i class="iconfont i-right fr"></i>
+            </div>
+            <div class="banner-sub-menu">
+              <a href="" class="fl">
+                <img src="./img/mobile.webp" class="fl" alt="">
+                <span class="fl">Note 11 Pro 系列 Note 11 Pro 系列 Note 11 Pro 系列</span>
+              </a>
+    				...省略...
+            </div>
+          </li>
+    
+          <li>
+          	...省略...
+          </li>
+        </ul>
+    ```
+
+    
+
 3. 根据设计文稿，获取样式数据
+
+    ![2](assets/banner4.png)
+
 4. 编写样式
+
+    ```css
+    /* 菜单样式 */
+    .banner-menu{
+      width: 234px;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      padding: 20px 0;
+      background-color: rgba(105,101,101,0.6);
+    }
+    
+    .banner-menu-item{
+     height: 42px;
+     line-height: 42px;
+     padding:0 20px 0 30px;
+     color: white;
+     cursor: pointer;
+    }
+    
+    .banner-menu li:hover .banner-menu-item{
+      background-color:#ed702e;
+    }
+    
+    /* 二级菜单 */
+    .banner-sub-menu{
+      position: absolute;
+      left: 234px;
+      top: 0;
+      height: 100%;
+      width: 992px;
+      background-color: white;
+      border: 1px solid #bbb;
+      display: none;
+    }
+    .banner-sub-menu a{
+      width: 25%;
+      height: 16.666%;
+      /* outline: 1px solid ; */
+      padding:0 20px ;
+    }
+    .banner-sub-menu img{
+      width: 40px;
+      height: 40px;
+      margin-top: 17px;
+      margin-right: 12px;
+    }
+    .banner-sub-menu span{
+      width: 154px;
+    margin-top: 26px;
+      /* 文字超出省略号代替 */
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    
+    }
+    
+    .banner-menu li:hover .banner-sub-menu{
+      display: block;
+    }
+    ```
+
+    
 
 ### [09. 横幅2](https://www.youtube.com/watch?v=l1M20aY_9jY&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=19)
 

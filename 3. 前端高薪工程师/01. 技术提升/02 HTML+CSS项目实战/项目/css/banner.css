@@ -50,3 +50,64 @@
   background-color: rgba(255,255,255,0.3);
   border: 2px solid  rgba(0,0,0,0.4);
 }
+
+/* 菜单样式 */
+.banner-menu{
+  width: 234px;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 20px 0;
+  background-color: rgba(105,101,101,0.6);
+}
+
+.banner-menu-item{
+ height: 42px;
+ line-height: 42px;
+ padding:0 20px 0 30px;
+ color: white;
+ cursor: pointer;
+}
+
+.banner-menu li:hover .banner-menu-item{
+  background-color:#ed702e;
+}
+
+
+/* 二级菜单 */
+.banner-sub-menu{
+  position: absolute;
+  left: 234px;
+  top: 0;
+  height: 100%;
+  width: 992px;
+  background-color: white;
+  border: 1px solid #bbb;
+  display: none;
+}
+.banner-sub-menu a{
+  width: 25%;
+  height: 16.666%;
+  /* outline: 1px solid ; */
+  padding:0 20px ;
+}
+.banner-sub-menu img{
+  width: 40px;
+  height: 40px;
+  margin-top: 17px;
+  margin-right: 12px;
+}
+.banner-sub-menu span{
+  width: 154px;
+margin-top: 26px;
+  /* 文字超出省略号代替 */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+}
+
+.banner-menu li:hover .banner-sub-menu{
+  display: block;
+}
