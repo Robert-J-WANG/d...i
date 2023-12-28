@@ -49,6 +49,12 @@
   top: 40px;
   border-top: 0;
   display: none;
+  /* 
+  对z-index层级的约定：
+  弹出菜单，使用2位数；
+  固定菜单，使用1位数 
+  */
+  z-index: 11;
 }
 
 .topNav-car:hover .topNav-detail{
@@ -57,4 +63,5 @@
 
 .topNav-car:hover .topNav-link{
   background-color: #fff;
+  color: #ff6700;
 }

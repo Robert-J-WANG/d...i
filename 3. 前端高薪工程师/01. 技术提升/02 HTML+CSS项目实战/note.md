@@ -216,6 +216,12 @@
       top: 40px;
       border-top: 0;
       display: none;
+      /* 
+      对z-index层级的约定：
+      弹出菜单，使用2位数；
+      固定菜单，使用1位数 
+      */
+      z-index: 11;
     }
     
     .topNav-car:hover .topNav-detail{
@@ -226,12 +232,89 @@
       background-color: #fff;
     }
     ```
-
+    
+    备注：防止类名冲突，应该使用多层级类名
+    
+    ```html
+     <a href="" class="topNav-link"> 
+         <!-- 而不是 -->
+      <a href="" class="link">
+    ```
+    
     
 
 ### 	[04. 头部-Logo和菜单](https://www.youtube.com/watch?v=H1DSo3lqNvg&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=8)
 
+1. 根据设局图分析结构
+
+    ![2](assets/header1.png)
+
+2. 编写html结构
+
+    ```html
+      <!-- 头部菜单开始 -->
+      <div class=" header">
+        <div class="container clearfix">
+          <!-- logo -->
+          <a href="" class="header-logo fl">
+            <h1>小米商城</h1>
+          </a>
+          <!-- 菜单 -->
+          <div class="header-menu fl">
+            <a class="fl" href="">小米手机</a>
+            <a class="fl" href="">红米手机</a>
+            <a class="fl" href="">电视</a>
+            <a class="fl" href="">笔记本</a>
+            <a class="fl" href="">平板</a>
+            <a class="fl" href="">家电</a>
+            <a class="fl" href="">路由器</a>
+            <a class="fl" href="">服务</a>
+            <a class="fl" href="">社区</a>
+          </div>
+          <!-- 搜索 -->
+        </div>
+      </div>
+      <!-- 头部菜单结束 -->
+    ```
+
+    
+
+3. 根据设计文稿，获取样式数据
+
+    ![2](assets/header2.png)
+
+4. 编写样式: header.css文件中编写
+
+    ```
+    .header{
+      height: 100px;
+      /* background-color: lightskyblue; */
+      line-height: 100px;
+    }
+    .header-logo h1{
+      display: none;
+    }
+    .header-logo{
+      width: 56px;
+      height: 56px;
+      /* outline: 1px solid ; */
+      margin-top: 22px;
+      margin-right: 172px;
+      background-image: url(../img/logo.png);
+      background-size: 100% 100%;
+    }
+    
+    .header-menu a{
+      padding: 0 7px;
+      font-size: 16px;
+    }
+    ```
+
+    
+
 ### 	[05. 头部-二级菜单](https://www.youtube.com/watch?v=OaS2K4iNcBM&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=9)
+
+
 
 ### [06. 头部-搜索区域](https://www.youtube.com/watch?v=zLKQ0YYhJ1I&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=10)
 
