@@ -1,5 +1,39 @@
 ## 02 HTML+CSS项目实战
 
+#### 知识漏洞：
+
+1. ::before，::after 伪元素，不受通配符*{ box-sizing: border-box; }样式的控制，需要单独设置
+
+    ```css
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+    ```
+
+2. 同一个容器中的多个**行盒（行块盒）**，垂直方向不对齐（由于高度不一致，比如图片高200px ,文字大小只是20px), 此时只需要给任意一个行盒设置**vertical-align: middle**（或这可以手动调整）属性
+
+    - 不对齐
+
+    ![1](assets/test1.png)
+
+    - 添加属性后对齐
+
+    ![1](assets/test2.png)
+
+3. 图片未填满父容器的问题
+
+    - 场景：父容器未设置宽高尺寸，由图片撑开。此时图片不能完全填充父容器，下边会有小的缝隙
+
+    ![1](assets/test3.png)
+
+    - 原因是图片默认是行盒，由于其对齐方式不同于文字
+    - 解决方案：图片转成块盒
+
+    ![1](assets/test4.png)
+
+
+
 ### 	[01. 搭建工程](https://www.youtube.com/watch?v=71aRpqQI2-A&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=15)
 
 1. 创建项目文件夹
