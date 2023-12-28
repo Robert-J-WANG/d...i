@@ -136,6 +136,20 @@
         </div>
       </div>
       <!-- 搜索 -->
+      <!-- 收集表单数据，使用form标签 -->
+      <form class="header-search fr">
+        <!-- 这里input标签不建议在包裹一层div,为了聚焦时，方便通过兄弟伪元素获取后面的元素 -->
+        <input  type="text" class="fl" placeholder="手机" >
+        <button type="button" class="search-icon fl">
+          <i class="iconfont i-fangdajing"></i>
+        </button>
+        <div class="search-suggestion">
+          <a href="">全部商品</a>
+          <a href="">手机</a>
+          <a href="">耳机</a>
+          <a href="">笔记本</a>
+        </div>
+      </form>
     </div>
   </div>
   <!-- 头部菜单结束 -->

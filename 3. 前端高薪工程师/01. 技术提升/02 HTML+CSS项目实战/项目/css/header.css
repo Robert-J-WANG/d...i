@@ -63,3 +63,67 @@
 .header-submenu .cover .price{
   color: #ff6700;
 }
+
+/* search区域 */
+.header-search{
+  margin-top: 25px;
+  /* background: #6cdb04; */
+  position: relative;
+}
+.header-search input{
+  width: 245px;
+  height: 50px;
+  outline: none;
+  border: 1px solid #ccc;
+  padding: 0 15px;
+  font-size: 16px;
+}
+.header-search input:hover{
+  border: 2px solid #aaa;
+}
+.header-search .search-icon{
+  width: 50px;
+  height: 50px;
+  border: 1px solid #ccc;
+  border-left: 0;
+  font-size: 20px;
+  color: #565656;
+  cursor: pointer;
+}
+.header-search .search-icon i{
+  font-size: inherit ;
+}
+.header-search .search-icon:hover{
+  background-color: #ff6700;
+  border: none;
+  color: white;
+}
+.header-search .search-suggestion{
+  position: absolute;
+  left: 0;
+  top: 50px;
+  width: 245px;
+  border: 1px solid #ff6700;
+  border-top: 0;
+  display: none;
+}
+.header-search .search-suggestion a{
+  display: block;
+  height: 30px;
+  line-height: 30px;
+  padding: 0 10px;
+}
+.header-search .search-suggestion a:hover{
+  background-color: #eee;
+  color: inherit;
+}
+.header-search input:focus{
+  border: 1px solid #ff6700;
+}
+.header-search input:focus~.search-suggestion{
+  display: block;
+}
+.header-search input:focus~.search-icon{
+  border: 1px solid #ff6700;
+  border-left: 0;
+}

@@ -425,6 +425,106 @@
 
 ### [06. 头部-搜索区域](https://www.youtube.com/watch?v=zLKQ0YYhJ1I&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=10)
 
+1. 根据设局图分析结构
+
+    ![2](assets/search1.png)
+
+2. 编写html结构
+
+    ```html
+    <!-- 搜索 -->
+          <!-- 收集表单数据，使用form标签 -->
+          <form class="header-search fr">
+            <!-- 这里input标签不建议在包裹一层div,为了聚焦时，方便通过兄弟伪元素获取后面的元素 -->
+            <input  type="text" class="fl" placeholder="手机" >
+            <button type="button" class="search-icon fl">
+              <i class="iconfont i-fangdajing"></i>
+            </button>
+            <div class="search-suggestion">
+              <a href="">全部商品</a>
+              <a href="">手机</a>
+              <a href="">耳机</a>
+              <a href="">笔记本</a>
+            </div>
+          </form>
+    ```
+
+    
+
+3. 根据设计文稿，获取样式数据
+
+    ![2](assets/search2.png)
+
+4. 编写样式: header.css文件中编写
+
+    ```css
+    /* search区域 */
+    .header-search{
+      margin-top: 25px;
+      /* background: #6cdb04; */
+      position: relative;
+    }
+    .header-search input{
+      width: 245px;
+      height: 50px;
+      outline: none;
+      border: 1px solid #ccc;
+      padding: 0 15px;
+      font-size: 16px;
+    }
+    .header-search input:hover{
+      border: 2px solid #aaa;
+    }
+    .header-search .search-icon{
+      width: 50px;
+      height: 50px;
+      border: 1px solid #ccc;
+      border-left: 0;
+      font-size: 20px;
+      color: #565656;
+      cursor: pointer;
+    }
+    .header-search .search-icon i{
+      font-size: inherit ;
+    }
+    .header-search .search-icon:hover{
+      background-color: #ff6700;
+      border: none;
+      color: white;
+    }
+    .header-search .search-suggestion{
+      position: absolute;
+      left: 0;
+      top: 50px;
+      width: 245px;
+      border: 1px solid #ff6700;
+      border-top: 0;
+      display: none;
+    }
+    .header-search .search-suggestion a{
+      display: block;
+      height: 30px;
+      line-height: 30px;
+      padding: 0 10px;
+    }
+    .header-search .search-suggestion a:hover{
+      background-color: #eee;
+      color: inherit;
+    }
+    .header-search input:focus{
+      border: 1px solid #ff6700;
+    }
+    .header-search input:focus~.search-suggestion{
+      display: block;
+    }
+    .header-search input:focus~.search-icon{
+      border: 1px solid #ff6700;
+      border-left: 0;
+    }
+    ```
+
+    
+
 ### [07. 横幅-主区域](https://www.youtube.com/watch?v=6xN_z9fwlf4&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=11)
 
 ### [08. 横幅-菜单](https://www.youtube.com/watch?v=XbR62vX-lBI&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=18)
