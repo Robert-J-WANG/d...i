@@ -914,9 +914,116 @@
 ### [11. 主区域-橱窗](https://www.youtube.com/watch?v=udvHCUDU-_Y&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=21)
 
 1. 根据设局图分析结构
+
+    ![2](assets/main3.png)
+
 2. 编写html结构
+
+    ```html
+         <div class="sc container">
+            <div class="sc-top clearfix">
+              <h2 class="sc-title fl">手机</h2>
+              <a href="" class="sc-more fr">
+                查看更多
+                <i class="iconfont i-right"></i>
+              </a>
+            </div>
+            <div class="sc-container clearfix">
+              <div class="sc-item-first fl">
+                <a href="">
+                  <img src="./img/mobile-first.webp" alt="" />
+                </a>
+              </div>
+              <div class="sc-item-list fl">
+                <a href="" class="sc-item fl">
+                  <img src="./img/heisha.webp" alt="" />
+                  <p class="sc-name">黑鲨4S Pro</p>
+                  <p class="sc-desc">磁动力升降肩键</p>
+                  <p class="sc-price">4799元起</p>
+                </a>
+             	 ...共8个...
+              </div>
+            </div>
+    ```
+
 3. 根据设计文稿，获取样式数据
+
+    ![2](assets/main4.png)
+
 4. 编写样式
+
+    ```css
+    /* 橱窗 */
+    .sc {
+      margin-top: 10px;
+    }
+    .sc-top {
+      height: 58px;
+      line-height: 58px;
+    }
+    .sc-title {
+      font-size: 22px;
+      font-weight: normal;
+    }
+    .sc-more .iconfont {
+      background: #aaa;
+      width: 20px;
+      height: 20px;
+      display: inline-block;
+      line-height: 20px;
+      color: #fff;
+      border-radius: 50%;
+      text-align: center;
+      /* vertical-align: -2px; */
+    }
+    .sc-more:hover .iconfont {
+      background: #ff6700;
+    }
+    
+    .sc-item-first {
+      width: 234px;
+      height: 614px;
+      margin-right: 14px;
+    }
+    .sc-item-first img {
+      width: 100%;
+      height: 100%;
+    }
+    .sc-item-list {
+      width: 978px;
+    }
+    .sc-item {
+      background: #fff;
+      margin-right: 14px;
+      margin-bottom: 14px;
+      width: 234px;
+      height: 300px;
+      text-align: center;
+    }
+    .sc-item img {
+      width: 160px;
+      height: 160px;
+      margin-top: 20px;
+    }
+    .sc-name {
+      margin-top: 20px;
+      color: #333;
+    }
+    .sc-desc {
+      font-size: 12px;
+      color: #b0b0b0;
+      margin-top: 3px;
+      margin-bottom: 10px;
+    }
+    .sc-price {
+      color: #ff6700;
+    }
+    .sc-item:nth-child(4n) {
+      margin-right: 0;
+    }
+    ```
+
+    
 
 ### [12. 页脚](https://www.youtube.com/watch?v=wDhjGE1XjVI&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=22)
 
