@@ -1,14 +1,24 @@
 ### 03 JS收官
 
-#### [01. 知识回顾-概述.mp4](https://www.youtube.com/watch?v=3z2s5fSJGCI)
+#### [01. 知识回顾- 环境准备](https://www.youtube.com/watch?v=3z2s5fSJGCI)
+
+​	 [笔记](01.%20环境准备/课件.md)
 
 #### 	[02. 知识回顾-数据的表达1](https://www.youtube.com/watch?v=sHSZCByedcI)
 
+ 	[笔记](01.%20环境准备/课件.md)
+
 #### 	[03. 知识回顾-数据的表达2](https://www.youtube.com/watch?v=QO87xbXfZCs)
+
+​	 [笔记](01.%20环境准备/课件.md)
 
 #### 	[04. 知识回顾-数据的表达3](https://www.youtube.com/watch?v=ba_nLakklmI)
 
+​	 [笔记](01.%20环境准备/课件.md)
+
 #### 	[05. 知识回顾-数据的运算](https://www.youtube.com/watch?v=QFOu0EoV-DI)
+
+​	 [笔记](01.%20环境准备/课件.md)
 
 #### 	[06. 知识回顾-数据的流程1](https://www.youtube.com/watch?v=h5cQUEIrd74)
 
