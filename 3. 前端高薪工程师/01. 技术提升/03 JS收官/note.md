@@ -40,6 +40,8 @@
 
 #### [10. 核心概念-全局对象](https://www.youtube.com/watch?v=5a0rmp1vl00)
 
+​	 [笔记](10.%20核心概念-全局对象/课件.md)
+
 #### [11.核心概念-构造函数](https://www.youtube.com/watch?v=FigYr0-yElA)
 
 #### [12. 核心概念-原型](https://www.youtube.com/watch?v=D0nZIy8XtQU)
