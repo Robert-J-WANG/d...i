@@ -62,6 +62,8 @@
 
 #### [16. 标准库-数字和字符串](https://www.youtube.com/watch?v=88oubQAWy_I)
 
+​	 [笔记](16.%20标准库-数字和字符串/标准库.md)
+
 #### [17. 标准库-数学](https://www.youtube.com/watch?v=hgymKSkIlrs)
 
 #### [18. 标准库-日期](https://www.youtube.com/watch?v=NabGrIRLfJg)
