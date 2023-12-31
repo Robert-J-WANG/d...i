@@ -74,17 +74,17 @@
 
 #### [26. 技巧-在循环中注册事件](https://www.youtube.com/watch?v=zcIjc-IMM9A)
 
-#### [27. 技巧-回调函数](javascript:void(0);)
+#### [27. 技巧-回调函数](https://www.youtube.com/watch?v=v6PLowSDHn8)
 
-#### [28. 技巧-函数防抖](javascript:void(0);)
+#### [28. 技巧-函数防抖](https://www.youtube.com/watch?v=3hQUqTTMev8)
 
-#### [28. 标准库-正则表达式](javascript:void(0);)
+#### [29. 标准库-正则表达式](https://www.youtube.com/watch?v=83afTHHxPXc)
 
-#### [30. 核心概念-浏览器渲染原理](javascript:void(0);)
+#### [30. 核心概念-浏览器渲染原理](https://www.youtube.com/watch?v=jTymeiyhHbw)
 
-#### [31. 核心概念-异常](javascript:void(0);)
+#### [31. 核心概念-异常](https://www.youtube.com/watch?v=ALnSnqxWwaA)
 
-#### [32. 技巧-断点调试](javascript:void(0);)
+#### [32. 技巧-断点调试](https://www.youtube.com/watch?v=BsVwI9ZDJ4M)
 
 
 
