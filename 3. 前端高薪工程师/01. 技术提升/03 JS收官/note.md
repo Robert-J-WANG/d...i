@@ -46,11 +46,19 @@
 
 #### [12. 核心概念-原型](https://www.youtube.com/watch?v=D0nZIy8XtQU)
 
+​	 [笔记](12.%20核心概念-原型/课件.md)
+
 #### [13. 核心概念-这是啥？](https://www.youtube.com/watch?v=GH3bGkau-GI)
+
+​	 [笔记](13.%20核心概念-这是啥？/课件.md)
 
 #### [14. 核心概念-原型链](https://www.youtube.com/watch?v=fnM0EVkWWE0)
 
+​	 [笔记](14.%20核心概念-原型链/课件.md)
+
 #### [15. 核心概念-继承](https://www.youtube.com/watch?v=0Oy6uPw-A9s)
+
+​	 [笔记](15.%20核心概念-继承/课件.md)
 
 #### [16. 标准库-数字和字符串](https://www.youtube.com/watch?v=88oubQAWy_I)
 
