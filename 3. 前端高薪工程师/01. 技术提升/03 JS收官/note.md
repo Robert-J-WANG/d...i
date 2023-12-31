@@ -70,6 +70,8 @@
 
 #### [19. 标准库-数组](https://www.youtube.com/watch?v=uxvbf767DX0)
 
+​	 [笔记](19.%20标准库-数组/练习题笔记.md)
+
 #### [20. WebAPI-BOM](https://www.youtube.com/watch?v=9tcLkPGq3RQ)
 
 #### [21. WebAPI-玩转DOM](https://www.youtube.com/watch?v=cXXU8Z1Rd4Y)
