@@ -26,15 +26,6 @@ function setSelectedLoves() {
   $("#selChoose").innerText = "已选择的爱好：" + valus.join(",");
 }
 
-/**
- *
- * @param {*} selector  选择器名称
- * @returns  选中的dom对象
- */
-function $(selector) {
-  return document.querySelector(selector);
-}
-
 // 页面加载时，先调用函数
 setSubmitButtonStatus();
 setSendCodeButtonStatus();
@@ -55,4 +46,13 @@ for (var i = 0; i < inputs.length; i++) {
       this.value = "";
     }
   });
+}
+
+/**
+ *
+ * @param {*} selector  选择器名称
+ * @returns  选中的dom对象
+ */
+function $(selector) {
+  return document.querySelector(selector);
 }
