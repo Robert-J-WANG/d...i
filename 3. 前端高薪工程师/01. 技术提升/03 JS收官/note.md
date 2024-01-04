@@ -96,6 +96,8 @@
 
 #### [29. 标准库-正则表达式](https://www.youtube.com/watch?v=83afTHHxPXc)
 
+​	 [笔记](29.%20标准库-正则表达式/课件.md)
+
 #### [30. 核心概念-浏览器渲染原理](https://www.youtube.com/watch?v=jTymeiyhHbw)
 
 #### [31. 核心概念-异常](https://www.youtube.com/watch?v=ALnSnqxWwaA)
