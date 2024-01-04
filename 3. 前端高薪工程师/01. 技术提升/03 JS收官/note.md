@@ -92,6 +92,8 @@
 
 #### [28. 技巧-函数防抖](https://www.youtube.com/watch?v=3hQUqTTMev8)
 
+​	 [笔记](28.%20技巧-函数防抖/函数防抖.md)
+
 #### [29. 标准库-正则表达式](https://www.youtube.com/watch?v=83afTHHxPXc)
 
 #### [30. 核心概念-浏览器渲染原理](https://www.youtube.com/watch?v=jTymeiyhHbw)
