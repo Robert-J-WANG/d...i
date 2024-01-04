@@ -104,6 +104,8 @@
 
 #### [31. 核心概念-异常](https://www.youtube.com/watch?v=ALnSnqxWwaA)
 
+​	 [笔记](31.%20核心概念-异常/课件.md)
+
 #### [32. 技巧-断点调试](https://www.youtube.com/watch?v=BsVwI9ZDJ4M)
 
 
