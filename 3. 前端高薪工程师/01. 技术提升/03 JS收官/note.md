@@ -100,6 +100,8 @@
 
 #### [30. 核心概念-浏览器渲染原理](https://www.youtube.com/watch?v=jTymeiyhHbw)
 
+​	 [笔记](30.%20核心概念-浏览器渲染原理/课件.md)
+
 #### [31. 核心概念-异常](https://www.youtube.com/watch?v=ALnSnqxWwaA)
 
 #### [32. 技巧-断点调试](https://www.youtube.com/watch?v=BsVwI9ZDJ4M)
