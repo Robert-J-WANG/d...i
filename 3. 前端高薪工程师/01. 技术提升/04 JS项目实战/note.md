@@ -6,7 +6,7 @@
 
 #### 	[02. 手风琴效果](https://www.youtube.com/watch?v=4FSW9-8imHc&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=64)
 
-​	[笔记](02.%20知识回顾-数据的表达1/课件.md)
+​	[笔记](02.%20手风琴效果/笔记.md)
 
 #### 	[03. 动态排序表格](https://www.youtube.com/watch?v=sHSZCByedcI)
 
