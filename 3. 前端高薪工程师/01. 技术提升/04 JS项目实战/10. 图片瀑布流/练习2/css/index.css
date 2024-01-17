@@ -1,0 +1,19 @@
+/* 外层容器样式 */
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+.container {
+  width: 80%;
+  margin: 0 auto;
+  border: 1px solid hsl(0, 80%, 57%);
+  position: relative;
+}
+
+/* 图片样式 */
+.container img {
+  position: absolute;
+  transition: all 0.5s;
+  /* width: 220px; */
+}

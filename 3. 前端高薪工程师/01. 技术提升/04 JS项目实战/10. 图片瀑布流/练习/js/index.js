@@ -11,64 +11,62 @@ var urls = [
   "../img/9.jpg",
   "../img/10.jpg",
 ];
-var container = document.querySelector(".container");
+var doms = {
+  container: document.querySelector(".container"),
+};
 var imgWidth = 220;
+var containerWidth = doms.container.clientWidth;
+var number = Math.floor(containerWidth / imgWidth); //每一行图片的个数
+var gap = (containerWidth - number * imgWidth) / number; //每一行图片的间隔
+var imgTops = [];
+var imgHeight = 0;
+var minTop = 0;
+var minIndex = null;
+var curIndex = 0;
+
 // 初始化
 init();
 // 交互
 
 function init() {
-  createImgs();
+  // 初始化imgTops数组
+  for (var i = 0; i < number; i++) {
+    imgTops.push(i);
+  }
+  getImgMinTop();
+  // 添加第一张图片
+  createImg(updateImgTops);
+  for (var i = 0; i < number; i++) {
+    curIndex++;
+    createImg(updateImgTops);
+  }
+
+  // 在这里使用更新后的imgTops
+  // 其他逻辑功能
 }
 
-function createImgs() {
-  for (var i = 0; i < urls.length; i++) {
-    var img = document.createElement("img");
-    img.src = urls[i];
+function createImg(callback) {
+  var img = document.createElement("img");
+  img.src = urls[curIndex];
+  img.onload = function () {
     img.style.width = imgWidth;
-    container.appendChild(img);
-    img.onload = setPositions;
-  }
+    img.classList.add("active");
+    doms.container.appendChild(img);
+    img.style.top = minTop + gap + "px";
+    img.style.left = (imgWidth + gap) * minIndex + gap / 2 + "px";
+    callback(img.clientHeight);
+  };
 }
 
-function setPositions() {
-  var info = cal();
-  // 计算imgLeft, top
-  var minTop = info.minTop;
-  var gap = info.gap;
-  var index = info.index;
-  console.log(this);
-  // 设置图片top
-  this.style.top = minTop + "px";
-  // 更新imgTops数组
-  minTop += this.clientHeight + gap;
-
-  // 设置图片LEFT
-  this.style.left = index * (imgWidth + gap) + gap + "px";
-}
-function cal() {
-  var containerWidth = container.clientWidth;
-  var imgNumber = Math.floor(containerWidth / imgWidth); //每一行图片的个数
-  var gap = (containerWidth - imgNumber * imgWidth) / (imgNumber + 1); //每一行图片的间隔
-  // 根据imgNumber生成imgTops数组
-  var imgTops = [];
-  for (var i = 0; i < imgNumber; i++) {
-    imgTops.push(0);
-  }
-  // 计算出数组最小高度
-  var minTop = getMin(imgTops);
-  // 计算最小高度对应的index
-  var index = imgTops.indexOf(minTop);
-
-  return { gap, minTop, index };
-}
-
-function getMin(arr) {
-  var min = arr[0];
-  for (var i = 1; i < arr.length; i++) {
-    if (arr[i] < min) {
-      min = arr[i];
+function getImgMinTop() {
+  for (var i = 0; i < imgTops.length; i++) {
+    if (minTop >= imgTops[i]) {
+      minTop = imgTops[i];
+      minIndex = i;
     }
   }
-  return min;
+}
+function updateImgTops(imgHeight) {
+  // 更新最小高度
+  imgTops[minIndex] = minTop + gap + imgHeight;
 }
