@@ -47,7 +47,10 @@
 
 #### 	[12. 五子棋游戏](https://www.youtube.com/watch?v=kyjkvWBu4mI&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=78)
 
-​	[笔记](02.%20知识回顾-数据的表达1/课件.md)
+​	[1. 五子棋游戏前置知识](12.%20五子棋游戏/1.%20五子棋游戏前置知识.md)
+
+​	[2. 五子棋游戏笔记](12.%20五子棋游戏/2.%20五子棋游戏笔记.md)
+
 
 #### 	[13. 读心术小游戏](https://www.youtube.com/watch?v=46x1TNHln7A&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=80)
 
