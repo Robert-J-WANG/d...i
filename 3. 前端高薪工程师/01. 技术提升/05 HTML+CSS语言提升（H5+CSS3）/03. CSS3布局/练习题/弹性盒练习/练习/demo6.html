@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
+    </style>
+    <style>
+      /* 在这里完成作业 */
+      .container{
+        display: flex;
+        height: 60px;
+        background-color: black;
+        color: #aaa;
+        line-height: 60px;
+        padding: 0 30px;
+      }
+      .nav{
+        flex-grow: 1;
+        display: flex;
+      }
+      .personal{
+        display: flex;
+      }
+      a{
+        padding: 0 10px;
+      }
+      .active{
+        color: chocolate;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <a href="">
+        <h1>Logo</h1>
+      </a>
+      <div class="nav">
+        <a href="" class="active">首页</a>
+        <a href="">新闻</a>
+        <a href="">活动专区</a>
+        <a href="">游戏数据库</a>
+        <a href="">比赛</a>
+      </div>
+      <div class="personal">
+        <a href="">登录</a>
+        <a href="">注册</a>
+      </div>
+    </div>
+  </body>
+</html>
