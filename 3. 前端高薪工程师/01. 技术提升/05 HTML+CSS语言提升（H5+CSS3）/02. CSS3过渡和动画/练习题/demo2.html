@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      body {
+        color: #666;
+        text-align: center;
+      }
+      .box {
+        width: 30px;
+        height: 30px;
+        background: #f40;
+        position: fixed;
+        left: 0;
+        top: 0;
+      }
+    </style>
+    <style>
+      /* 在这里完成作业 */
+      .box{
+        border-radius: 50%;
+        transition: all 0.3s;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="ball" class="box"></div>
+    <p>在屏幕上点击任意位置试一试</p>
+    <p>此效果需要用到JS</p>
+    <script>
+      var ball=document.querySelector('.box')
+      window.onclick=function(e){
+        var clickedX=e.clientX;
+        var clickedY=e.clientY;
+        var x=clickedX-ball.clientWidth/2;
+        var y=clickedY-ball.clientHeight/2;
+        // left， top会引发页面的重构，
+        /* 
+        ball.style.left=x+"px";
+        ball.style.top=y + "px";
+        */
+        // 推荐使用transform
+        ball.style.transform="translate("+x+"px,"+y+"px)"
+      }
+    </script>
+  </body>
+</html>
