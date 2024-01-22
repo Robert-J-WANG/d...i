@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <style>
+    .form {
+      width: 200px;
+      margin: 0 auto;
+    }
+
+    .item {
+      margin: 1em 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="form">
+    <div class="item">
+      <label>姓名</label>
+      <input class="nameTxt" type="text" />
+    </div>
+    <div class="item">
+      <label>年龄</label>
+      <input class="age" type="number" />
+    </div>
+    <div class="item">
+      <label>性别</label>
+      <label>
+        <input class="male"  name="sex" type="radio" checked />
+        男
+      </label>
+      <label>
+        <input class="female" name="sex" type="radio" />
+        女
+      </label>
+    </div>
+  </div>
+  <script>
+    var nameTxt=document.querySelector('.nameTxt');
+    var age=document.querySelector('.age');
+    var male=document.querySelector('.male');
+    var female=document.querySelector('.female');
+    // 填写表单时，保存数据到本地
+    var inputs=document.querySelectorAll('input')
+    for (var i=0; i<inputs.length; i++){
+      inputs[i].addEventListener('input', save)
+    }
+    function save(){
+      var obj={
+        name:nameTxt.value,
+        age:+age.value||0,
+        sex:male.checked?"男":"女"
+      }
+      localStorage.setItem('obj', JSON.stringify(obj))
+    }
+    // 打开页面时，从本地加载数据到表单
+    init()
+    function init(){
+      var obj=JSON.parse(localStorage.getItem('obj'));
+      nameTxt.value=obj.name;
+      age.value=obj.age;
+      obj.sex==="男"?male.checked=true:female.checked=true
+    }
+  </script>
+</body>
+
+</html>

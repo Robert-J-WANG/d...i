@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    // 切勿在全局中使用变量name，因为他是js的一个内置属性名，会引发命名冲突带来的bug
+    // 例如1：不声明name,直接打印不报错 
+    // console.log(name)
+    // 2. 命名为其他类型，打印出的会是字符串
+    // var name=[1,2,3,4,5,6,7,8,9,10]
+    // console.log(typeof name) // string
+
+    var name = {
+      a: 1,
+      b: 2
+    }
+    console.log(typeof name)// string
+    console.log(name.a) // undefined
+  </script>
+</body>
+
+</html>
