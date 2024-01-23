@@ -5,9 +5,9 @@
 
 #### 	[gitee](https://gitee.com/dev-edu/frontend-training/tree/master)
 
-#### 	[css3手册](css3手册.md)
+#### 	[css3手册](./css3手册.md)
 
-#### 	[H5手册](HTML5手册.md)
+#### 	[H5手册](./HTML5手册.md)
 
 #### 	[01. CSS3视觉](https://www.youtube.com/watch?v=-pQeB0oZd00&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=84)
 

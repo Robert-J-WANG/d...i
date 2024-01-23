@@ -1,18 +1,29 @@
-## WEB前端高薪工程师
+### 06 JavaScript语音提升（ES6+）
 
-### 01. 技术提升
+#### 	[gitee](https://gitee.com/dev-edu/frontend-training/tree/master)
 
-#### 	[01 HTML+CSS收官](javascript:void(0);)
+#### 	[ES语言提升](./ES语言提升.md)
 
-#### 	[02 HTML+CSS项目实战](javascript:void(0);)
+#### 	[深入理解ES6](./深入理解ES6.pdf)
 
-#### 	[25 element源码剖析](javascript:void(0);)
+#### 	[01. 零碎的改动.mp4](https://www.youtube.com/watch?v=MSAWyplL0jg&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=93)
 
-#### 	[26 vue3](javascript:void(0);)
+#### [02. 数组.mp4](https://www.youtube.com/watch?v=YkzZbherpRU&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=93)
 
-### 02. 就业提升
+#### [03. 对象.mp4](https://www.youtube.com/watch?v=ScsscE6rHe4&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=94)
 
-#### 	[01 前端必会算法](javascript:void(0);)
+#### [04. 函数.mp4](https://www.youtube.com/watch?v=WmX2TvF3qr0&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=95)
 
-#### 	[02 移动端入门到实战](javascript:void(0);)
+#### [05. 原理-事件循环-处理好.mp4](https://www.youtube.com/watch?v=FNr7G0GLYRc&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=96)
+
+#### [06. Promise基础.mp4](https://www.youtube.com/watch?v=sZs-r-IdSr0&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=97)
+
+#### [07. Promise的链式调用.mp4](https://www.youtube.com/watch?v=14qz3XswrKQ&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=98)
+
+#### [08. Promise的静态方法.mp4](https://www.youtube.com/watch?v=CWPvMyKzigA&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=99)
+
+#### [09. async和await.mp4](https://www.youtube.com/watch?v=1xkkWHmZ76c&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=100)
+
+#### [10. Promise相关面试题.mp4](https://www.youtube.com/watch?v=WJRyTlAmfwQ&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=101)
+
 
