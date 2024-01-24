@@ -14,7 +14,9 @@
 
 #### [04. 函数.mp4](https://www.youtube.com/watch?v=WmX2TvF3qr0&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=95)
 
-#### [05. 原理-事件循环-处理好.mp4](https://www.youtube.com/watch?v=FNr7G0GLYRc&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=96)
+#### [05. 原理-事件循环.mp4](https://www.youtube.com/watch?v=FNr7G0GLYRc&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=96)
+
+##### 		[笔记](./05.%20事件循环/课件.md)
 
 #### [06. Promise基础.mp4](https://www.youtube.com/watch?v=sZs-r-IdSr0&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=97)
 
@@ -25,5 +27,4 @@
 #### [09. async和await.mp4](https://www.youtube.com/watch?v=1xkkWHmZ76c&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=100)
 
 #### [10. Promise相关面试题.mp4](https://www.youtube.com/watch?v=WJRyTlAmfwQ&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=101)
-
 
