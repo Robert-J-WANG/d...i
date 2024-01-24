@@ -20,6 +20,8 @@
 
 #### [06. Promise基础.mp4](https://www.youtube.com/watch?v=sZs-r-IdSr0&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=97)
 
+##### 		[笔记](./06.%20Promise基础/笔记.md)
+
 #### [07. Promise的链式调用.mp4](https://www.youtube.com/watch?v=14qz3XswrKQ&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=98)
 
 #### [08. Promise的静态方法.mp4](https://www.youtube.com/watch?v=CWPvMyKzigA&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=99)
