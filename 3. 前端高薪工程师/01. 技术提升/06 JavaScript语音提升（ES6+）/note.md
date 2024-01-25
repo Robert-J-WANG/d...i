@@ -28,6 +28,8 @@
 
 #### [08. Promise的静态方法.mp4](https://www.youtube.com/watch?v=CWPvMyKzigA&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=99)
 
+##### 		[笔记](./08.%20Promise的静态方法/笔记.md)
+
 #### [09. async和await.mp4](https://www.youtube.com/watch?v=1xkkWHmZ76c&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=100)
 
 #### [10. Promise相关面试题.mp4](https://www.youtube.com/watch?v=WJRyTlAmfwQ&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=101)
