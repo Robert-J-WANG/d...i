@@ -36,3 +36,4 @@
 
 #### [10. Promise相关面试题.mp4](https://www.youtube.com/watch?v=WJRyTlAmfwQ&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=101)
 
+##### 		[笔记](./10.%20Promise相关面试题/笔记.md)
