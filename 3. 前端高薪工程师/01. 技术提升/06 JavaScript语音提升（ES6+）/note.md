@@ -24,6 +24,8 @@
 
 #### [07. Promise的链式调用.mp4](https://www.youtube.com/watch?v=14qz3XswrKQ&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=98)
 
+##### 		[笔记](./07.%20Promise的链式调用/笔记.md)
+
 #### [08. Promise的静态方法.mp4](https://www.youtube.com/watch?v=CWPvMyKzigA&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=99)
 
 #### [09. async和await.mp4](https://www.youtube.com/watch?v=1xkkWHmZ76c&list=PLRxJGZOBxjTNIhex5oh44bl9QH2R7AuXl&index=100)
