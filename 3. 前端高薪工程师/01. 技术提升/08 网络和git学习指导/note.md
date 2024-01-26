@@ -18,6 +18,8 @@
 
 #### [07.关于 Apifox 的使用.mp4](javascript:void(0);)
 
+##### [笔记](07.%20关于%20Apifox%20的使用/关于%20Apifox%20的使用.md)
+
 #### [08. 浏览器页面处理流程.mp4](javascript:void(0);)
 
 #### [09. AJAX.mp4](javascript:void(0);)
