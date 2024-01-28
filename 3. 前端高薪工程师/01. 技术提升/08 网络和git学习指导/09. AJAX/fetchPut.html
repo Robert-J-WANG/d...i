@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <label for="">
+    用户名：
+    <input class="uname" type="text" name="" id="">
+  </label>
+  <label for="">
+    密码：
+    <input class="pwd" type="text" name="" id="">
+  </label>
+  <button class="btn">登录</button>
+
+  <script>
+    function $(selector) {
+      return document.querySelector(selector)
+    }
+    const btn = $('.btn')
+    const loginId = $('.uname').value
+    const loginPwd = $('.pwd').value
+
+    const obj = {
+      loginId, loginPwd
+    }
+    console.log(obj)
+
+    btn.onclick = async function () {
+      const res = await fetch('https://study.duyiedu.com/api/user/login', {
+        method: 'POST',
+        headers: {
+          "content-type": "application/json; charset=utf-8"
+        },
+        body: JSON.stringify(obj)
+      }) // 接收响应头
+      const body = await res.json() //  接收响应体
+      console.log(body)
+      if (body.code === 0) {
+        alert('login successfully')
+      }
+      else {
+        alert(body.msg)
+      }
+    }
+
+  </script>
+</body>
+
+</html>

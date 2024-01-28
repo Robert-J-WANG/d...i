@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <button>PRINT</button>
+  <ul></ul>
+  <script>
+    // 使用新的api-fetch函数发送AJAX网络请求
+    // 过程解释：
+    // 1. 直接使用fetch()函数,发送AJAX网络请求返回的是一个promise对象-使用then函数可以获得promise完成后的数据
+    // fetch('https://study.duyiedu.com/api/herolist') //网络请求已经发送成功/
+    // 2. 返回的是一个promise对象。
+    const res = fetch('https://study.duyiedu.com/api/herolist')
+    console.log(res) // Promise {<pending>}
+    // 3. 那么就可以使用then函数可以获得promise完成后的数据,
+    res.then(resp => console.log(resp))
+    // 4. 并且，这个promise对象的状态是在拿到响应头之后变成fulfilled的，所以可以拿到响应头数据
+    //可以遍历打印出响应头数据
+    res.then(resp => {
+      const headers = resp.headers //那到响应头数据对象
+      for (const key of headers.keys()) {
+        console.log(key) // content-length ,content-type
+      }
+    })
+    // 5. 但是无法拿到响应体数据，因为这个promise对象的状态变为fulfilled时：是拿到了响应头，但还没有接收响应体时
+    res.then(resp => console.log(resp.body)) // 这里无法获得响应体
+    // 6. 要拿到响应体数据，需要让它继续接收响应体-调用resp的2个方法json()或text()
+    // json()-拿到的是JSON格式的数据，text()拿到的是字符串格式的数据
+    // res.then(resp=>resp.json()) // 继续接收响应体
+    // 7. res.then()返回的也是一个promise对象，当响应体数据接收完成后，其状态变为fulfilled，此时就可以打一次响应体数据啦
+    res.then(resp => resp.json()).then(newResp => console.log(newResp)) // newResp就是响应体对象，newResp.data 可以获取具体数据
+
+    // <!-- ---------------------- 最终连写 ----------------------- -->
+    fetch('https://study.duyiedu.com/api/herolist'). // 能拿到响应头数据
+      then(resp => resp.json()). // 继续接收响应体
+      then(newResp => console.log(newResp.data)) // 拿到响应体
+
+    // <!-- ------------------- 通常写法，封装成函数 -------------------- -->
+    async function getHeros() {
+      // 将响应体结果直接保存到变量res,并返回
+      const res = await fetch('https://study.duyiedu.com/api/herolist') // 能拿到响应头数据
+      const body = await res.json() // 继续接收响应体
+      return body;
+    }
+
+    // 调用getHeros方法获取数据
+    let data = null
+    getHeros().then(resp => data = resp.data)
+    // 注意：这里不能直接打印出data， 因为异步任务在微队列，而打印函数的执行在主队列，先执行主队列里的任务
+    console.log(data) // null
+    // 但是可以将打印数据的任务放入另一个异步任务中，比如点击事件
+    document.querySelector('button').onclick = function () {
+      console.log(data) // 此时可以打印出更新后的数据
+      let html = data.map(item => `<li>${item.cname}</li>`).join('')
+      document.querySelector('ul').innerHTML = html
+    }
+
+  </script>
+</body>
+
+</html>
