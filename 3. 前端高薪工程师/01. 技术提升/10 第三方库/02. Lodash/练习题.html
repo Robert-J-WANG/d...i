@@ -5,6 +5,8 @@
    * 期望结果：[1,2,3,4,5,6,7,8,9,10]
    * 提示：times函数
    */
+  const arr=_.times(10,(n) => n+1)
+  console.log(arr)
 
   /**
    * 练习2：去掉对象无关的属性
@@ -19,6 +21,8 @@
     sex: '男',
     hobbies: ['抽烟', '喝酒', '烫头'],
   };
+  const newObj=_.pick(obj, ['name', 'age'])
+  console.log(newObj)
 
   /**
    * 练习3：arr1 保存了用户选中的号码， arr2 保存了开奖号码，比较 arr1 和 arr2，看用户选对了几个数字
@@ -28,4 +32,9 @@
    */
   const arr1 = [11, 33, 5, 19, 45, 17, 33, 45];
   const arr2 = [1, 17, 19, 26, 55];
+
+  const newArr=_.uniq(arr1);
+  console.log(newArr)
+  const result=_.intersection(newArr, arr2);
+  console.log(result)
 </script>
