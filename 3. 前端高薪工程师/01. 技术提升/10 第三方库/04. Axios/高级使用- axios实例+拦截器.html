@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+
+<body>
+  <script>
+    //<!-- ------------- 高级使用：创建axios实例 --------------- -->
+
+    // <!-- ------------------- 1.创建axios实例 ------------------- -->
+    const axiosInstance = axios.create({
+      // 配置统一的根路径
+      baseURL: 'https://study.duyiedu.com/'
+    })
+
+    // 拦截器：可能需要对所有的请求或响应做一些统一的处理
+    // 比如，在请求时，如果发现本地有token，需要附带到请求头
+    // 比如，在拿到响应后，我们仅需要取响应体中的data属性
+    // 比如，如果发生错误，我们需要做一个弹窗显示
+
+    // <!-- ------------------- 2. 配置请求拦截器 -------------------- -->
+    axiosInstance.interceptors.request.use(function (config) {
+      // config 为当前的请求配置
+      // 在发送请求之前做些什么
+      // 这里，我们添加一个请求头
+      const token = localStorage.getItem('token');
+      if (token) {
+        config.headers.authorization = token;
+      }
+      return config; // 返回处理后的配置
+    });
+    // <!-- -------------------- 3.配置响应拦截器 -------------------- -->
+
+
+    // <!-- ------------------- 4.使用axios实例 ------------------- -->
+    axiosInstance.get("api/user/exists", {
+      params: {
+        loginId: "bbjer",
+      },
+    }).then(resp => {
+      console.log(resp); // resp.data 为响应体的数据，axios会自动解析JSON格式
+    })
+
+    // // 发送 post 请求到 https://study.duyiedu.com/api/user/reg
+    // // axios 会将第二个参数转换为JSON格式的请求体
+    // axiosInstance.post("api/user/reg", {
+    //   loginId: 'abc',
+    //   loginPwd: '123123',
+    //   nickname: '棒棒鸡'
+    // }).then(resp => {
+    //   console.log(resp.data); // resp.data 为响应体的数据，axios会自动解析JSON格式
+    // })
+  </script>
+</body>
+
+</html>

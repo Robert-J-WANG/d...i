@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+
+<body>
+  <script>
+    //<!-- ------------- 高级使用：创建axios实例 --------------- -->
+
+    // axios允许开发者先创建一个实例，后续通过使用实例进行请求
+    // 这样做的好处是可以预先进行某些配置
+    const axiosInstance=axios.create({
+      // 配置统一的根路径
+      baseURL: 'https://study.duyiedu.com/'
+    })
+    // 使用axios实例
+    axiosInstance.get("api/user/exists", {
+      params: { // 这里可以配置 query，axios会自动将其进行Url编码
+        loginId: "abc"
+      },
+    }).then(resp => {
+      console.log(resp.data); // resp.data 为响应体的数据，axios会自动解析JSON格式
+    })
+
+    // 发送 post 请求到 https://study.duyiedu.com/api/user/reg
+    // axios 会将第二个参数转换为JSON格式的请求体
+    axiosInstance.post("api/user/reg", {
+      loginId: 'abc',
+      loginPwd: '123123',
+      nickname: '棒棒鸡'
+    }).then(resp => {
+      console.log(resp.data); // resp.data 为响应体的数据，axios会自动解析JSON格式
+    })
+  </script>
+</body>
+
+</html>
