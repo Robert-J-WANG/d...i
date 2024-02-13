@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <script type="text/javascript" src="https://cdn.bootcdn.net/ajax/libs/Mock.js/1.0.0/mock-min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.1/axios.min.js"></script>
+  <script>
+    // <!-- ---------------------- 模拟数据 ----------------------- -->
+    const data = Mock.mock({
+      'firstName|2-3': 'f',
+      'lastName|5': 'l',
+      'age|18-99': 20,
+      'height|170-200.0-2': 185.50,
+      'isMale|1': true,
+      'namesArr|5-10':[{
+        first: '@FIRST',
+        last: '@LAST',
+        age: /[1-9][1-9]/,
+        tel:/1\d{10}/
+      }]
+      
+    })
+    // console.log(data)
+    // <!-- ---------------- 拦截ajax请求，同时返回模拟数据 ---------------- -->
+    Mock.mock('/hello',{
+      'firstName|2-3': 'f',
+      'lastName|5': 'l',
+      'age|18-99': 20,
+      'height|170-200.0-2': 185.50,
+      'isMale|1': true,
+      'namesArr|5-10':[{
+        first: '@FIRST',
+        last: '@LAST',
+        age: /[1-9][1-9]/,
+        tel:/1\d{10}/
+      }]
+    })
+    // 只能拦截XmlHttpRequest，所以不是fetch，可以使用axios
+    axios.get('/hello').then((resp) => {
+      console.log(resp.data)
+    })
+
+  </script>
+
+</body>
+
+</html>
