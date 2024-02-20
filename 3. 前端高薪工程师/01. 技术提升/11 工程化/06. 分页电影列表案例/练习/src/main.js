@@ -4,6 +4,7 @@
 // import "./movie";
 /* ------------------------ 2.分包： ----------------------- */
 // 打开页面时，只需要渲染cover模块的内容，即只将这部分的js打包进入main.js中
-import "./cover"; // 静态导入cover模块
+// import "./cover"; // 静态导入cover模块
 // 而其余的内容，可以延迟渲染，将这部分内容打包进另外一个js文件
 import("./movie"); // 动态导入movie模块
+import "./global.less";
