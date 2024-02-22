@@ -16,17 +16,17 @@ init();
  * @params movies 电影数组
  */
 export function createMovieTags(movies) {
-  console.log(movies);
+  // console.log(movies);
   const html = movies
     .map((m) => {
       return `
     <div>
       <a href=${m.url} target="_blank"><img src=${m.cover} alt=""></a>
-      <a href=${m.url} target="_blank"><p>${m.title}</p></a>
-      <p>${m.rate}</p>
+      <a  href=${m.url} target="_blank"><p class='${styles.title}'>${m.title}</p></a>
+      <p class='${styles.rate}'>评分：${m.rate}</p>
     </div>`;
     })
     .join("");
-  console.log(html);
+  // console.log(html);
   container.html(html);
 }
