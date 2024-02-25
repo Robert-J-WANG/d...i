@@ -1,6 +1,8 @@
-import React from "react";
-import ReactDOM from "react-dom";
-// import Ball from "./component/Ball";
-import Balls from "./component/Balls";
+import React from 'react'
+import ReactDOM from 'react-dom'
+import TickControl from "./TickControl";
 
-ReactDOM.render(<Balls />, document.getElementById("root"));
+const tc = new TickControl();
+console.log(tc);
+
+ReactDOM.render(<TickControl/>, document.getElementById("root"));
