@@ -1,16 +1,8 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import axios from "axios";
-import Heroes from "./component/Heroes";
+import React from 'react';
+import ReactDOM from 'react-dom';
+// import Tick from "./components/Tick"
+import A from "./components/Test"
 
-async function getHeroes() {
-  const resp = await axios.get("https://study.duyiedu.com/api/herolist");
-  return resp.data.data;
-}
+// ReactDOM.render(<Tick number={10} />, document.getElementById('root'));
 
-async function render() {
-  ReactDOM.render(<h1>loading...</h1>, document.getElementById("root"));
-  const heroes = await getHeroes();
-  ReactDOM.render(<Heroes heroes={heroes} />, document.getElementById("root"));
-}
-render();
+ReactDOM.render(<A/>, document.getElementById('root'))
