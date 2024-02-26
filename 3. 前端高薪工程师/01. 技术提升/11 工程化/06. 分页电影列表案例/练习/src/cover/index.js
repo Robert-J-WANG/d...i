@@ -26,7 +26,8 @@ function init() {
     .prop("loop", true)
     .appendTo(container);
   // 添加文本
-  $("<p>").text("豆瓣音乐").addClass(styles.text).appendTo(container);
+  // $("<p>").text("豆瓣音乐").addClass(styles.text).appendTo(container);
+  $("<p>").text("TOP RATED MOVIES").addClass(styles.text).appendTo(container);
   // 滚动条注册滚动事件
   $(window).on("scroll", function () {
     // 获取滚动条滚动的距离

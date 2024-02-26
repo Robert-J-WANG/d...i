@@ -2,6 +2,7 @@ import $ from "jquery";
 import styles from "./index.module.less";
 import { getMovies } from "@/api/movie";
 import { createMovieTags } from "../list";
+import { getTopMovies } from "../../api/topMovie";
 let container;
 /**
  * 初始化函数，负责创建容器
@@ -34,18 +35,20 @@ export function createPagers(page, limit, total) {
       span.on("click", async function () {
         /* ---------------------- 点击过后干什么？ ---------------------- */
         // 1. 重新拿数据
-        const resp = await getMovies(targetPage, 30);
+        // const resp = await getMovies(targetPage, 30);
+        const resp = await getTopMovies(targetPage);
         // console.log(resp);
         // 2. 重新生成列表
-        createMovieTags(resp.data.movieList);
+        // createMovieTags(resp.data.movieList);
+        createMovieTags(resp.results);
         // 3. 重新生成分页区域
-        createPagers(targetPage, 30, resp.data.movieTotal);
+        createPagers(targetPage, 20, resp.total_results);
       });
     }
   }
 
   // 获取尾页数
-  const lastPage = Math.ceil(total / limit);
+  let lastPage = Math.ceil(total / limit);
   //1. 创建首页标签
   _createTag("|<<", page === 1 ? "disabled" : "", 1);
   //2. 创建上一页标签
@@ -59,7 +62,7 @@ export function createPagers(page, limit, total) {
     (minPageCount = lastPage - pageCount + 1);
   let maxPageCount = minPageCount + pageCount - 1;
   maxPageCount > lastPage && (maxPageCount = lastPage);
-
+  console.log(maxPageCount, lastPage);
   for (let i = minPageCount; i <= maxPageCount; i++) {
     _createTag(i, i === page ? "active" : "", i);
   }
