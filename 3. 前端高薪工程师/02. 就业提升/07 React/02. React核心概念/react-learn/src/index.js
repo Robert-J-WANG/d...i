@@ -1,4 +1,5 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import PagerControler from "./components/PagerControler";
 
-ReactDOM.render(<h1>hello</h1>, document.getElementById("root"));
+ReactDOM.render(<PagerControler />, document.getElementById("root"));
