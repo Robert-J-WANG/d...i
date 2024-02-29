@@ -1,0 +1,21 @@
+.imgContainer {
+  width: 80%;
+  margin: 20px auto;
+  /* background-color: #ee5050; */
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-row-gap: 30px;
+  text-align: center;
+}
+.imgContainer img {
+  width: 200px;
+  height: 300px;
+  object-fit: cover;
+}
+.imgContainer .title {
+  margin: 10px 0;
+  font-size: 20px;
+}
+.imgContainer .rate {
+  color: chocolate;
+}

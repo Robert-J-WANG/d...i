@@ -1,11 +1,20 @@
 import React from "react";
 import "./Pager.less";
 
+/**
+ *
+ * @param {*} props
+ * currentPage :当前页数
+ * @returns
+ */
 export default function Pager(props) {
-  const { currentPage, pageNumber, lastPage, handerClick } = props;
-  const min = getMin(currentPage, pageNumber, lastPage);
+  const { currentPage, pageNumber, totalPage, handerClick } = props;
+  const min = getMin(currentPage, pageNumber, totalPage);
   const max = getMax(min, pageNumber);
   const pageNumbers = getPageNumbers(min, max);
+  if (!totalPage) {
+    return null;
+  }
   return (
     <div className="container">
       {/* 首页 */}
@@ -43,10 +52,10 @@ export default function Pager(props) {
       ))}
       {/* 下一页 */}
       <span
-        className={`pager ${currentPage === lastPage ? "disabled" : ""}`}
+        className={`pager ${currentPage === totalPage ? "disabled" : ""}`}
         onClick={() => {
           const targetPage =
-            currentPage >= lastPage ? lastPage : currentPage + 1;
+            currentPage >= totalPage ? totalPage : currentPage + 1;
           handerClick(targetPage);
         }}
       >
@@ -55,25 +64,28 @@ export default function Pager(props) {
 
       {/* 尾页 */}
       <span
-        className={`pager ${currentPage === lastPage ? "disabled" : ""}`}
+        className={`pager ${currentPage === totalPage ? "disabled" : ""}`}
         onClick={() => {
-          const targetPage = lastPage;
+          const targetPage = totalPage;
           handerClick(targetPage);
         }}
       >
         尾页
       </span>
+      <span className="pager show">
+        {currentPage} / {totalPage}
+      </span>
     </div>
   );
 }
 
-function getMin(currentPage, pageNumber, lastPage) {
+function getMin(currentPage, pageNumber, totalPage) {
   let minNumber = currentPage - pageNumber / 2;
   if (minNumber <= 1) {
     minNumber = 1;
   }
-  if (minNumber >= lastPage - pageNumber + 1) {
-    minNumber = lastPage - pageNumber + 1;
+  if (minNumber >= totalPage - pageNumber + 1) {
+    minNumber = totalPage - pageNumber + 1;
   }
   return minNumber;
 }
