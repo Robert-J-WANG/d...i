@@ -1,5 +1,5 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import PagerControler from "./components/PagerControler";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import Comp from './Comp'
 
-ReactDOM.render(<PagerControler />, document.getElementById("root"));
+ReactDOM.render(<Comp/>, document.getElementById('root'));

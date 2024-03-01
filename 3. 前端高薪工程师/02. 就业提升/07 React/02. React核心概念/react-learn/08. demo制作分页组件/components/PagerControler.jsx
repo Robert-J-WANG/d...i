@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import "./Pager.css";
 // import Pager from "./ClassPager";
-import Pager from "./FuncPager";
+import Pager from "./FuncPager.jsx";
 import { getTopMovies } from "./topMovie.js";
 import MovieList from "./MovieList.jsx";
 
