@@ -25,10 +25,15 @@ export default class PagerControler extends Component {
     this.setState({ totalPage: resp.total_pages, movies: resp.results });
   }
 
-  handerClick = async (targetPage) => {
-    // setState()是异步的，这里等待操作完成，在调用fetchMovieList方法
-    await this.setState({ currentPage: targetPage });
-    this.fetchMovieList(this.state.currentPage);
+  handerClick = (targetPage) => {
+    console.log(targetPage);
+    // setState()  在HTML元素的事件函数中调用时，是异步的，使用更新后的状态数据的话，采用回调函数的形式
+    this.setState({ currentPage: targetPage }, () => {
+      this.fetchMovieList(this.state.currentPage);
+    });
+    // 下面这样，得不到更新后的状态数据
+    // this.setState({ currentPage: targetPage });
+    // this.fetchMovieList(this.state.currentPage);
   };
   render() {
     return (
