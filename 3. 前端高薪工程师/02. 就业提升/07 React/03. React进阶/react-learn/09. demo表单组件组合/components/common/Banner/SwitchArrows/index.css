@@ -1,0 +1,32 @@
+.arrow{
+  display: none;
+}
+.banner-container:hover .arrow{
+  display: block;
+
+}
+
+.arrow span{
+  position: absolute;
+  top:50%;
+  transform: translateY(-50%);
+  color: white;
+  font-weight: 700;
+  background: rgba(28, 28, 28, 0.3);
+  width: 20px;
+  height: 40px;
+  text-align: center;
+  line-height: 40px;
+  cursor: pointer;
+}
+.arrow span:hover{
+  background: rgba(28, 28, 28, 0.7);
+}
+.arrow .left{
+  left:0;
+  border-radius:0 10px 10px 0;
+}
+.arrow .right{
+  right:0;
+  border-radius:10px 0 0 10px;
+}
