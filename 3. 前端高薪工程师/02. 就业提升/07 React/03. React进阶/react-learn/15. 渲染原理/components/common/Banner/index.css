@@ -1,0 +1,8 @@
+.banner-container{
+  outline: 1px solid red;
+  margin: 20px auto;
+  position: relative;
+  overflow: hidden;
+}
+
+
