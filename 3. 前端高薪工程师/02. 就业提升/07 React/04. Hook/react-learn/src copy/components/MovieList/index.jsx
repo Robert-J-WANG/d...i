@@ -1,5 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
+import Movie from "./Movie";
+import "./Movie.css";
 
 /**
  * 显示电影列表的组件:根据传入的电影数据，渲染到页面
@@ -8,8 +10,16 @@ import PropTypes from "prop-types";
  * @returns
  */
 export default function MovieList({ movies }) {
-  const movieList = movies.map((m) => <li key={m.id}>{m.original_title}</li>);
-  return <ul>{movieList}</ul>;
+  const movieList = movies.map((m) => <Movie key={m.id} movie={m} />);
+  return (
+    <>
+      <header className="header">
+        <h1>Top Movies</h1>
+      </header>
+
+      <div className="imgContainer">{movieList}</div>
+    </>
+  );
 }
 MovieList.defaultProps = {
   movies: [],
