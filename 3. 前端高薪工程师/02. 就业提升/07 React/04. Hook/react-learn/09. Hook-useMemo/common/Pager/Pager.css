@@ -1,0 +1,25 @@
+.container {
+  margin: 20px auto;
+  /* outline: 1px solid red; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.container .pager {
+  cursor: pointer;
+  font-size: 20px;
+  color: cornflowerblue;
+  padding: 5px;
+  margin: 0 10px;
+}
+.container .pager.disabled {
+  color: gray;
+  cursor: not-allowed;
+}
+.container .pager.active {
+  color: orangered;
+  cursor: auto;
+}
+.container .pager.show {
+  color: black;
+}
