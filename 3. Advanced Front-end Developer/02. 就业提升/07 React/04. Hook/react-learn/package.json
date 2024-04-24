@@ -7,7 +7,8 @@
     "less": "^4.2.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
-    "react-scripts": "3.0.1"
+    "react-scripts": "3.0.1",
+    "react-transition-group": "^4.4.5"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -30,6 +31,5 @@
       "last 1 safari version"
     ]
   },
-
-  "proxy":"https://api.themoviedb.org"
+  "proxy": "https://api.themoviedb.org"
 }
