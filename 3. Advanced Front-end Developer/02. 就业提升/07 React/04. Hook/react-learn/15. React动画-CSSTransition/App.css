@@ -1,0 +1,19 @@
+/* App.css */
+
+.container{
+  width: 100px;
+  margin: 0 auto;
+}
+.comp-container{
+  position: relative;
+  height: 100px;
+}
+.title{
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.my-exit-done{
+  display: none;
+}
+
