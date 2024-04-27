@@ -8,6 +8,7 @@ export default function App() {
   const MyClassNames = {
     exitActive: "animate__fadeOutLeft",
     enterActive: "animate__fadeInRight",
+    appear: "animate__fadeInRight",
   };
   const [taskslist, setTaskslist] = useState([
     { id: uuid(), name: "task 1" },
@@ -17,7 +18,7 @@ export default function App() {
   ]);
   return (
     <div className="container">
-      <TransitionGroup>
+      <TransitionGroup appear>
         {taskslist.map((t) => (
           <CSSTransition timeout={1000} key={t.id} classNames={MyClassNames}>
             <div className="animate__animated animate__fast">
