@@ -16,20 +16,13 @@
 .exit-active{
   opacity: 0;
   transition: 1s;
-  transform: translateX(-100px);
 }
-
-.exit-done{
-  display: none;
-}
-.enter, .appear{
-  display: block;
+.enter,.appear{
   opacity: 0;
-  transform: translateX(100px);
+  
 }
 .enter-active,.appear-active{
   opacity: 1;
-  transform: translateX(0);
-  transition: 1s ;
-
+  transition: 1s;
 }
+
