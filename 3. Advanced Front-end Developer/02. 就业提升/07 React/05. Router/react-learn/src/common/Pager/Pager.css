@@ -1,25 +1,25 @@
-.container {
+.pageContainer {
   margin: 20px auto;
-  /* outline: 1px solid red; */
+  outline: 1px solid red;
   display: flex;
   justify-content: center;
   align-items: center;
 }
-.container .pager {
+.pageContainer .pager {
   cursor: pointer;
   font-size: 20px;
   color: cornflowerblue;
   padding: 5px;
   margin: 0 10px;
 }
-.container .pager.disabled {
+.pageContainer .pager.disabled {
   color: gray;
   cursor: not-allowed;
 }
-.container .pager.active {
+.pageContainer .pager.active {
   color: orangered;
   cursor: auto;
 }
-.container .pager.show {
+.pageContainer .pager.show {
   color: black;
 }

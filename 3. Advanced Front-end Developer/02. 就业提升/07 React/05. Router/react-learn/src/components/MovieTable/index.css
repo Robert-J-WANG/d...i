@@ -1,0 +1,13 @@
+.table{
+  margin: 10px 0;
+  width: 100%;
+  text-align: center;
+  border-collapse: collapse;
+  border: 2px solid #8aa8ce;
+}
+.table tr{
+  height: 35px;
+}
+.table td, .table th{
+  border: 1px solid #8aa8ce;;
+}

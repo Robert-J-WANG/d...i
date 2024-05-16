@@ -37,4 +37,5 @@
   height: 100%;
   background-color: #c1d3cf;
   padding: 20px;
+  overflow: auto;
 }

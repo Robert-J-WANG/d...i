@@ -12,12 +12,13 @@ import "./Pager.css";
  */
 export default function Pager(props) {
   const {
-    currentPage,
-    pageNumber = 10, //设置默认值
+    currentPage = 1,
+    // pageNumber, //设置默认值
     totalPage,
     handerClick,
   } = props;
 
+  let pageNumber = totalPage <= 10 ? totalPage : 10;
   const min = getMin(currentPage, pageNumber, totalPage);
   const max = getMax(min, pageNumber);
   const pageNumbers = getPageNumbers(min, max);
@@ -25,7 +26,7 @@ export default function Pager(props) {
     return null;
   }
   return (
-    <div className="container">
+    <div className="pageContainer">
       {/* 首页 */}
       <span
         className={`pager ${currentPage === 1 ? "disabled" : ""}`}
@@ -90,12 +91,15 @@ export default function Pager(props) {
 
 // 辅助函数
 function getMin(currentPage, pageNumber, totalPage) {
-  let minNumber = currentPage - pageNumber / 2;
-  if (minNumber <= 1) {
+  let minNumber = currentPage - Math.floor(pageNumber / 2);
+  // 当总页数少于页码数时，将最小页码设为1
+  if (totalPage <= pageNumber) {
     minNumber = 1;
-  }
-  if (minNumber >= totalPage - pageNumber + 1) {
-    minNumber = totalPage - pageNumber + 1;
+  } else {
+    // 确保不小于 1
+    minNumber = Math.max(minNumber, 1);
+    // 确保不大于 totalPage - pageNumber + 1
+    minNumber = Math.min(minNumber, totalPage - pageNumber + 1);
   }
   return minNumber;
 }

@@ -6,10 +6,10 @@ export default class index extends Component {
   static propTypes = {
     header: PropTypes.element, // 头部区显示的内容
     aside: PropTypes.element, // 左侧栏显示的内容
-    children: PropTypes.element, // 右侧内容栏显示的内容
+    children: PropTypes.node, // 右侧内容栏显示的内容
   };
   render() {
-    console.log(this.props.header);
+    // console.log(this.props.header);
     return (
       <div className="container">
         {/* 头部区 */}

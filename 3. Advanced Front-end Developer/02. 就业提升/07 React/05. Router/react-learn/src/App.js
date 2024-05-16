@@ -1,44 +1,15 @@
 import React from "react";
 import "./App.css";
-import {
-  BrowserRouter as Router,
-  Route,
-  Switch,
-  withRouter,
-} from "react-router-dom";
-
-const AWraper = withRouter(A);
-
-function News(props) {
-  return (
-    <div>
-      <h1> News</h1>
-      {/* 方法1：逐层传递props */}
-      {/* <A {...props} /> */}
-      {/* 方法2：使用react-router提供的高阶组件withRouter包装 */}
-      <AWraper />
-    </div>
-  );
-}
-function A(props) {
-  return (
-    <div>
-      <h3>Component A</h3>
-      <button onClick={() => props.history.push("/")}>点击返回</button>
-    </div>
-  );
-}
-
-function C() {
-  return <h1> Not Found</h1>;
-}
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import Login from "./pages/Login";
+import Admin from "./pages/Admin";
 
 export default function App() {
   return (
     <Router>
       <Switch>
-        <Route path="/news" component={News} />
-        <Route component={C} />
+        <Route exact path="/login" component={Login} />
+        <Route path="/" component={Admin} />
       </Switch>
     </Router>
   );
