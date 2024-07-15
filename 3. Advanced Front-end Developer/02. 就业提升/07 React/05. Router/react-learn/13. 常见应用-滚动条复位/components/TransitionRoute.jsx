@@ -14,17 +14,17 @@ export default function TransitionRoute({
         return (
           <CSSTransition
             in={match ? true : false}
-            timeout={3000}
+            timeout={500}
             classNames={{
-              enter: "animate__animated slower animate__fadeInLeft",
-              exit: "animate__animated slower animate__fadeOutRight",
+              enter: "animate__animated faster animate__fadeInLeft",
+              exit: "animate__animated faster animate__fadeOutRight",
             }}
             // 当进入（in=ture）是挂载内部的子组件
             mountOnEnter={true}
             // 当退出（in=false）时卸载内部的子组件
             unmountOnExit={true}
           >
-            {Component}
+            <Component />
           </CSSTransition>
         );
       }}

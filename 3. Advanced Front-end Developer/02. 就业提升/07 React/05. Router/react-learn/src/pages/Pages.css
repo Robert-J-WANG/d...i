@@ -1,0 +1,43 @@
+.header {
+  position: fixed;
+  left: 0;
+  top: 0;
+  background: #008c8c;
+  line-height: 50px;
+  text-align: center;
+  z-index: 999;
+  
+}
+
+.header a {
+  color: #fff;
+  text-decoration: none;
+  margin: 0 10px;
+  font-size: 1.3em;
+}
+
+.header a.active {
+  color: rgb(234, 236, 112);
+}
+
+.page {
+  width: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  border: 2px solid #000;
+}
+
+.page h1{
+  margin: 0;
+  line-height: 3;
+  text-align: center;
+}
+
+.home{
+  background: lightblue;
+}
+
+.news{
+  background: lightgreen;
+}
