@@ -35,5 +35,6 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "https://api.themoviedb.org"
+  "proxy": "https://api.themoviedb.org",
+  "devDependencies": {}
 }

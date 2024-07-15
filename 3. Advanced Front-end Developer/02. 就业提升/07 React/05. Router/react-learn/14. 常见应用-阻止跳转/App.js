@@ -1,12 +1,16 @@
 import React from "react";
-import * as Pages from "./pages/Pages";
 import { BrowserRouter as Router } from "react-router-dom";
-import "./App.css";
+import * as Pages from "./pages/Pages";
 import TransitionRoute from "./components/TransitionRoute";
+import "./App.css";
 
 export default function App() {
   return (
-    <Router>
+    <Router
+      getUserConfirmation={(msg, callback) => {
+        callback(window.confirm(msg));
+      }}
+    >
       <Pages.NavBar />
       <div className="page-container">
         <TransitionRoute path="/" exact component={Pages.HomePage} />
