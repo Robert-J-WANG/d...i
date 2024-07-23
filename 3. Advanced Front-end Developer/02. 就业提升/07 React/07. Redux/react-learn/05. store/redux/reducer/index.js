@@ -1,6 +1,6 @@
 // 创建新的reducer，用来合并所以的分支reducer
-import { loginUserReducer } from "./loginUserReducer";
-import { usersReducer } from "./usersReducer";
+import { loginUserReducer } from "../reducer/loginUserReducer";
+import { usersReducer } from "../reducer/usersReducer";
 import { combineReducers } from "redux";
 
 /* 
