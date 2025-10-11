@@ -176,7 +176,7 @@ tsc --init
     [nodemon] clean exit - waiting for changes before restart
     
     ```
-​	   使用nodemon开启了对文件内容的检测watching， 修改内容，保存后，会自动执行ts-node src/index.ts
+    ​	   使用nodemon开启了对文件内容的检测watching， 修改内容，保存后，会自动执行ts-node src/index.ts
 
 3. 设置启动脚本，优化启动命令
 
@@ -210,6 +210,321 @@ tsc --init
   - 开发完成，使用`tsc`, 生产打包文件dist
 
 ### part-3 基本类型检查
+
+#### 如何进行基本约束
+仅需要再 变量，函数的参数，函数的返回值，后面加上**：“类型值” **即可
+```ts
+let say:string = 'hello ts';
+console.log(say);
+
+function add(a: number, b: number): number {
+  return a + b;
+}
+console.log(add(1, 2));
+```
+
+一些说明：
+  - 由于TS的类型检查机制，会严格匹配前后的变量名，当重命名一处变量名（函数名）时，其他地方的变量名会自动更改
+  - 通过模块引用的变量名（函数名），在一处更改时，另一处也会自动修改
+  - 必须是重命名操作，而不是手动输入修改：选中目标, 按F2, 或者选中目标，右键重命名操作
+
+ts 在很多时候可以进行类型推导，减少类型的书写
+```ts
+let flag = true; // 推导出为boolean类型
+flag = 123 // 报错：Type 'number' is not assignable to type 'boolean'.ts(2322)
+```
+同样，上面的函数可以简写成：
+```ts
+function add(a: number, b: number) {
+  return a + b;
+}
+console.log(add(1, 2));
+// 函数返回值可以推导出为number
+```
+
+#### 编译后的代码和源代码的区别
+编译结果
+```js
+function add(a, b) {
+    return a + b;
+}
+console.log(add(1, 2));
+```
+编译结果中，没有任何类型的信息（ts）
+
+#### 基本类型 （js原有的类型）
+- number
+- string
+- boolean
+- 数组类型
+  ```ts
+  // 语法糖形式，推荐使用
+  let nums: number[] = [1, 2, 3];
+  // 标准形式：在react中使用时，<>符合容易和组件符号混淆
+  let nums2: Array<number> = [1, 2, 3];
+  
+  ```
+- object ：不常用
+  ```ts
+  et user: object;
+  user = { name: "duyi", age: 10 };
+  
+  function printVals(obj: object) {
+    let vals = Object.values(obj);
+    vals.forEach((v) => console.log(v));
+  }
+  printVals({ name: "duyi", age: 10, flag: true });
+  ```
+- null 和 undefined1
+  这两个类型是其他所有类型的子类型，可以赋值个其他类型
+  ```ts
+  let hi: string = "hello ts";
+  hi= null
+  hi = undefined
+  
+  let num: number;
+  num = null
+  num = undefined
+  
+  let flag: boolean;
+  flag = null
+  flag = undefined
+  ```
+  但是，开发中我们要避免这样的操作，因此，可以修改配置文件，加以避免。 从而空类型只能赋值给其本身
+  ```
+  {
+    // Visit https://aka.ms/tsconfig to read more about this file
+    "compilerOptions": {
+      // tsc编译选项
+     ...
+      "strictNullChecks": true // 是否开启严格的空值检查
+     ...
+    }, 
+  
+    "include": ["./src"] // 需要编译的文件的如何文件夹
+  }
+  ```
+
+#### 其他基本类型 （ts新增的类型）
+- 联合类型
+  使用“|”，多种类型任选其一
+  ```ts
+  let data: string | undefined;
+  data = "hello";
+  data = undefined;
+  ```
+  可以配合 **类型保护** 进行判断
+  类型保护：当对某个变量进行类型判断之后，在判断的语句块中便可以确定变量的确切类型，简单类型可以使用typeof来触发
+  
+  ```ts
+  let data: string | undefined;
+  
+  if(typeof data === 'string') {
+    console.log(data.length);
+  }
+  ```
+  
+- void类型： 通常用于约束函数的返回值，表示函数没有任何返回
+  
+  ```ts
+  function fn(): void {
+    return 123 // void类型的函数不能有返回值，undefined或者null也不行
+  }
+  
+  function printMenu(): void {
+    console.log('1. menu1');
+    console.log('2. menu2');
+  }
+  ```
+  
+- never 类型 ： 通常用于约束函数的返回值，表示此函数永远不可能结束
+
+    ```ts
+    function throwError(message: string): never {
+      throw new Error(message);
+    }
+    throwError("something wrong");
+    
+    function doSomeThingAlways(): never {
+      while (true) {
+        console.log("hello");
+      }
+    }
+    doSomeThingAlways();
+    ```
+    
+- 字面量类型 ： 使用一个值进行约束
+  
+  ```ts
+  let text: "hello";
+  text = "hello world"; // error: Type '"hello world"' is not assignable to type '"hello"'.ts(2322)
+  
+  let num: 10;
+  num = 20; // error: Type '20' is not assignable to type '10'.ts(2322)
+  
+  let arr: [];
+  arr = [1, 2]; // error:  Type '[number, number]' is not assignable to type '[]'.
+  
+  
+  let gender:"male" | "female";
+  gender = "male"
+  
+  let obj: {
+    name: string;
+    age: number;
+  };
+  
+  obj = { name: "duyi", age: 10
+  };
+  ```
+  
+- 元组（Tuple）类型： 一个固定长度的数组，而且，每个数组成员的类型限定  
+
+    ```ts
+    let info: [string, number, boolean] = ["duyi", 10, true];
+    ```
+
+- any类型： any类型可以绕过类型检查，因此可以赋值个任何类型， 因此开发中不建议使用any类型   
+  ```ts
+  let anything: any = 10;
+  anything = "hello";
+  anything = true;
+  anything = {};
+  anything = [];
+  ```
+
+#### 类型别名
+对已知的类型自定义类型名称, 规则是： type：“类型别名” = ......, 比如有以下代码：
+  ```ts
+  let student: {
+    name: string;
+    age: number;
+    gender: "male" | "female";
+  };
+
+  student = {
+    name: "duyi",
+    age: 10,
+    gender: "male",
+  };
+
+  function getStudent(): {
+    name: string;
+    age: number;
+    gender: "male" | "female";
+  }[] {
+    return [];
+  }
+  ```
+使用类型别名优化后为：
+  ```ts
+  // 定义类型别名
+  type Student = {
+    name: string;
+    age: number;
+    gender: "male" | "female";
+  };
+  
+  let student: Student = {
+    name: "duyi",
+    age: 10,  
+    gender: "male",
+  }
+  function getStudents(): Student[] {
+    return [];
+  }
+  ```
+
+甚至，类型别名之间可以相互使用
+  ```ts
+  type Gender = "male" | "female";
+  type Student = {
+    name: string;
+    age: number;
+    gender: Gender;
+  };
+  
+  let student: Student;
+  student = {
+    name: "duyi",
+    age: 10,
+    gender: "female",
+  };
+  
+  function getStudents(g: Gender): Student[] {
+    return [];
+  }
+  getStudents("female");
+  ```
+
+使用类型别名可以优化代码的重复书写，提高可维护性
+
+#### 函数的相关类型约束
+
+- 函数重载： 在函数调用之前，对函数的多种情况进行申明
+
+​	 比如我们有如下的一个函数
+
+  ```ts
+  /*
+  如果a和b都是数字类型，则返回它们的乘积
+  如果a和b都是字符串类型，则返回它们的连接结果
+  其他情况，抛出一个错误，提示a和b类型不相同 
+  */
+  function combine(a:number|string, b:number|string):number|string{
+    if(typeof a === 'number' && typeof b === 'number'){
+      return a * b;
+    }else if(typeof a === 'string' && typeof b === 'string'){
+      return a + b;
+    }
+    throw new Error('a和b类型不相同');
+    }
+
+  let result=combine(2,3); // result: string | number
+  let result2=combine('hello ','duyi'); // result2: string | number
+  ```
+
+  问题：上面的函数书写，丢失掉了一个非常重要的信息，即a和b都是number时，返回值一定是number，而a和b都是string时，返回值一定是string。result 推断类型是string | number， 但显然只是number， 同样， result 推断类型是string | number， 但显然只是string， 这样的类型推断不严谨，因此需要对函数进行申明，如下优化：
+
+  ```ts
+  function combine(a: number, b: number): number;
+  function combine(a: string, b: string): string;
+
+  function combine(a: number | string, b: number | string): number | string {
+    if (typeof a === "number" && typeof b === "number") {
+      return a * b;
+    } else if (typeof a === "string" && typeof b === "string") {
+      return a + b;
+    }
+    throw new Error("a和b类型不相同");
+  }
+
+  let result = combine(2, 3); // result: number
+  let result2 = combine("hello ", "duyi"); // result2: string 
+
+  ```
+- 可选参数 ：可以在参数后面添加？号，表示此参数可以不传递
+  ```ts
+  function sum(a: number, b: number, c?:number): number {
+    if(c){
+      return a + b + c;
+    }
+    return a + b;
+  }
+  console.log(sum(1, 2));
+  console.log(sum(1, 2, 3));
+  ```
+
+- 默认参数： 参数后面使用=号
+  ```ts
+  function sum(a: number, b: number, c: number = 10): number {
+    return a + b + c;
+  }
+  console.log(sum(1, 2));
+  console.log(sum(1, 2, 3));
+  ```
+
+
 
 
 ### part-4 扩展类型-枚举
