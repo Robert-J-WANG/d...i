@@ -524,11 +524,136 @@ console.log(add(1, 2));
   console.log(sum(1, 2, 3));
   ```
 
-
-
-
 ### part-4 扩展类型-枚举
 
+> 扩展类型： 类型别名，枚举， 接口， 类
+
+枚举： 通常用于约束某个变量的取值范围。比如性别（男，女）， 扑克牌的花色（4种），坦克大战的方向（上下左右）等等。
+字面量结合联合类型，也能实现约束变量取值范围的作用，但是有一些问题，因此，引出了枚举的概念。
+
+#### 字面量类型的问题：
+- 在类型约束的位置，产生重复书写的问题
+  ```ts
+  let gender: "male" | "female";
+  
+  gender = "male";
+  gender = "female";
+  
+  function searchGender(gender: "male" | "female") { // 类型约束重复书写
+    return gender;
+  }
+  ```
+  可以使用类型别名解决该问题：
+  ```ts
+  type Gender = "male" | "female"
+  
+  let gender: Gender;
+  gender = "male";
+  gender="female";
+  
+  function searchGender(gender:Gender){
+    return gender
+  }
+  ```
+- 变量的逻辑含义和真实的赋值产生混淆，当需要修改真实的赋值时，会产生大量的修改：
+  > 比如上面的示例中，gender的赋值如果修改成"Mr"和“Mrs”时，如果代码量多，需要检查所有的位置进行修改
+- 字面量不会进入编译的结果中。如果我们需要运行过程中动态获取变量的值时，无法做到
+
+后面的2个问题，使用枚举可以很好的解决。
+
+#### 枚举
+- 如何定义一个枚举：
+
+```
+enum 枚举名称{
+  枚举字段1=值1，
+  枚举字段2=值2，
+  枚举字段3=值3，
+  ...
+}
+```
+对上面的示例进行枚举改造如下：
+```ts
+enum Gender {
+  Male = "male",
+  Female = "female",
+}
+
+let gender: Gender;
+gender = Gender.Male;// 变量赋值时，使用逻辑含义,而不是使用真实的赋值"male"
+gender = Gender.Female;
+
+function searchGender(gender: Gender) {
+  return gender;
+}
+```
+> 如果要修改变量的逻辑名称呢？？ 可以使用F2快捷键进行重命名重构
+枚举会出现在编译结果中，枚举会被编译成对象，出现在编译后的js代码中。
+
+对上面的代码进行编译，结果如下：
+```js
+var Gender; 
+
+(function (Gender) {
+    Gender["Male"] = "male";
+    Gender["Female"] = "female";
+})(Gender || (Gender = {}));
+
+// 编译成类似于这样的一个对象
+/* {
+  Male:"male";
+  Female:"female"
+} */
+
+let gender;
+gender = Gender.Male;
+gender = Gender.Female;
+
+function searchGender(gender) {
+    return gender;
+}
+```
+因此，我们可以动态获取变量范围的值，如下打印上面的性别值
+```ts
+function printGender() {
+  let vals = Object.values(Gender);
+  vals.forEach((v) => console.log(v));
+}
+printGender(); // male, female
+```
+- 枚举的规则
+  - 枚举的字段值可以是字符或者数字
+  ```ts
+  enum Level {
+    level1 = "one",
+    level2 = "two",
+    level3 = "three",
+  }
+  
+  enum LevelNum {
+    level1 = 1,
+    level2 = 2,
+    level3 = 3,
+  }
+  ```
+  - 数组枚举的字段值会自动递增
+  ```ts
+  enum LevelNum {
+    level1 = 1,
+    level2,
+    level3,
+  }
+  
+  let level2 = LevelNum.level2;
+  let level3 = LevelNum.level3;
+  console.log(level2); //2
+  console.log(level3); //3
+  ```
+  > 如上所示：假如不给level2，level3字段赋值，字段值会自动递增，如果level1也不赋值，level1默认是0
+
+- 最佳实践：
+  - 尽量嫑在一个枚举中既出现字符串字段，又出现数字字段
+  - 使用枚举时，尽量使用枚举字段的名称，不使用真实的赋值
 
 ### part-5 模块化
 
