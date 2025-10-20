@@ -1,12 +1,12 @@
 ## ts 基础
 
-### part-1 概述
+### 01 概述
 
-#### 为什么要使用ts?
+#### 1.1 为什么要使用ts?
 - 获得更好的开发体验
 - 解决js中的一些问题
 
-#### js开发中常见的问题：
+#### 1.2 js开发中常见的问题：
 - 使用了不存在的变量，函数或者成员（比如写错了名称等等）
 - 变量类型的错误：把不确定的类型当成确定的类型使用
 - 使用了null/undefined成员
@@ -32,7 +32,7 @@ js原罪：
 
 因此，导致前端开发中，大部分时间都在调试错误
 
-#### TS
+#### 1.3 TS简介
 ts是js的一个超集， 是一个可选的，静态的类型系统
 - 超集： ts包含了所有js的内容
 - 类型系统： 对代码中所有的标识符（变量，函数，参数，返回值等等）进行了类型约束和检查
@@ -52,15 +52,15 @@ ts是js的一个超集， 是一个可选的，静态的类型系统
 - 有了类型检查，无形中增强了面向对象开发
 - js中也有类和对象，没有类型检查之前，面向对象过程不友好
 
-### part-2 node中搭建ts开发环境
+### 02 node中搭建ts开发环境
 
-#### ts安装
+#### 2.1 ts安装
 ``` bash
   npm i -g  typescript
 ```
 建议全局安装，可是使用tsc命令
 
-#### 使用ts
+#### 2.2 使用ts
 创建ts代码文件
 
 ```ts
@@ -88,7 +88,7 @@ ts是js的一个超集， 是一个可选的，静态的类型系统
   - 使用tsc命令行的时候，加上参数选项（不常用，麻烦）
   - 使用ts配置文件，统一进行编译配置
 
-#### ts编译的配置文件
+#### 2.3 ts编译的配置文件
 
 创建ts配置文件tsconfig.json
 
@@ -143,7 +143,7 @@ tsc --init
 
 但是，对于代码内容每次更新，都需要执行一次上面的流程，无法对新的代码内容进行热更新编译，因此我们需要一个第三方库进行支持
 
-#### 使用第三方库优化操作流程
+#### 2.4 使用第三方库优化操作流程
 1. ts-node : 将ts代码在内存中进行编译（而不是编译到上面提到的dist文件夹里），并自动运行编译后的js代码
 
 - 安装
@@ -211,7 +211,7 @@ tsc --init
 
 ### part-3 基本类型检查
 
-#### 如何进行基本约束
+#### 3.1 如何进行基本约束
 仅需要再 变量，函数的参数，函数的返回值，后面加上**：“类型值” **即可
 ```ts
 let say:string = 'hello ts';
@@ -242,7 +242,7 @@ console.log(add(1, 2));
 // 函数返回值可以推导出为number
 ```
 
-#### 编译后的代码和源代码的区别
+#### 3.2 编译后的代码和源代码的区别
 编译结果
 ```js
 function add(a, b) {
@@ -305,7 +305,7 @@ console.log(add(1, 2));
   }
   ```
 
-#### 其他基本类型 （ts新增的类型）
+#### 3.3 其他基本类型 （ts新增的类型）
 - 联合类型
   使用“|”，多种类型任选其一
   ```ts
@@ -393,7 +393,7 @@ console.log(add(1, 2));
   anything = [];
   ```
 
-#### 类型别名
+#### 3.4 类型别名
 对已知的类型自定义类型名称, 规则是： type：“类型别名” = ......, 比如有以下代码：
   ```ts
   let student: {
@@ -459,7 +459,7 @@ console.log(add(1, 2));
 
 使用类型别名可以优化代码的重复书写，提高可维护性
 
-#### 函数的相关类型约束
+#### 3.5 函数的相关类型约束
 
 - 函数重载： 在函数调用之前，对函数的多种情况进行申明
 
@@ -524,14 +524,14 @@ console.log(add(1, 2));
   console.log(sum(1, 2, 3));
   ```
 
-### part-4 扩展类型-枚举
+### 04 扩展类型-枚举
 
 > 扩展类型： 类型别名，枚举， 接口， 类
 
 枚举： 通常用于约束某个变量的取值范围。比如性别（男，女）， 扑克牌的花色（4种），坦克大战的方向（上下左右）等等。
 字面量结合联合类型，也能实现约束变量取值范围的作用，但是有一些问题，因此，引出了枚举的概念。
 
-#### 字面量类型的问题：
+#### 4.1 字面量类型的问题：
 - 在类型约束的位置，产生重复书写的问题
   ```ts
   let gender: "male" | "female";
@@ -561,7 +561,7 @@ console.log(add(1, 2));
 
 后面的2个问题，使用枚举可以很好的解决。
 
-#### 枚举
+#### 4.2 枚举
 - 如何定义一个枚举：
 
 ```
@@ -655,8 +655,198 @@ printGender(); // male, female
   - 尽量嫑在一个枚举中既出现字符串字段，又出现数字字段
   - 使用枚举时，尽量使用枚举字段的名称，不使用真实的赋值
 
-### part-5 模块化
+### 05 模块化
 
+> 模块化相关的参数配置
+>
+> | 配置名称            | 含义                         |
+> | ------------------- | ---------------------------- |
+> | Module              | 编译结果中使用的模块化标准   |
+> | moduleResolution    | 解析模块的模式               |
+> | noImplicitUseStrict | 编译结果中不包含“use strict” |
+> | removeComments      | 编译结果中移除注释           |
+> | noEmitOnError       | 错误时不生成编译结果         |
+> | esModuleInterop     | 启用es模块化交互非es模块导出 |
+
+> 前段领域模块化标准：ES6, commonjs, amd, umd, system, esnext, 在ts中，我们只关注 ES6, commonjs
+
+#### 5.1 ts中如何书写模块化语句
+ts中，导入和导出模块，统一使用es6的模块化标准
+```ts
+// myModule.ts 
+export const text = "hello module";
+
+export function sum(num1: number, num2: number) {
+  return num1 + num2;
+}
+
+// index.ts
+import { sum, text } from "./myModule";
+
+console.log(text);
+console.log(sum(1, 2));
+```
+
+#### 5.2 编译结果中的模块化
+> - 模块化标准可配置
+> - 真实项目中，ts使用模块化标准比较复杂，有时用es标准，有时使用commonjs标准（比如使用的一些第三方库），因此我们需要探究ts中使用的模块化，在编译结果中的具体情况
+
+- ts中的模块化在编译结果中：
+  - 如果编译结果的模块化标准是ES6，即ts中属性的es6标准要编译成es6标准的js，没有区别
+  - 如果编译结果的模块化标准是commonjs：即ts中属性的es6标准要编译成commonjs标准的js, 导出的声明会变成exports的属性，默认的导出会变成exports的default属性
+```ts
+// myModule.ts
+export const text = "hello module";
+
+export function sum(num1: number, num2: number) {
+  return num1 + num2;
+}
+
+export default function () {
+  console.log("hello");
+}
+
+
+// index.ts
+import sayHello, { sum, text } from "./myModule";
+
+console.log(text);
+console.log(sum(1, 2));
+
+sayHello();
+
+// ./dist/myModule.ts
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+
+exports.text = void 0;
+exports.sum = sum;
+exports.default = default_1;
+exports.text = "hello module";
+
+function sum(num1, num2) {
+    return num1 + num2;
+}
+function default_1() {
+    console.log("hello");
+}
+
+// ./dist/index.js
+
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const myModule_1 = require("./myModule");
+console.log(myModule_1.text);
+console.log((0, myModule_1.sum)(1, 2));
+(0, myModule_1.default)();
+
+```
+
+#### 5.3 解决默认导入时的错误
+> 比如我们在ts文件中使用nodejs的一些接口，例如fs模块
+```ts
+// index.ts
+import fs from "fs";
+const files = fs.readdirSync("./");
+console.log(files);
+
+// .dist/index.js
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const fs_1 = require("fs");
+const files = fs_1.default.readdirSync("./");
+console.log(files);
+
+```
+> 报错：使用默认导入fs模块时， 编译成的js代码中，会通过模块fs的default属性来使用，如上面的fs_1.default。但是fs模块压根就不是用es6写的，而是使用commonjs标准写的。这个模块是在module.export对象里，而我们上面使用的的默认导入，ts编译时需要在exports.default里去找，但是commonjs压根没有default属性，所以报错。 如何解决？？
+
+- 方法1：使用单个方法的具名导入使用， 书写不太方法（无法提示方法）
+  ```ts
+  // index.ts
+  import { readdirSync } from "fs";
+  const files = readdirSync("./");
+  console.log(files);
+  
+  // .dist/index.js
+  Object.defineProperty(exports, "__esModule", { value: true });
+  const fs_1 = require("fs");
+  const files = (0, fs_1.readdirSync)("./");
+  console.log(files);
+  ```
+
+- 方法2： 导入模块所有内容，再重命名
+
+    ```ts
+    // index.ts
+    import * as fs from "fs";
+    const files = fs.readdirSync("./");
+    console.log(files);
+    
+    // .dist/index.js
+    Object.defineProperty(exports, "__esModule", { value: true });
+    const fs = require("fs");
+    const files = fs.readdirSync("./");
+    console.log(files);
+    ```
+
+- 方法3：使用配置，实现es和非es模块标准交互 （推荐）
+  ```bash
+  "compilerOptions": {
+      // tsc编译选项
+      ...
+      "esModuleInterop": true // 允许使用ES6模块化语法去引入CommonJS模块
+      ...
+    },
+  ```
+  
+  ```ts
+  // index.ts
+  import fs = require("fs");
+  const files = fs.readdirSync("./");
+  console.log(files);
+  
+  // .dist/index.js
+  Object.defineProperty(exports, "__esModule", { value: true });
+  const fs = require("fs");
+  const files = fs.readdirSync("./");
+  console.log(files);
+  
+  ```
+
+#### 5.4 如何在TS中书写commonjs标准的模块化代码(了解)
+
+- 导出： export = xxx
+  ```ts
+  export = {
+    text: "hello module",
+    sum: function (num1: number, num2: number) {
+      return num1 + num2;
+    },
+  };
+  ```
+- 导入： import xxx = require（“xxx”）
+  ```ts
+  import myModule = require("./myModule");
+  
+  console.log(myModule.text);
+  console.log(myModule.sum(1, 2));
+  
+  ```
+
+#### 5.5 模块解析
+> 模块解析：应该从什么位置寻找模块
+
+在ts中，有两种模块解析策略：
+- classic: es6标准之前指定的，比较老的项目里使用，不推荐
+- node:和nodejs的模块解析方式完全一致（只是把js替换成ts）
+  - 路径模块：相对路径 `import utils from './utils' `或者 `require('./utils')`， 绝对路径 `import utils from '/utils' `或者 `require('/utils')`
+    - 先按文件的书写文件找？
+    - 看package.json里有没有设置main字段？
+    - 找同名的文件夹（utils），依次找找utils里的index文件
+
+  - 非路径模块（无前缀：第三方、自定义、内置）： `import utils from 'utils' `或者 `require('utils')`
+    - 是不是内置模块？
+    - 按目录逐级查找 node_modules
 
 ### part-6 接口和类型兼容性
 
