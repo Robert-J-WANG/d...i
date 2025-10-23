@@ -850,6 +850,379 @@ console.log(files);
 
 ### part-6 接口和类型兼容性
 
+#### 6.1 扩展类型——接口
+> 扩展类型： 类型别名（type alias），枚举（enum)，接口（interface），类（class)
+
+ts中的接口：用于约束类，对象，函数的契约（标准）。
+
+契约（标准）的形式：
+  - 文档：比如前后端交互时的API文档，是一种弱标准
+  - 代码约束： 强标准， 比如在后端开发中，经常使用的接口interface
+
+
+##### 6.1.1 接口如何约束对象？
+```ts
+interface User {
+  name: string;
+  age: number;
+}
+
+let u: User = {
+  name: "Robert",
+  age: 18,
+};
+```
+
+对比使用类型别名
+
+```ts
+type User={
+  name: string;
+  age: number;
+}
+
+let u: User = {
+  name: "Robert",
+  age: 18,
+};
+```
+
+现阶段使用接口和类型别名，基本什么区别，但是主要的区别在于约束类，后面会详细理解。推荐对象约束时使用接口
+
+##### 6.1.2 接口如何约束函数？
+
+- 对象里的函数（方法）
+```ts
+interface User {
+  name: string;
+  age: number;
+  // 箭头函数
+  sayHello: () => void;
+  // 普通函数
+  sayHi(): void;
+}
+let u: User = {
+  name: "Robert",
+  age: 18,
+  sayHello: () => {
+    console.log("Hello");
+  },
+  sayHi() {
+    console.log("hi");
+  },
+};
+```
+​	对比使用类型别名：
+```ts
+type User = {
+  name: string;
+  age: number;
+   // 箭头函数
+  sayHello: () => void;
+  // 普通函数
+  sayHi(): void;
+};
+
+let u: User = {
+  name: "Robert",
+  age: 18,
+  sayHello: () => {
+    console.log("Hello");
+  },
+  sayHi() {
+    console.log("hi");
+  },
+};
+```
+
+- 普通函数
+> 假设一个数组求和函数，对满足条件（具体什么条件？使用者定义，使用回调函数）的数组项求和
+> ```ts
+> function sum(numbers: number[], Callback: (n: number) => boolean) {
+>   let result = 0;
+>   numbers.forEach((n) => {
+>     if (Callback(n)) {
+>       result += n;
+>     }
+>   });
+>   return result;
+> }
+> 
+> // 对奇数求和
+> const result = sum([1, 2, 4, 5, 7, 11], (n) => n % 2 !== 0);
+> console.log(result); // 24
+> ```
+
+使用接口interface约束
+
+```ts
+interface Condition {
+  (n: number): boolean;
+}
+
+function sum(numbers: number[], Callback: Condition) {
+  let result = 0;
+  numbers.forEach((n) => {
+    if (Callback(n)) {
+      result += n;
+    }
+  });
+  return result;
+}
+
+// 对奇数求和
+const result = sum([1, 2, 4, 5, 7, 11], (n) => n % 2 !== 0);
+console.log(result); // 24
+```
+
+对比使用类型别名约束
+
+```ts
+type Condition = {
+  (n: number): boolean;
+};
+
+function sum(numbers: number[], Callback: Condition) {
+  let result = 0;
+  numbers.forEach((n) => {
+    if (Callback(n)) {
+      result += n;
+    }
+  });
+  return result;
+}
+
+// 对奇数求和
+const result = sum([1, 2, 4, 5, 7, 11], (n) => n % 2 !== 0);
+console.log(result); // 24
+```
+
+##### 6.1.5 接口的继承
+类似于类的继承概念，ts中的接口也能进行继承，实现多种接口约束的组合
+
+```ts
+interface A {
+  t1: number;
+}
+interface B extends A {
+  t2: string;
+}
+
+let b: B = {
+  t1: 111,
+  t2: "hahhaha",
+};
+```
+
+也可以继承多个接口
+
+```ts
+interface A {
+  t1: number;
+}
+interface B  {
+  t2: string;
+}
+
+interface C extends A,B { // 继承多个接口
+  t3: boolean;
+}
+
+let c: C = {
+  t1: 111,
+  t2: "hahhaha",
+  t3: false
+};
+```
+
+**注意**： 类型别名不能进行继承， 但是类型别名也可以实现类似的组合效果。需要通过```&```符号，这种组合叫做交叉类型
+
+```ts
+type A = {
+  t1: number;
+};
+type B = {
+  t2: string;
+};
+
+type C = {
+  t3: boolean;
+} & A & B; //交叉组合
+
+let c: C = {
+  t1: 111,
+  t2: "hahhaha",
+  t3: false,
+};
+```
+
+主要区别：
+
+- 子接口不能覆盖父接口的成员
+
+    ```ts
+    interface A {
+      t1: number;
+    }
+    interface B {
+      t2: string;
+    }
+    
+    interface C extends A, B {
+      t1: string; // 不能重新覆盖（重写）父接口成员的类型 :Interface 'C' incorrectly extends interface 'A'. Types of property 't1' are incompatible. Type 'string' is not assignable to type 'number'.ts(2430)
+      t3: boolean;
+    }
+    ```
+
+- 而上面对比的交叉类型别名，可以进行重写: 但是此时的类型会变成never（ 一个变量既是number，又是string，根本不可能存在）
+
+    ```ts
+    type A = {
+      t1: number;
+    };
+    type B = {
+      t2: string;
+    };
+    
+    type C = {
+      t1: string;
+      t3: boolean;
+    } & A & B;
+    ```
+
+    	**因此，使用接口更加合理**
+
+##### 6.1.6 readonly修饰符
+
+只读修饰符： 修改的目标是只读的，不能重写
+
+> 比如有如下代码：
+>
+> ```ts
+> interface Student {
+>   id: number;
+>   name: string;
+>   age: number;
+>   marks: number[];
+> }
+> 
+> let student: Student = {
+>   id: 1001,
+>   name: "Peter",
+>   age: 18,
+>   marks: [100, 90, 85],
+> };
+> 
+> student.id = 2000; // 重新修改id
+> student.marks.push(99) // 添加一个成绩
+> ```
+
+如果希望学生的id值是不能修改的，就可以使用只读修饰符
+
+```ts
+interface Student {
+  readonly id: number;
+  name: string;
+  age: number;
+  readonly marks: readonly number[];
+}
+
+let student: Student = {
+  id: 1001,
+  name: "Peter",
+  age: 18,
+  marks: [100, 90, 85],
+};
+
+student.id = 2000; // 不能重新修改id, Cannot assign to 'id' because it is a read-only property.
+student.marks.push(99); // 无法修改数组成员,添加一个成绩, Property 'push' does not exist on type 'readonly number[]'.
+```
+
+
+
+#### 6.2 类型兼容性
+
+> 假设我们把A赋值给B：A->B， 如果能完成赋值，怎认为类型B和A兼容
+
+- 基本类型（number，string，boolean），需要完全匹配
+- 对于对象类型：满足子结构辨型法
+  > 子结构辨型法（鸭子辨型法）：目标类型需要一些特征，赋值类型只要满足这些特征就行
+
+```ts
+// 目标类型
+interface Duck {
+  sound: "gagaga";
+  swim: () => void;
+}
+
+// 赋值的类型
+const Person = {
+  name: "Peter",
+  age: 18,
+  sound: "gagaga" as "gagaga", // as是类型断言符号
+  swim: () => {
+    console.log("i can swim");
+  },
+};
+
+// 把赋值类型赋值给目标类型
+let duck: Duck = Person;
+```
+
+原因： ts中往往会有一个大的对象（也可能是调用接口获得的），但是在某处，仅仅需要部分对象的特征，而其他地方可能需要另外的一些特征，因此，为了不重复书写对个对象，设计成可以写一个大的对象，同时可以赋值给对个字类型
+
+**注意**： 直接使用字面量对象赋值时，会进行严格的类型兼容检查
+
+```ts
+// 目标类型
+interface Duck {
+  sound: "gagaga";
+  swim: () => void;
+}
+
+// 把字面量对象赋值类型赋值给目标类型（类型必须严格匹配）
+let duck: Duck = {
+  // name: "Peter",   
+  // age: 18,
+  sound: "gagaga" as "gagaga",
+  swim: () => {
+    console.log("i can swim");
+  },
+};
+```
+
+- 函数类型： 通常出现在回调函数的地方
+    - 函数参数：传递给目标函数的参数可以少，但不能多
+    - 函数返回值：要求有返回值的，必须返回；不要求返回值的，随意
+
+```ts
+interface Condition {
+  (n: number, i: number): boolean;
+}
+
+function sum(numbers: number[], Callback: Condition) {
+  let result = 0;
+
+  for (let i = 0; i < numbers.length; i++) {
+    const n = numbers[i];
+    if (Callback(n, i)) {
+      result += n;
+    }
+  }
+
+  return result;
+}
+
+// 对奇数求和
+const r = sum([1, 2, 4, 5, 7, 11], (n) => n % 2 !== 0); // 目标函数类型参数是2个，但是传递的时候，可以少于2个
+console.log(r); // 24
+
+// 对下标为奇数的项求和
+const r2 = sum([1, 2, 4, 5, 7, 11], (n, i) => i % 2 !== 0); 
+console.log(r2); //18
+```
+
+
 
 ### part-7 类
 
