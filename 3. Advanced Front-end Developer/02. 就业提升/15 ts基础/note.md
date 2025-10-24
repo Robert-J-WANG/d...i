@@ -1222,10 +1222,433 @@ const r2 = sum([1, 2, 4, 5, 7, 11], (n, i) => i % 2 !== 0);
 console.log(r2); //18
 ```
 
-
-
 ### part-7 类
 
+> 面向对象思想
+
+对于ts 基础，学习类的时候，我们只讨论新增的语法部分
+
+示例代码：
+
+```js
+// js代码：
+class User {
+  constructor(name, age) {
+    // 给当前的属性赋值
+    this.name = name;
+    this.age = age;
+  }
+}
+
+let u = new User("Sam", 19); // 通过new 实例化类的对象，并给属性赋值
+console.log(u)
+u.gender = "male" // 动态添加属性
+console.log(u)
+```
+
+js中的类，允许在实例化对象的过程中动态添加成员（属性和方法），但是在ts中，这是不允许的，在定义类的时候，就必须要确定类的成员，从而排除后面随意增加（修改）类的成员的风险
+
+#### 7.1 属性：
+
+- 属性列表 ：Ts中，对于类的属性，要求使用**属性列表**来描述类的属性
+
+  ```ts
+  class User {
+      
+    // 定义类的时候，必须要明确类的成员，使用属性类别描述
+    name: string;
+    age: number;
+      
+    constructor(name: string, age: number) {
+      // 给当前的属性赋值
+      this.name = name;
+      this.age = age;
+    }
+  }
+  
+  // 实例化一个对象
+  let u = new User("Sam", 18);
+  console.log(u);
+  u.gender = "male"; // 报错： Property 'gender' does not exist on type 'User'.
+  ```
+
+  
+
+- 属性的初始化：如果上面的类中没有属性构造器函数，或者忘记书写了一些属性的赋值：
+
+  **情况1：**没有构造器函数
+
+  ```ts
+  // 下面的类相当于是一个空的，虽然有属性成员类型，但是没有属性成员，无法通过给构造函数传递参数完成赋值
+  
+  class User {
+    // 定义类的时候，必须要明确成员的类型
+    name: string;
+    age: number;
+  }
+  
+  let u = new User(); // 示例的对象是空的
+  console.log(u); // User {}
+  // 给对象追加参数
+  u.name = "sam";
+  u.age = 19;
+  console.log(u); // User { name: 'sam', age: 19 }
+  ```
+  **情况2：**虽然有构造器（能接受参数），但是忘记赋值给属性成员
+
+  ```ts
+  // 
+  class User {
+    // 定义类的时候，必须要明确类的成员
+    name: string;
+    age: number;
+    constructor(name: string, age: number) {
+      // 忘记给属性赋值
+    }
+  }
+  
+  let u = new User("sam", 18); // 虽然传递了参数，但是无法完成赋值
+  console.log(u); // User {}
+  u.name = "sam";
+  u.age = 19;
+  
+  console.log(u); // User { name: 'sam', age: 19 }
+  ```
+
+  针对上面的2中情况，我们可以通过参数配置，实现更严的属性赋值检查
+
+  ```json
+  "strictPropertyInitialization": true //严格检查属性的初始化
+  ```
+
+  这样设置，会提示：Property 'name' has no initializer and is not definitely assigned in the constructor.
+
+  
+
+- 属性默认值： 在设计类的属性时，如果我们明确知道一个属性的默认值，可以通过属性列表或者构造函数设置默认值
+
+    ```ts
+    class User {
+      name: string;
+      age: number;
+      gender: "male" | "female" = "male"; // 设置属性默认值
+      constructor(name: string, age: number) {
+        this.name = name;
+        this.age = age;
+      }
+    }
+    
+    let u = new User("sam", 18);
+    console.log(u); // User { name: 'sam', age: 18, gender: 'male' }
+    u.gender = "female"; // 给属性追加赋值来修改
+    console.log(u); // User { name: 'sam', age: 18, gender: 'female' }
+    ```
+  
+  ```ts
+  class User {
+    name: string;
+    age: number;
+    gender: "male" | "female";
+    // 通过构造函数，给属性赋值，设置默认值
+    constructor(name: string, age: number, gender: "male" | "female" = "male") {
+      this.name = name;
+      this.age = age;
+      this.gender = gender;
+    }
+  }
+  
+  let u = new User("sam", 18);
+  console.log(u); // User { name: 'sam', age: 18, gender: 'male' }
+  u.gender = "female";
+  console.log(u); // User { name: 'sam', age: 18, gender: 'female' }
+  ```
+
+
+- 可选属性： 属性后面添加？设置可选属性, 可选属性没有初始化的要求
+
+  ```ts
+  class User {
+    name: string;
+    age: number;
+    gender: "male" | "female" = "male";
+    id?: string; // 可选属性
+    
+    constructor(name: string, age: number) {
+      // 给属性赋值
+      this.name = name;
+      this.age = age;
+    }
+  }
+  
+  let u = new User("sam", 18);
+  console.log(u);  // User { gender: 'male', name: 'sam', age: 18 }
+  u.id = "10010000";
+  console.log(u); // User { gender: 'male', name: 'sam', age: 18, id: '10010000' }
+  
+  ```
+
+- 只读属性： 有点属性，初始化之后，就不能再修改（赋值）了，可以添加readonly关键字修饰
+  ```ts
+  class User {
+    readonly id: number; // 设置为只读属性
+    name: string;
+    age: number;
+    gender: "male" | "female" = "male";
+    pid?: string; // 可选属性
+  
+    constructor(name: string, age: number, pid?: string) {
+      // 给属性赋值
+      this.id = Math.random();
+      this.name = name;
+      this.age = age;
+      this.pid = pid;
+    }
+  }
+  
+  let u = new User("sam", 18, "10000100");
+  console.log(u.id); // id属性可以读取
+  
+  u.id = 1238409138493; // 报错：但是不能修改： Cannot assign to 'id' because it is a read-only property.
+  ```
+
+
+
+#### 7.2 访问修饰符
+
+访问修饰符：用来控制类中的某个成员（属性，方法）的访问权限。
+
+- Public : 默认的 (不写的时候），公开的， 类的内部和外部的代码都能访问
+
+    ```ts
+    class User {
+      public readonly id: number; 
+      public name: string;
+      age: number;
+      gender: "male" | "female" = "male";
+      pid?: string; 
+    
+      constructor(name: string, age: number, pid?: string) {
+        // 给属性赋值
+        this.id = Math.random();
+        this.name = name;
+        this.age = age;
+        this.pid = pid;
+      }
+    }
+    
+    let u = new User("sam", 18, "10000100");
+    console.log(u.id);
+    console.log(u.age);
+    console.log(u.name);
+    console.log(u.gender);
+    console.log(u.pid);
+    ```
+
+- private： 私有的，只能在类的内部使用
+
+    ```ts
+    class User {
+      public readonly id: number; 
+      public name: string;
+      age: number;
+      gender: "male" | "female" = "male";
+      pid?: string; 
+    
+      // 私有属性，只在类的内容使用（维护）
+      private publishNumber: number = 3; // 一天能发布文章的上限值
+      private curPublish: number = 0; // 当前发布的文章数
+    
+      constructor(name: string, age: number, pid?: string) {
+        // 给属性赋值
+        this.id = Math.random();
+        this.name = name;
+        this.age = age;
+        this.pid = pid;
+      }
+    
+      // 类的内容方法中使用私有属性
+      publish(title: string) {
+        if (this.curPublish < this.publishNumber) {
+          console.log(title + " is published");
+          this.curPublish++;
+        } else {
+          console.log("you can not publish today");
+        }
+      }
+    }
+    
+    let u = new User("sam", 18, "10000100");
+    u.publish("title 1"); // title 1 is published
+    u.publish("title 2"); // title 2 is published
+    u.publish("title 3"); // title 3 is published
+    u.publish("title 4"); // ou can not publish today
+    
+    
+    u.publishNumber=100 // 报错，外部无法操作私有属性：Property 'publishNumber' is private and only accessible within class 'User'.ts(2341)
+    ```
+    
+- prtected: 受保护的，暂时不讲
+
+
+
+#### 7.3 属性的简写
+
+如果类中的某个属性，通过构造函数传递参数实现初始化赋值，若这个参数不足任何处理，直接赋值个属性的话，我们可以把构造函数里的参数添加任何访问修饰符，对书写进行简写
+
+```ts
+class User {
+  public readonly id: number; 
+  gender: "male" | "female" = "male";
+  private publishNumber: number = 3; 
+  private curPublish: number = 0; 
+
+  // 在构造器函数中，对参数赋值给属性的简写  
+  constructor(public name: string, public age: number, public pid?: string) {
+    // 给属性赋值
+    this.id = Math.random();
+  }
+
+  publish(title: string) {
+    if (this.curPublish < this.publishNumber) {
+      console.log(title + " is published");
+      this.curPublish++;
+    } else {
+      console.log("you can not publish today");
+    }
+  }
+}
+
+let u = new User("sam", 18, "10000100");
+```
+
+
+
+#### 7.4 访问器 (Getter / Setter)
+
+作用：用于控制类的属性的读取和赋值。 对于公共的属性（比如年龄属性），可以在类的外部直接读取并赋值，但是对于属性更细致的处理（比如年龄不能是小数，年龄不能是负数等等），我们需要放置进类里处理，外部访问通过访问器（其实就是一个函数接口）处理后的结果。
+
+- 一些后端语言（比如JAVA）的处理方式：把属性私有化，新增2个方法（访问器）来进行属性的读取和设置
+
+    ```ts
+    class User {
+      public readonly id: number; // 设置为只读属性
+      gender: "male" | "female" = "male";
+      private _publishNumber: number = 3; // 一天能发布文章的上限值
+      private _curPublish: number = 0; // 当前发布的文章数
+    
+      constructor(public name: string, private _age: number, public pid?: string) {
+        // 给属性赋值
+        this.id = Math.random();
+      }
+    
+      // 对属性进行处理
+      setAge(value: number) {
+        // 设置年龄范围
+        if (value < 0) {
+          value = 0;
+        }
+        if (value >= 200) {
+          value = 200;
+        }
+        this._age = value;
+      }
+    
+      getAge() {
+        // 对年龄取整
+        return Math.floor(this._age);
+      }
+    
+      publish(title: string) {
+        if (this._curPublish < this._publishNumber) {
+          console.log(title + " is published");
+          this._curPublish++;
+        } else {
+          console.log("you can not publish today");
+        }
+      }
+    }
+    
+    let u = new User("sam", 18, "10000100");
+    
+    //使用访问器读取年龄
+    let age = u.getAge();
+    console.log(age);
+    
+    // 使用访问器设置年龄
+    u.setAge(100);
+    let age2 = u.getAge();
+    console.log(age2);
+    
+    u.setAge(300);
+    let age3 = u.getAge();
+    console.log(age3);
+    
+    u.setAge(100.456);
+    let age4 = u.getAge();
+    console.log(age4);
+    ```
+
+    上面的方法，逻辑上没有任何问题，但是使用时，感官上和属性（比如上面的age) 没有任何关系
+
+- 使用访问器关键字（C#, ES的做法），`set age(){}`和 `get age(){}`。更优雅的语法，是一种语法糖，本质上还是一个函数.
+
+    外部操作属性时，通过访问器属性（age) 来执行
+
+    ```ts
+    class User {
+      public readonly id: number; // 设置为只读属性
+      gender: "male" | "female" = "male";
+      private _publishNumber: number = 3; // 一天能发布文章的上限值
+      private _curPublish: number = 0; // 当前发布的文章数
+    
+      constructor(public name: string, private _age: number, public pid?: string) {
+        // 给属性赋值
+        this.id = Math.random();
+      }
+    
+      // 对属性进行处理
+      set age(value: number) {
+        // 设置年龄范围
+        if (value < 0) {
+          value = 0;
+        }
+        if (value >= 200) {
+          value = 200;
+        }
+        this._age = value;
+      }
+    
+      get age() {
+        // 对年龄取整
+        return Math.floor(this._age);
+      }
+    
+      publish(title: string) {
+        if (this._curPublish < this._publishNumber) {
+          console.log(title + " is published");
+          this._curPublish++;
+        } else {
+          console.log("you can not publish today");
+        }
+      }
+    }
+    
+    let u = new User("sam", 18, "10000100");
+    // 读取访问器属性
+    console.log(u.age);
+    
+    // 给访问器属性赋值
+    u.age = 100;
+    console.log(u.age);
+    
+    u.age = 300;
+    console.log(u.age);
+    
+    u.age = 100.465;
+    console.log(u.age);
+    ```
+
+    
 
 ### part-8 泛型
 
