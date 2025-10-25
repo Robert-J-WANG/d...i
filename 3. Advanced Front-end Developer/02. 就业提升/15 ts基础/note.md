@@ -1652,7 +1652,296 @@ let u = new User("sam", 18, "10000100");
 
 ### part-8 泛型
 
+> 上面的章节里的基础，已经可以很好地解决js中开发的问题了。 但是还有一些更复杂的问题，比如下面的代码：
+>
+> ```ts
+> /**
+>  * 从一个数组中取前n项，
+>  * @param arr
+>  * @param n
+>  * @returns 一个新的数组
+>  */
+> function take(arr, n) {
+>   if (n >= arr.length) {
+>     return arr;
+>   } else {
+>     const newArr = [];
+>     for (let i = 0; i < n; i++) {
+>       newArr.push(arr[i]);
+>     }
+>     return newArr;
+>   }
+> }
+> 
+> const res = take([1, 3, 4, 6, 8], 2)
+> console.log(res) // [ 1, 3 ]
+> ```
+>
+> 上面的是纯js的写法， 没有进行任何类型的限制，调用函数的过程，可能会输入字符串或者其他类型，使用ts类型检查.
+>
+> 但是我们无法确定输入的数组的类型，是数字型，还是字符串型？还是混合型，因此目前我们只能写成any型
+>
+> ```ts
+> /**
+>  * 从一个数组中取前n项，
+>  * @param arr
+>  * @param n
+>  * @returns 一个新的数组
+>  */
+> function take(arr: any[], n: number): any[] {
+>   if (n >= arr.length) {
+>     return arr;
+>   } else {
+>     const newArr: any[] = [];
+>     for (let i = 0; i < n; i++) {
+>       newArr.push(arr[i]);
+>     }
+>     return newArr;
+>   }
+> }
+> 
+> const res = take([1, 3, 4, 6, 8], 2); // any[] | undefined
+> console.log(res); // [ 1, 3 ]
+> const res2 = take(["1", "3", "4", " 6", "8"], 2); // any[] | undefined
+> console.log(res2); // [ "1", "3" ]
+> ```
+>
+> 此时，我们调用此函数时，res和res2的类型都是是any[] | undefined， 而实际上res是number [ ], res2是string [ ]。 这样的结果，不能准确检查出类型。同时，我们丢失了一个非常重要的信息： 不管传入的是什么类型，传入的数组的类型，返回的数组类型，和函数里定义的变量newArr的类型应该是完全一致的，也就是说上面的3个any[] 应该是同一个类型。因此，我们对于在定义时不确定变量类型，并且只有在使用时才能确定类型的情况，可以使用泛型(Generics)
 
+**泛型： 是指附属于函数，类，接口， 类型别名之上的类型，相当于一个占位符（或者是一个存储类型的变量），在定义时，无法预先指定变量的类型，所以先试用一个符号（变量）代替， 调用时，才能确定它的类型，再传入具体的类型**
+
+
+
+- 在函数中使用泛型： 
+
+    在函数名后写上```<泛型名称>```， 调用时，传入具体的类型
+
+    ```ts
+    // 定义函数
+    function take<T>(){
+        ...
+    }
+    // 调用函数
+    take<number>();  // 调用时，传入number 类型
+    ```
+
+    现在对上面的take函数进行改造
+
+    ```ts
+    /**
+     * 从一个数组中取前n项，
+     * @param arr
+     * @param n
+     * @returns 一个新的数组
+     */
+    function take<T>(arr: T[], n: number): T[] {
+      if (n >= arr.length) {
+        return arr;
+      } else {
+        const newArr: T[] = [];
+        for (let i = 0; i < n; i++) {
+          newArr.push(arr[i]);
+        }
+        return newArr;
+      }
+    }
+    
+    const res = take<number>([1, 3, 4, 6, 8], 2); // number[]， 调用时，传入number 类型
+    console.log(res); // [ 1, 3 t
+    const res2 = take(["1", "3", "4", " 6", "8"], 2); //string[]，调用时，不传入类型，ts也可以进行类型推断 
+    console.log(res2); // [ "1", "3" ]
+    ```
+
+    **注意：** 很多情况，ts会根据传入参入的类型推断出泛型对应的类型
+
+- 在类，接口，类型别名中书写泛型
+
+    直接在名称后面书写```<泛型名称>```
+
+    ```ts
+    // 之前的回调函数的类型申明
+    // 回调函数，判断数组中的某一项是否满足条件
+    type callback = (n: number, i: number) => boolean;
+    ```
+
+    上面的类型什么，没有通用性，只能适用于number型的数组（数组的成员n: number），但是如果是string类型，或者其他类型的数组呢？？？我们使用泛型改造其通用性
+
+    ```ts
+    // 回调函数，判断数组中的某一项是否满足条件
+    type callback<T> = (n: T, i: number) => boolean;
+    
+    function filter<T>(arr: T[], callback: callback<T>): T[] {
+      const newArr: T[] = [];
+      arr.forEach((n, i) => {
+        if (callback(n, i)) {
+          newArr.push(n);
+        }
+      });
+      return newArr;
+    }
+    
+    const res = filter([1, 3, 4, 5, 7, 90, 101], (n) => n % 2 !== 0);
+    console.log(res); // [ 1, 3, 5, 7, 101 ]
+    
+    const res2 = filter(["1", "3", "4", "5", "7", "90", "101"],(n, i) => i % 2 !== 0);
+    console.log(res2); // [ '3', '5', '90' ]
+    ```
+
+    接口的泛型，和上面类型别名的基本一样，把类型别名改成接口
+
+    ```ts
+    interface callback<T> {
+      (n: T, i: number): boolean;
+    }
+    
+    function filter<T>(arr: T[], callback: callback<T>): T[] {
+      const newArr: T[] = [];
+      arr.forEach((n, i) => {
+        if (callback(n, i)) {
+          newArr.push(n);
+        }
+      });
+      return newArr;
+    }
+    
+    const res = filter([1, 3, 4, 5, 7, 90, 101], (n) => n % 2 !== 0);
+    console.log(res); // [ 1, 3, 5, 7, 101 ]
+    
+    const res2 = filter(["1", "3", "4", "5", "7", "90", "101"],(n, i) => i % 2 !== 0);
+    console.log(res2); // [ '3', '5', '90' ]
+    ```
+
+    类中使用泛型：
+
+    ```ts
+    class ArrayHelper<T> {
+      constructor(private arr: T[]) {}
+      /**
+       * 从数组里去前n个数
+       *
+       * @param n
+       * @returns
+       */
+      take(n: number): T[] {
+        if (n >= this.arr.length) {
+          return this.arr;
+        } else {
+          const newArr: T[] = [];
+          for (let i = 0; i < n; i++) {
+            newArr.push(this.arr[i]);
+          }
+          return newArr;
+        }
+      }
+    
+      /**
+       * 洗牌
+       * 随机打乱数组成员的顺序
+       * @returns
+       */
+      shuffle(): T[] {
+        this.arr.forEach((n, i) => {
+          const targetIndex = this.getRandom(0, this.arr.length);
+          const temp = this.arr[i];
+          this.arr[i] = this.arr[targetIndex];
+          this.arr[targetIndex] = temp;
+        });
+        return this.arr;
+      }
+    
+      /**
+       * 生成一个范围类的随机数，取不到最大值
+       * @param min
+       * @param max
+       * @returns
+       */
+      private getRandom(min: number, max: number) {
+        const dec = max - min;
+        return Math.floor(Math.random() * dec + min);
+      }
+    }
+    
+    const arr = new ArrayHelper([1, 2, 3, 4, 5]);
+    
+    console.log(arr.take(2)); // [ 1, 2 ]
+    console.log(arr.shuffle()); // [ 5, 2, 4, 1, 3 ]
+    ```
+
+- 泛型约束: 
+
+    用于限制泛型的取值
+
+    ```ts
+    /**
+     * 将一个对象里的name属性的值的首字母大写
+     * @param obj 一个对象，必须有name属性
+     * @returns 包含首字母大写的name属性的对象
+     */
+    function nameToUpperCase<T>(obj: T): T {
+      obj.name="K" // 报错：Property 'name' does not exist on type 'T'.ts(2339)， 因为书写这一步代码时，我们还不知道obj的类型，因此需要对泛型T进行必要的限定（约束）
+    }
+    
+    const o = {
+      name: "kevin wang",
+      age: 18,
+    };
+    
+    const newO = nameToUpperCase(o);
+    ```
+
+    泛型约束通常使用关键字```extends```, 继承一个设定好的类型，比如上面的例子，我们知道需要的obj至少必须有个属性name
+
+    ```ts
+    interface HasNameProperty {
+      name: string;
+    }
+    
+    /**
+     * 将一个对象里的name属性的值的首字母大写
+     * @param obj 一个对象，必须有name属性
+     * @returns 包含首字母大写的name属性的对象
+     */
+    function nameToUpperCase<T extends HasNameProperty>(obj: T): T {
+      obj.name = obj.name
+        .split(" ")
+        .map((n) => n[0].toUpperCase() + n.substring(1))
+        .join(" ");
+    
+      return obj;
+    }
+    
+    const o = {
+      name: "kevin wang",
+      age: 18,
+    };
+    
+    const newO = nameToUpperCase(o);
+    ```
+
+    
+
+- 多泛型
+
+    ```ts
+    /**
+     * 将多个数组混合：[1,2,3]+["4","5","6"] => [1,"4", 2,"5",3,"6"]
+     */
+    function mixArray<T, K>(arr1: T[], arr2: K[]): (T | K)[] {
+      const newArr: (T | K)[] = [];
+      if (arr1.length !== arr2.length) {
+        throw new Error("arr1和arr2长度不相等");
+      }
+      for (let i = 0; i < arr1.length; i++) {
+        newArr.push(arr1[i]);
+        newArr.push(arr2[i]);
+      }
+      return newArr;
+    }
+    const res = mixArray([1, 2, 3], ["a", "b", "c"]);
+    console.log(res); // [ 1, 'a', 2, 'b', 3, 'c' ]
+    ```
+
+    
 
 ### part-9 项目实战
 
@@ -1663,5 +1952,25 @@ let u = new User("sam", 18, "10000100");
 - 使用模块化
 - 使用接口改造程序，加入大小王
 - 使用类改造程序，加入洗牌，发牌的功能
+
+#### 泛型练习- 模拟Map函数
+
+开发一个字典类（Dictionary），字典中会保存键值对的数据
+
+> 键值对数据特点：
+
+> - 键（key）可以是任意类型，但不允许重复
+> - 值（value）可以是任意类型
+> - 每一个键对应一个值
+> - 所以的键类型相同，所以的值类型相同
+
+字典类中对键值对数据的操作：
+
+- 重新设置某个键对应的值，如果不存在，则添加
+- 循环每一个键值对
+- 判断某个键是否存在
+
+- 按照键，删除对应的键值对
+- 得到当前键值对的数量
 
 #### React+ts开发三子棋游戏
