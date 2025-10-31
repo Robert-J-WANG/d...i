@@ -1,0 +1,13 @@
+.text {
+  margin: 1em auto;
+  width: 160px;
+  font-size: 30px;
+  border: 1px solid black;
+  text-align: center;
+}
+.red {
+  color: #f20;
+}
+.black {
+  color: #000;
+}
