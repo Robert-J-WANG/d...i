@@ -1,0 +1,8 @@
+.board {
+  width: 150px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  box-sizing: border-box;
+  margin: 1em auto;
+}
