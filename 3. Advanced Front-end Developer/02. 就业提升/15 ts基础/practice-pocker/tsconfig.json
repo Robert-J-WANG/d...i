@@ -1,0 +1,19 @@
+{
+  // Visit https://aka.ms/tsconfig to read more about this file
+  "compilerOptions": {
+    // tsc编译选项
+
+    "target": "es6", // 目标代码版本标准
+    "module": "commonjs", // 目标使用模块化规范标准
+    "lib": ["es6"], // 编译时使用的环境（引入的库文件）
+    "outDir": "./dist", // 编译后文件存放位置
+    "strictNullChecks": true, // 是否开启严格的空值检查
+    "removeComments": true, // 是否移除注释
+    "alwaysStrict": false, // 是否在编译后的文件中添加'use strict'
+    "esModuleInterop": true, // 允许使用ES6模块化语法去引入CommonJS模块
+    "strictPropertyInitialization": true
+  },
+
+  "include": ["./src"]
+  // 需要编译的文件的如何文件夹
+}
