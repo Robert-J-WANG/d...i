@@ -940,7 +940,443 @@ console.log(url.format(urlOjb)); // https://www.example.com:8080/path/to/resourc
     console.log(util.isDeepStrictEqual(obj1, obj2)); // false
     ```
 
-    
+### 1-6 文件I/O
+
+#### 1. I/O: input/output 
+
+- 对外部设备的输入和输出
+- 外部设备：
+    - 磁盘
+    - 网卡
+    - 显卡
+    - 打印机
+    - 其他
+- IO的速度往往低于内存和CPU交互的速度
+
+#### 2. fs模块
+
+- readFile() - 读取一个文件
+
+```ts
+import fs from "fs";
+import path from "path";
+
+// 获取文件的绝对路径
+const filepath = path.resolve(__dirname, "./myFiles/file.txt");
+
+// 读取文件的内容
+
+// 格式1：
+fs.readFile(filepath, (err, content) => {
+  console.log(content); // 读取的是Buffer格式 <Buffer 68 65 6c 6c 6f 20 6e 6f 64 65 20 6a 73 20>
+  console.log(content.toString()); // 转换为字符串 hello node js 
+});
+
+// 格式2：
+fs.readFile(filepath, "utf-8", (err, content) => {
+  console.log(content); // hello node js 
+});
+
+// 格式3：
+fs.readFile(filepath,{encoding: "utf-8"},(err, content) => {
+    console.log(content); // hello node js 
+  }
+);
+```
+
+> 注意：
+>
+> - fs模块处理文件的方法都是异步的（读写文件内容需要时间，js是单线程（主线程），防止阻塞，这些方法设计成异步（使用callback回调函数的形式处理内容）
+> - nodejs中的回调函数标准：（err, result）=> { 处理result的逻辑 }
+> - 处理文件的方法都对应有一个同步方法，比如readFileSync, writeFileSync。
+> - 同步方法需谨慎使用，会阻塞线程，影响性能。通常只在程序初次运行的有限次数时使用，用于初始化
+> - 为了兼容es新标准，fs模块下新加了promises 属性，从而可以使用新标准的异步函数的一些用法，比如async, await。 减少回调函数的使用
+>
+> ```ts
+> // promise 链式写法
+> fs.promises.readFile(filepath, "utf-8").then((content) => {
+>   console.log(content);
+> });
+> 
+> // es8新语法，promise语法糖写法
+> async function newReadFile() {
+>   const res = await fs.promises.readFile(filepath, "utf-8");
+>   console.log(res); 
+> }
+> newReadFile() // hello node js 
+> ```
+
+
+
+> **JavaScript 异步发展史**的三代核心技
+>
+> - 回调函数 → Promise → async/await
+>
+> - 总结如下
+>
+>     | 技术                     | 诞生时间                         | 出现原因 / 解决问题                                          |
+>     | ------------------------ | -------------------------------- | ------------------------------------------------------------ |
+>     | **回调函数（Callback）** | 最早，几乎从 JS 诞生（1995）就有 | JavaScript 是单线程的，要执行异步任务（如 `setTimeout`、`fs.readFile`）只能靠“回调函数” |
+>     | **Promise**              | 2015 (ES6)                       | 解决“回调地狱（callback hell）”问题，让异步流程可链式调用、可捕获错误 |
+>     | **async/await**          | 2017 (ES8)                       | 让异步代码写起来像同步代码，更直观、易维护                   |
+
+
+
+- writeFile() - 向文件写入内容
+
+```ts
+import fs from "fs";
+import path from "path";
+
+// 获取文件的绝对路径
+const filepath = path.resolve(__dirname, "./myFiles/file.txt");
+
+// 方式1：
+fs.writeFile(filepath, "hello world", () => {
+  console.log("write file done 1");
+});
+
+// 方式2
+fs.promises.writeFile(filepath, "hello new world").then(() => {
+  console.log("write file done 2");
+});
+
+// 方式3
+const newWriteFile = async () => {
+  await fs.promises.writeFile(filepath, "hello hello");
+  console.log("write file done 3");
+};
+newWriteFile();
+```
+
+>一些其他配置
+>
+>- 默认编码方式是utf-8, 也可以通过配置对象进行设置
+>- 也可以写入Buffer格式的内容，常用语图片，音视频等的写入操作
+>- 默认写入会替换原有内容，可配置成追加形式写入
+>- 如果写入的文件不存在，或自动创建文件，并写入内容 （文件目录必须存在）
+>
+>```ts
+>// 复制一张图片
+>
+>const imgPath = path.resolve(__dirname, "./myFiles/pic.png");
+>const newImgPath = path.resolve(__dirname, "./myFiles/pic2.png");
+>
+>const newWriteFile = async () => {
+>  const buffer = await fs.promises.readFile(imgPath);
+>  await fs.promises.writeFile(newImgPath, buffer, {
+>    encoding: "utf-8", // 配置编码方式
+>    flag: "a", // 配置写入方式 - 追加
+>  });
+>  console.log("copy done");
+>};
+>newWriteFile();
+>```
+>
+>
+
+- stat() - 获取文件或者目录的信息
+
+```ts
+const test = async (path) => {
+  const res = await fs.promises.stat(path);
+  console.log(res);
+};
+test(imgPath);
+```
+
+```bash
+Stats {
+  dev: 16777220,
+  mode: 33188,
+  nlink: 1,
+  uid: 501,
+  gid: 20,
+  rdev: 0,
+  blksize: 4096,
+  ino: 98933537,
+  size: 68611, //占用的字节数
+  blocks: 256,
+  atimeMs: 1762554835146.2834,
+  mtimeMs: 1762554821001.8875,
+  ctimeMs: 1762554833158.735,
+  birthtimeMs: 1762554804428.301,
+  atime: 2025-11-07T22:33:55.146Z, // 上一次访问的时间
+  mtime: 2025-11-07T22:33:41.002Z, // 上一次修改的时间
+  ctime: 2025-11-07T22:33:53.159Z, // 上一次改变文件状态的时间（访问权限等等）
+  birthtime: 2025-11-07T22:33:24.428Z // 文件创建的时间
+}
+```
+
+> 内置了方法，可以判断是文件还是文件夹
+>
+> 	- isFile()
+> 	- isDirectory()
+
+```ts
+const test = async (path) => {
+  const res = await fs.promises.stat(path);
+  console.log(res);
+  console.log(res.isFile()); // true
+  console.log(res.isDirectory()); // false
+};
+test(imgPath);
+```
+
+
+
+- readdir() - 获取目录中的文件和子目录 (返回一个数组)
+
+```ts
+import fs from "fs";
+import path from "path";
+
+// 获取绝对路径
+const dirpath = path.resolve(__dirname, "./myFiles");
+
+const test = async (path: string) => {
+  const res = await fs.promises.readdir(path);
+  console.log(res);
+};
+
+test(dirpath);
+```
+
+```bash
+[ 'dir', 'file.txt', 'pic.png', 'pic2.png' ] // 包括子文件夹（但不包括子文件夹里的文件）
+```
+
+
+
+- mkdir() - 创建目录
+
+```ts
+// ./myFiles下创建5个文件夹
+
+// 获取绝对路径
+const dirpath = path.resolve(__dirname, "./myFiles");
+
+const test = async (path: string) => {
+  for (let index = 1; index <= 5; index++) {
+    await fs.promises.mkdir(dirpath + "/" + index);
+  }
+  const res = await fs.promises.readdir(path);
+  console.log(res);
+};
+
+test(dirpath);
+```
+
+```bash
+[
+  '1',       '2',
+  '3',       '4',
+  '5',       'dir',
+  'dir1',    'dir2',
+  'dir3',    'dir4',
+  'dir5',    'file.txt',
+  'pic.png', 'pic2.png'
+]
+```
+
+
+
+- ~~exists() - 判断文件或者目录是否存在, **已废弃**~~ 
+
+使用fs.stat()方法，可以自行封装一个
+
+```ts
+import fs from "fs";
+import path from "path";
+
+// 获取绝对路径
+const dirpath = path.resolve(__dirname, "./myFiles");
+
+const exists = async (path) => {
+  try {
+    await fs.promises.stat(path);
+    return true;
+  } catch (err) {
+    // console.log(err);
+    if (err.code === "ENOENT") {
+      // 文件不存在
+      return false;
+    }
+    throw err;
+  }
+};
+
+const test = async (path) => {
+  const res = await exists(path);
+  if (res) {
+    // dir 存在，不做任何操作
+    console.log(" dir already exists");
+  } else {
+    // dir不存在，创建
+    await fs.promises.mkdir(path);
+    console.log("create dir done");
+  }
+};
+
+test(dirpath);
+```
+
+
+
+#### 3. 练习 - 读取一个目录中的所以子目录和文件
+
+每个目录或文件都是一个对象
+
+- 属性
+    - name - 文件名
+    - ext - 后缀名
+    - isFile - 是否是一个文件
+    - size - 文件大小
+    - createTime - 日期对象，创建时间
+    - updateTime - 日期对象， 修改时间
+- 方法
+    - getChildren() - 得到目录所以子文件对象，如果是文件，则返回空对象
+    - getContent(isBuffer=false) - 读取文件内容，如果是目录，则返回null
+
+```ts
+import fs from "fs";
+import path from "path";
+
+interface IProps {
+  filename: string;
+  name: string;
+  ext: string;
+  isFile: boolean;
+  size: number;
+  createTime: Date;
+  updateTime: Date;
+}
+
+class File {
+  constructor(private props: IProps) {}
+
+  static async getFile(filename: string) {
+    const name = path.basename(filename);
+    const ext = path.extname(filename);
+    const stat = await fs.promises.stat(filename);
+    // console.log(stat);
+    const isFile = stat.isFile();
+    const size = stat.size;
+    const createTime = stat.birthtime;
+    const updateTime = stat.mtime;
+    return new File({
+      filename,
+      name,
+      ext,
+      isFile,
+      size,
+      createTime,
+      updateTime,
+    });
+  }
+
+  async getContent(isBuffer: boolean = false) {
+    if (this.props.isFile) {
+      if (isBuffer) {
+        return await fs.promises.readFile(this.props.filename);
+      } else {
+        return await fs.promises.readFile(this.props.filename, "utf-8");
+      }
+    }
+    return null;
+  }
+
+  async getChildren() {
+    if (this.props.isFile) {
+      return [];
+    } else {
+      let children = await fs.promises.readdir(this.props.filename);
+      const childrenFiles = children.map((name) => {
+        const newfilename = path.resolve(this.props.filename, name);
+        return File.getFile(newfilename);
+      });
+      return Promise.all(childrenFiles);
+    }
+  }
+}
+
+const readDir = async (filename) => {
+  const file = await File.getFile(filename);
+  return await file.getChildren();
+};
+
+const test = async () => {
+  const filename = path.resolve(__dirname, "./myFiles");
+  const res = await readDir(filename);
+  console.log(res);
+  console.log(await res[0].getChildren());
+};
+
+test();
+
+```
+
+```bash
+[
+  File {
+    props: {
+      filename: '/Users/aqiang/Desktop/myGitHub/upload/duyi/3. Advanced Front-end Developer/02. 就业提升/03 node/code/src/myFiles/1',
+      name: '1',
+      ext: '',
+      isFile: false,
+      size: 96,
+      createTime: 2025-11-07T23:58:34.932Z,
+      updateTime: 2025-11-08T10:26:52.755Z
+    }
+  },
+  File {
+    props: {
+      filename: '/Users/aqiang/Desktop/myGitHub/upload/duyi/3. Advanced Front-end Developer/02. 就业提升/03 node/code/src/myFiles/2',
+      name: '2',
+      ext: '',
+      isFile: false,
+      size: 64,
+      createTime: 2025-11-07T23:58:34.932Z,
+      updateTime: 2025-11-07T23:58:34.932Z
+    }
+  },
+  File {
+    props: {
+      filename: '/Users/aqiang/Desktop/myGitHub/upload/duyi/3. Advanced Front-end Developer/02. 就业提升/03 node/code/src/myFiles/file.txt',
+      name: 'file.txt',
+      ext: '.txt',
+      isFile: true,
+      size: 5,
+      createTime: 2025-11-07T11:15:41.449Z,
+      updateTime: 2025-11-07T22:39:33.579Z
+    }
+  },
+  File {
+    props: {
+      filename: '/Users/aqiang/Desktop/myGitHub/upload/duyi/3. Advanced Front-end Developer/02. 就业提升/03 node/code/src/myFiles/pic.png',
+      name: 'pic.png',
+      ext: '.png',
+      isFile: true,
+      size: 68611,
+      createTime: 2025-11-07T22:33:24.428Z,
+      updateTime: 2025-11-07T22:33:41.002Z
+    }
+  },
+  File {
+    props: {
+      filename: '/Users/aqiang/Desktop/myGitHub/upload/duyi/3. Advanced Front-end Developer/02. 就业提升/03 node/code/src/myFiles/pic2.png',
+      name: 'pic2.png',
+      ext: '.png',
+      isFile: true,
+      size: 1440831,
+      createTime: 2025-11-07T22:37:48.903Z,
+      updateTime: 2025-11-07T23:41:48.630Z
+    }
+  }
+]
+```
+
+
 
 ## 2. mySql
 
