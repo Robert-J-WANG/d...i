@@ -1,74 +1,39 @@
-import fs from "fs";
 import path from "path";
+import fs from "fs";
 
-interface IProps {
-  filename: string;
-  name: string;
-  ext: string;
-  isFile: boolean;
-  size: number;
-  createTime: Date;
-  updateTime: Date;
-}
+const filename = path.resolve(__dirname, "./myFiles/file.txt");
 
-class File {
-  constructor(private props: IProps) {}
+const rs = fs.createReadStream(filename, {
+  encoding: "utf8",
+  start: 0,
+  end: 100,
+  highWaterMark: 1,
+});
 
-  static async getFile(filename: string) {
-    const name = path.basename(filename);
-    const ext = path.extname(filename);
-    const stat = await fs.promises.stat(filename);
-    // console.log(stat);
-    const isFile = stat.isFile();
-    const size = stat.size;
-    const createTime = stat.birthtime;
-    const updateTime = stat.mtime;
-    return new File({
-      filename,
-      name,
-      ext,
-      isFile,
-      size,
-      createTime,
-      updateTime,
-    });
-  }
+rs.on("open", () => {
+  console.log("file opend");
+});
 
-  async getContent(isBuffer: boolean = false) {
-    if (this.props.isFile) {
-      if (isBuffer) {
-        return await fs.promises.readFile(this.props.filename);
-      } else {
-        return await fs.promises.readFile(this.props.filename, "utf-8");
-      }
-    }
-    return null;
-  }
+rs.on("data", (chunk) => {
+  console.log("reading data:", chunk);
+  rs.pause();
+});
 
-  async getChildren() {
-    if (this.props.isFile) {
-      return [];
-    } else {
-      let children = await fs.promises.readdir(this.props.filename);
-      const childrenFiles = children.map((name) => {
-        const newfilename = path.resolve(this.props.filename, name);
-        return File.getFile(newfilename);
-      });
-      return Promise.all(childrenFiles);
-    }
-  }
-}
+rs.on("pause", () => {
+  console.log("reading puased");
+  setTimeout(() => {
+    rs.resume();
+  }, 1000);
+});
 
-const readDir = async (filename) => {
-  const file = await File.getFile(filename);
-  return await file.getChildren();
-};
+rs.on("resume", () => {
+  console.log("reading resumed");
+});
 
-const test = async () => {
-  const filename = path.resolve(__dirname, "./myFiles");
-  const res = await readDir(filename);
-  console.log(res);
-  console.log(await res[0].getChildren());
-};
+rs.on("end", () => {
+  console.log("reading data done");
+});
 
-test();
+rs.on("close", () => {
+  console.log("file colesd");
+});

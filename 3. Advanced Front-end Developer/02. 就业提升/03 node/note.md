@@ -770,7 +770,7 @@ index.js
 
 用于处理和解析 URL（统一资源定位符）。可以解析、格式化和处理 URL 字符串
 
-- ~~parse()： 将一个 URL 字符串解析为一个 URL 对象~~  **已废弃**
+- ~~parse()： 将一个 URL 字符串解析为一个 URL 对象~~ **已废弃**
 
 ```ts
 import url from "url";
@@ -849,111 +849,109 @@ const urlOjb = {
 console.log(url.format(urlOjb)); // https://www.example.com:8080/path/to/resource?A=1&B=2#hash456
 ```
 
-
-
 #### 4. util 模块
 
 - 回调风格转换
 
-    - callbackify() - 将回 Promise 的函数转换为回调风格的函数
+  - callbackify() - 将回 Promise 的函数转换为回调风格的函数
 
-    ```ts
-    import util from "util";
-    
-    async function delay(duration = 1000): Promise<number> {
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          resolve(duration); // resolve(1000) 或 resolve(2000)
-        }, duration);
-      });
-    }
-    
-    // 1. 定义 delayCallback 的函数重载签名
-    interface DelayCallback {
-      // 签名 1: 带有 duration 参数 (必传或可选)
-      (duration: number, callback: (err: Error, result: number) => void): void;
-    
-      // 签名 2: 不带 duration 参数 (它会使用 delay 内部的默认值 1000)
-      (callback: (err: Error, result: number) => void): void;
-    }
-    
-    // 2. 将 util.callbackify(delay) 断言为我们定义的接口
-    const delayCallback = util.callbackify(delay) as unknown as DelayCallback;
-    
-    // --- 测试 ---
-    
-    // ✅ 调用方式 1: 传递 duration (2000)
-    delayCallback(2000, (err, result) => {
-      console.log("延迟 2000ms 结束，结果是:", result); // 2000
-    });
-    
-    // ✅ 调用方式 2: 不传递 duration，使用默认值 1000
-    delayCallback((err, result) => {
-      console.log("延迟 1000ms 结束，结果是:", result); // 1000
-    });
-    ```
+  ```ts
+  import util from "util";
 
-    - **==promisify()==** - 将回调风格的函数转换为返回 Promise 的函数
-
-    ```ts
-    import util from "util";
-    function delayCallback(duration: number = 1000, callback) {
+  async function delay(duration = 1000): Promise<number> {
+    return new Promise((resolve) => {
       setTimeout(() => {
-        callback(null, duration);
+        resolve(duration); // resolve(1000) 或 resolve(2000)
       }, duration);
-    }
-    
-    delayCallback(2000, (err, d) => {
-      console.log(d);
     });
-    
-    const delay = util.promisify(delayCallback);
-    
-    delay(2000).then((d) => {
-      console.log(d);
-    });
-    ```
+  }
 
-    这样我们经常将旧版本的callback形式转换成promise形式，进而可以使用es新标准的语法糖 async, await
+  // 1. 定义 delayCallback 的函数重载签名
+  interface DelayCallback {
+    // 签名 1: 带有 duration 参数 (必传或可选)
+    (duration: number, callback: (err: Error, result: number) => void): void;
+
+    // 签名 2: 不带 duration 参数 (它会使用 delay 内部的默认值 1000)
+    (callback: (err: Error, result: number) => void): void;
+  }
+
+  // 2. 将 util.callbackify(delay) 断言为我们定义的接口
+  const delayCallback = util.callbackify(delay) as unknown as DelayCallback;
+
+  // --- 测试 ---
+
+  // ✅ 调用方式 1: 传递 duration (2000)
+  delayCallback(2000, (err, result) => {
+    console.log("延迟 2000ms 结束，结果是:", result); // 2000
+  });
+
+  // ✅ 调用方式 2: 不传递 duration，使用默认值 1000
+  delayCallback((err, result) => {
+    console.log("延迟 1000ms 结束，结果是:", result); // 1000
+  });
+  ```
+
+  - **==promisify()==** - 将回调风格的函数转换为返回 Promise 的函数
+
+  ```ts
+  import util from "util";
+  function delayCallback(duration: number = 1000, callback) {
+    setTimeout(() => {
+      callback(null, duration);
+    }, duration);
+  }
+
+  delayCallback(2000, (err, d) => {
+    console.log(d);
+  });
+
+  const delay = util.promisify(delayCallback);
+
+  delay(2000).then((d) => {
+    console.log(d);
+  });
+  ```
+
+  这样我们经常将旧版本的 callback 形式转换成 promise 形式，进而可以使用 es 新标准的语法糖 async, await
 
 - 类型检查工具
 
-    - **isDeepStrictEqual(val1, val2)** - 测试两个值是否深度严格相等
+  - **isDeepStrictEqual(val1, val2)** - 测试两个值是否深度严格相等
 
-    ```ts
-    mport util from "util";
-    const obj1 = {
-      a: 1,
-      b: 2,
-      c: {
-        d: 3,
-        e: 4,
-      },
-      f: 5,
-    };
-    
-    const obj2 = {
-      a: 1,
-      b: 2,
-    };
-    
-    console.log(util.isDeepStrictEqual(obj1, obj2)); // false
-    ```
+  ```ts
+  mport util from "util";
+  const obj1 = {
+    a: 1,
+    b: 2,
+    c: {
+      d: 3,
+      e: 4,
+    },
+    f: 5,
+  };
+  
+  const obj2 = {
+    a: 1,
+    b: 2,
+  };
+  
+  console.log(util.isDeepStrictEqual(obj1, obj2)); // false
+  ```
 
-### 1-6 文件I/O
+### 1-6 文件 I/O
 
-#### 1. I/O: input/output 
+#### 1. I/O: input/output
 
 - 对外部设备的输入和输出
 - 外部设备：
-    - 磁盘
-    - 网卡
-    - 显卡
-    - 打印机
-    - 其他
-- IO的速度往往低于内存和CPU交互的速度
+  - 磁盘
+  - 网卡
+  - 显卡
+  - 打印机
+  - 其他
+- IO 的速度往往低于内存和 CPU 交互的速度
 
-#### 2. fs模块
+#### 2. fs 模块
 
 - readFile() - 读取一个文件
 
@@ -969,44 +967,41 @@ const filepath = path.resolve(__dirname, "./myFiles/file.txt");
 // 格式1：
 fs.readFile(filepath, (err, content) => {
   console.log(content); // 读取的是Buffer格式 <Buffer 68 65 6c 6c 6f 20 6e 6f 64 65 20 6a 73 20>
-  console.log(content.toString()); // 转换为字符串 hello node js 
+  console.log(content.toString()); // 转换为字符串 hello node js
 });
 
 // 格式2：
 fs.readFile(filepath, "utf-8", (err, content) => {
-  console.log(content); // hello node js 
+  console.log(content); // hello node js
 });
 
 // 格式3：
-fs.readFile(filepath,{encoding: "utf-8"},(err, content) => {
-    console.log(content); // hello node js 
-  }
-);
+fs.readFile(filepath, { encoding: "utf-8" }, (err, content) => {
+  console.log(content); // hello node js
+});
 ```
 
 > 注意：
 >
-> - fs模块处理文件的方法都是异步的（读写文件内容需要时间，js是单线程（主线程），防止阻塞，这些方法设计成异步（使用callback回调函数的形式处理内容）
-> - nodejs中的回调函数标准：（err, result）=> { 处理result的逻辑 }
-> - 处理文件的方法都对应有一个同步方法，比如readFileSync, writeFileSync。
+> - fs 模块处理文件的方法都是异步的（读写文件内容需要时间，js 是单线程（主线程），防止阻塞，这些方法设计成异步（使用 callback 回调函数的形式处理内容）
+> - nodejs 中的回调函数标准：（err, result）=> { 处理 result 的逻辑 }
+> - 处理文件的方法都对应有一个同步方法，比如 readFileSync, writeFileSync。
 > - 同步方法需谨慎使用，会阻塞线程，影响性能。通常只在程序初次运行的有限次数时使用，用于初始化
-> - 为了兼容es新标准，fs模块下新加了promises 属性，从而可以使用新标准的异步函数的一些用法，比如async, await。 减少回调函数的使用
+> - 为了兼容 es 新标准，fs 模块下新加了 promises 属性，从而可以使用新标准的异步函数的一些用法，比如 async, await。 减少回调函数的使用
 >
 > ```ts
 > // promise 链式写法
 > fs.promises.readFile(filepath, "utf-8").then((content) => {
 >   console.log(content);
 > });
-> 
+>
 > // es8新语法，promise语法糖写法
 > async function newReadFile() {
 >   const res = await fs.promises.readFile(filepath, "utf-8");
->   console.log(res); 
+>   console.log(res);
 > }
-> newReadFile() // hello node js 
+> newReadFile(); // hello node js
 > ```
-
-
 
 > **JavaScript 异步发展史**的三代核心技
 >
@@ -1014,13 +1009,11 @@ fs.readFile(filepath,{encoding: "utf-8"},(err, content) => {
 >
 > - 总结如下
 >
->     | 技术                     | 诞生时间                         | 出现原因 / 解决问题                                          |
->     | ------------------------ | -------------------------------- | ------------------------------------------------------------ |
->     | **回调函数（Callback）** | 最早，几乎从 JS 诞生（1995）就有 | JavaScript 是单线程的，要执行异步任务（如 `setTimeout`、`fs.readFile`）只能靠“回调函数” |
->     | **Promise**              | 2015 (ES6)                       | 解决“回调地狱（callback hell）”问题，让异步流程可链式调用、可捕获错误 |
->     | **async/await**          | 2017 (ES8)                       | 让异步代码写起来像同步代码，更直观、易维护                   |
-
-
+>   | 技术                     | 诞生时间                         | 出现原因 / 解决问题                                                                     |
+>   | ------------------------ | -------------------------------- | --------------------------------------------------------------------------------------- |
+>   | **回调函数（Callback）** | 最早，几乎从 JS 诞生（1995）就有 | JavaScript 是单线程的，要执行异步任务（如 `setTimeout`、`fs.readFile`）只能靠“回调函数” |
+>   | **Promise**              | 2015 (ES6)                       | 解决“回调地狱（callback hell）”问题，让异步流程可链式调用、可捕获错误                   |
+>   | **async/await**          | 2017 (ES8)                       | 让异步代码写起来像同步代码，更直观、易维护                                              |
 
 - writeFile() - 向文件写入内容
 
@@ -1049,31 +1042,29 @@ const newWriteFile = async () => {
 newWriteFile();
 ```
 
->一些其他配置
+> 一些其他配置
 >
->- 默认编码方式是utf-8, 也可以通过配置对象进行设置
->- 也可以写入Buffer格式的内容，常用语图片，音视频等的写入操作
->- 默认写入会替换原有内容，可配置成追加形式写入
->- 如果写入的文件不存在，或自动创建文件，并写入内容 （文件目录必须存在）
+> - 默认编码方式是 utf-8, 也可以通过配置对象进行设置
+> - 也可以写入 Buffer 格式的内容，常用语图片，音视频等的写入操作
+> - 默认写入会替换原有内容，可配置成追加形式写入
+> - 如果写入的文件不存在，或自动创建文件，并写入内容 （文件目录必须存在）
 >
->```ts
->// 复制一张图片
+> ```ts
+> // 复制一张图片
 >
->const imgPath = path.resolve(__dirname, "./myFiles/pic.png");
->const newImgPath = path.resolve(__dirname, "./myFiles/pic2.png");
+> const imgPath = path.resolve(__dirname, "./myFiles/pic.png");
+> const newImgPath = path.resolve(__dirname, "./myFiles/pic2.png");
 >
->const newWriteFile = async () => {
->  const buffer = await fs.promises.readFile(imgPath);
->  await fs.promises.writeFile(newImgPath, buffer, {
->    encoding: "utf-8", // 配置编码方式
->    flag: "a", // 配置写入方式 - 追加
->  });
->  console.log("copy done");
->};
->newWriteFile();
->```
->
->
+> const newWriteFile = async () => {
+>   const buffer = await fs.promises.readFile(imgPath);
+>   await fs.promises.writeFile(newImgPath, buffer, {
+>     encoding: "utf-8", // 配置编码方式
+>     flag: "a", // 配置写入方式 - 追加
+>   });
+>   console.log("copy done");
+> };
+> newWriteFile();
+> ```
 
 - stat() - 获取文件或者目录的信息
 
@@ -1110,8 +1101,8 @@ Stats {
 
 > 内置了方法，可以判断是文件还是文件夹
 >
-> 	- isFile()
-> 	- isDirectory()
+>     - isFile()
+>     - isDirectory()
 
 ```ts
 const test = async (path) => {
@@ -1122,8 +1113,6 @@ const test = async (path) => {
 };
 test(imgPath);
 ```
-
-
 
 - readdir() - 获取目录中的文件和子目录 (返回一个数组)
 
@@ -1145,8 +1134,6 @@ test(dirpath);
 ```bash
 [ 'dir', 'file.txt', 'pic.png', 'pic2.png' ] // 包括子文件夹（但不包括子文件夹里的文件）
 ```
-
-
 
 - mkdir() - 创建目录
 
@@ -1179,11 +1166,9 @@ test(dirpath);
 ]
 ```
 
+- ~~exists() - 判断文件或者目录是否存在, **已废弃**~~
 
-
-- ~~exists() - 判断文件或者目录是否存在, **已废弃**~~ 
-
-使用fs.stat()方法，可以自行封装一个
+使用 fs.stat()方法，可以自行封装一个
 
 ```ts
 import fs from "fs";
@@ -1221,22 +1206,20 @@ const test = async (path) => {
 test(dirpath);
 ```
 
-
-
 #### 3. 练习 - 读取一个目录中的所以子目录和文件
 
 每个目录或文件都是一个对象
 
 - 属性
-    - name - 文件名
-    - ext - 后缀名
-    - isFile - 是否是一个文件
-    - size - 文件大小
-    - createTime - 日期对象，创建时间
-    - updateTime - 日期对象， 修改时间
+  - name - 文件名
+  - ext - 后缀名
+  - isFile - 是否是一个文件
+  - size - 文件大小
+  - createTime - 日期对象，创建时间
+  - updateTime - 日期对象， 修改时间
 - 方法
-    - getChildren() - 得到目录所以子文件对象，如果是文件，则返回空对象
-    - getContent(isBuffer=false) - 读取文件内容，如果是目录，则返回null
+  - getChildren() - 得到目录所以子文件对象，如果是文件，则返回空对象
+  - getContent(isBuffer=false) - 读取文件内容，如果是目录，则返回 null
 
 ```ts
 import fs from "fs";
@@ -1313,7 +1296,6 @@ const test = async () => {
 };
 
 test();
-
 ```
 
 ```bash
@@ -1375,6 +1357,234 @@ test();
   }
 ]
 ```
+
+### 1-7 文件流
+
+#### 1. 什么是流？
+
+- 流是指数据的流动，数据从一个地方缓缓（一点一点）流动到另一个地方
+
+  > 传输文件，尤其是大文件（如图片，音视频），避免一次性传输整个内容，而导致占用太多内存空间，我们希望数据能**一点一点向水流一下传输**
+
+- 流是有方向的
+
+  - 可读流 readable - 数据从源头（文件）流行内存
+  - 可写流 writeable - 数据从内存流向源头（文件）
+  - 双工流 duplex - 双向流动
+
+#### 2. 为什么要使用流？
+
+- 其他介质和内存的数据规模不一致
+
+  > 就是空间大小不一致，磁盘可以存放大量数据，而内存空间通常很小。因此比如我们需要从磁盘里读取一个大文件到内存时，不能一下读取全部数据，而是希望一点一点读取，读一部分用一部分
+
+- 其他介质和内存的数据处理能力不一致
+
+  > 内存处理数据的能力非常快，而磁盘就慢很多。如果把内存处理好的数据一次性传输给磁盘，磁盘第处理能力无法快速处理完数据，导致磁盘卡顿
+
+#### 3. node 中流的设计
+
+node 中设计了流模块 stream， 里面封装了公共的 readable， writeable ，duplex 等等类。其他类型的流使用时，直接继承这些通用的公共的类
+
+```ts
+import stream from "stream";
+console.log(stream);
+```
+
+```bash
+{
+  isDisturbed: [Function: isDisturbed],
+  isErrored: [Function: isErrored],
+  isReadable: [Function: isReadable],
+  Readable: [Function: Readable] {
+    ReadableState: [Function: ReadableState],
+    _fromList: [Function: fromList],
+    from: [Function (anonymous)],
+    wrap: [Function (anonymous)]
+  },
+  Writable: [Function: Writable] { WritableState: [Function: WritableState] },
+  Duplex: [Function: Duplex] { from: [Function (anonymous)] },
+  Transform: [Function: Transform],
+  PassThrough: [Function: PassThrough],
+  pipeline: [Function: pipeline] {
+    [Symbol(nodejs.util.promisify.custom)]: [Getter]
+  },
+  addAbortSignal: [Function: addAbortSignal],
+  finished: [Function: eos] {
+    finished: [Function: finished],
+    [Symbol(nodejs.util.promisify.custom)]: [Getter]
+  },
+  destroy: [Function: destroyer],
+  compose: [Function: compose],
+  promises: [Getter],
+  Stream: [Circular *1],
+  _isUint8Array: [Function: isUint8Array],
+  _uint8ArrayToBuffer: [Function: _uint8ArrayToBuffer]
+}
+```
+
+#### 4. 文件流
+
+- 什么是文件流
+
+  内存数据和磁盘文件数据直接的流动
+
+  > 比如，读取硬盘里的一个文件，将内容显示到控制台
+
+#### 5. 文件可读流
+
+- 可读流的创建
+
+  - fs.createReadStream(path[, options])
+
+  - 创建一个可读流，用于读取文件内容
+
+  - path: 读取的文件的路径
+
+  - options： 可选配置
+
+    > - encoding - 编码方式，默认的是 buffer
+    > - start - 起始字节
+    > - end - 结束字节
+    > - highWaterMark - 每次读取数量, 默认 64kb = 64x1024
+
+  ```ts
+  import path from "path";
+  import fs from "fs";
+  
+  const filename = path.resolve(__dirname, "./myFiles/file.txt");
+  
+  const rs = fs.createReadStream(filename, {
+    encoding: "utf8",
+    start: 0,
+    end: 100,
+    highWaterMark: 1,
+  });
+  ```
+
+- 返回值：Readable 的子类 ReadStream
+
+    - 事件 - 返回的子类中，追加了事件注册方法，**rs.on ("事件名", 处理函数)，** 类似于dom里的事件注册
+
+        - open -  文件打开事件，文件被打开，事件触发
+
+        - error -  文件打开错误时触发
+
+        - close - 文本关闭时触发
+
+            > **如何关闭文件？？？** 1. 通过手动关闭 `rs.close()`， 2. 文件读取完成后会自动关闭
+
+        - data - 获取文件流里数据的事件， 读取到一部分数据后触发
+
+            >- 注册data事件后，才开始真正读取数据
+            >- 每次读取highWaterMark指定的数量
+            >- 回调函数中会附带读取到的数据
+
+        - end - 数据读取完毕时触发
+
+    ```ts
+    
+    rs.on("open", () => {
+    console.log("file opend");
+    });
+    
+    rs.on("data", (chunk) => {
+      console.log("reading data:", chunk);
+    });
+    
+    rs.on("end", () => {
+      console.log("reading data done");
+    });
+    
+    rs.on("close", () => {
+      console.log("file colesd");
+    });
+    ```
+
+    ```bash
+    file opend
+    reading data: h
+    reading data: e
+    reading data: l
+    reading data: l
+    reading data: o
+    reading data:
+    reading data: 你
+    reading data: 好
+    reading data done
+    file colesd
+    ```
+
+    - 方法：返回的类，有2个读取数据流时使用到的方法
+        - puase() - 暂停读取，会触发暂停事件
+        - resume() - 恢复读取, 会触发恢复读取事件
+
+    ```ts
+    rs.on("open", () => {
+      console.log("file opend");
+    });
+    
+    rs.on("data", (chunk) => {
+      console.log("reading data:", chunk);
+      rs.pause();
+    });
+    
+    rs.on("pause", () => {
+      console.log("reading puased");
+      setTimeout(() => {
+        rs.resume();
+      }, 1000);
+    });
+    
+    rs.on("resume", () => {
+      console.log("reading resumed");
+    });
+    
+    rs.on("end", () => {
+      console.log("reading data done");
+    });
+    
+    rs.on("close", () => {
+      console.log("file colesd");
+    });
+    ```
+
+    ```bash
+    reading resumed
+    file opend
+    reading data: h
+    reading puased
+    reading resumed
+    reading data: e
+    reading puased
+    reading resumed
+    reading data: l
+    reading puased
+    reading resumed
+    reading data: l
+    reading puased
+    reading resumed
+    reading data: o
+    reading puased
+    reading resumed
+    reading data:  
+    reading puased
+    reading resumed
+    reading data: 你
+    reading puased
+    reading resumed
+    reading data: 好
+    reading puased
+    reading resumed
+    reading data done
+    file colesd
+    ```
+
+#### 6. 文件可写流
+
+
+
+
 
 
 
