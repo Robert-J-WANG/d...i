@@ -23,3 +23,6 @@ node_modules
 *.sln
 *.sw?
 *.mp4
+
+temp_file.txt
+temp_file_copy.txt

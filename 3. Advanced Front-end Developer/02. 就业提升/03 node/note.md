@@ -1451,9 +1451,9 @@ console.log(stream);
   ```ts
   import path from "path";
   import fs from "fs";
-  
+
   const filename = path.resolve(__dirname, "./myFiles/file.txt");
-  
+
   const rs = fs.createReadStream(filename, {
     encoding: "utf8",
     start: 0,
@@ -1464,129 +1464,321 @@ console.log(stream);
 
 - 返回值：Readable 的子类 ReadStream
 
-    - 事件 - 返回的子类中，追加了事件注册方法，**rs.on ("事件名", 处理函数)，** 类似于dom里的事件注册
+  - 事件 - 返回的子类中，追加了事件注册方法，**rs.on ("事件名", 处理函数)，** 类似于 dom 里的事件注册
 
-        - open -  文件打开事件，文件被打开，事件触发
+    - open - 文件打开事件，文件被打开，事件触发
 
-        - error -  文件打开错误时触发
+    - error - 文件打开错误时触发
 
-        - close - 文本关闭时触发
+    - close - 文本关闭时触发
 
-            > **如何关闭文件？？？** 1. 通过手动关闭 `rs.close()`， 2. 文件读取完成后会自动关闭
+      > **如何关闭文件？？？** 1. 通过手动关闭 `rs.close()`， 2. 文件读取完成后会自动关闭
 
-        - data - 获取文件流里数据的事件， 读取到一部分数据后触发
+    - data - 获取文件流里数据的事件， 读取到一部分数据后触发
 
-            >- 注册data事件后，才开始真正读取数据
-            >- 每次读取highWaterMark指定的数量
-            >- 回调函数中会附带读取到的数据
+      > - 注册 data 事件后，才开始真正读取数据
+      > - 每次读取 highWaterMark 指定的数量
+      > - 回调函数中会附带读取到的数据
 
-        - end - 数据读取完毕时触发
+    - end - 数据读取完毕时触发
 
-    ```ts
-    
-    rs.on("open", () => {
+  ```ts
+  rs.on("open", () => {
     console.log("file opend");
-    });
-    
+  });
+  
+  rs.on("data", (chunk) => {
+    console.log("reading data:", chunk);
+  });
+  
+  rs.on("end", () => {
+    console.log("reading data done");
+  });
+  
+  rs.on("close", () => {
+    console.log("file colesd");
+  });
+  ```
+
+  ```bash
+  file opend
+  reading data: h
+  reading data: e
+  reading data: l
+  reading data: l
+  reading data: o
+  reading data:
+  reading data: 你
+  reading data: 好
+  reading data done
+  file colesd
+  ```
+
+  - 方法：返回的类，有 2 个读取数据流时使用到的方法
+    - puase() - 暂停读取，会触发暂停事件
+    - resume() - 恢复读取, 会触发恢复读取事件
+
+  ```ts
+  rs.on("open", () => {
+    console.log("file opend");
+  });
+  
+  rs.on("data", (chunk) => {
+    console.log("reading data:", chunk);
+    rs.pause();
+  });
+  
+  rs.on("pause", () => {
+    console.log("reading puased");
+    setTimeout(() => {
+      rs.resume();
+    }, 1000);
+  });
+  
+  rs.on("resume", () => {
+    console.log("reading resumed");
+  });
+  
+  rs.on("end", () => {
+    console.log("reading data done");
+  });
+  
+  rs.on("close", () => {
+    console.log("file colesd");
+  });
+  ```
+
+  ```bash
+  reading resumed
+  file opend
+  reading data: h
+  reading puased
+  reading resumed
+  reading data: e
+  reading puased
+  reading resumed
+  reading data: l
+  reading puased
+  reading resumed
+  reading data: l
+  reading puased
+  reading resumed
+  reading data: o
+  reading puased
+  reading resumed
+  reading data:
+  reading puased
+  reading resumed
+  reading data: 你
+  reading puased
+  reading resumed
+  reading data: 好
+  reading puased
+  reading resumed
+  reading data done
+  file colesd
+  ```
+
+#### 6. 文件写入流
+
+- 写入流的创建
+
+  - createWriteStream(path[, options])
+
+  - 创建一个写入流，用来写入内容到文件
+
+  - path: 读取的文件的路径
+
+  - options： 可选配置
+
+    > - encoding - 编码方式，默认的是 utf8
+    > - start - 起始字节
+    > - highWaterMark - 每次能够写入的子节数, 默认 64kb = 64x1024
+
+  ```ts
+  const filename = path.resolve(__dirname, "./myFiles/file.txt");
+  const ws = fs.createWriteStream(filename, {
+    encoding: "utf-8",
+    start: 0,
+    highWaterMark: 100,
+  });
+  ```
+
+- 返回值：Writeable 的子类 WriteStream
+
+  - 事件
+
+    - open
+    - error
+    - close
+    - drain - 写入队列清空了
+
+  - 方法
+
+    - write(data) - 开始写入数据的方法
+
+      > 1.  写入一组数据
+      >
+      > 2.  data 可以是字符串或 Buffer
+      >
+      > 3.  返回一个 boolean 值-
+      >
+      >     - true - 写入通道没有被填满，接下来的数据可以直接写入，无需排队
+      >     - false - 写入通道目前已经被填满，接下来的数据将进入写入队列, 并在内存中排队
+      >
+      >     ```ts
+      >     const filename = path.resolve(__dirname, "./myFiles/file.txt");
+      >     const ws = fs.createWriteStream(filename, {
+      >       encoding: "utf-8",
+      >       start: 0,
+      >       highWaterMark: 5,
+      >     });
+      >
+      >     let flag = ws.write("a");
+      >     console.log(flag); // true 写入通道没有被填满 1/5
+      >     flag = ws.write("b");
+      >     console.log(flag); // true 写入通道没有被填满 2/5
+      >     flag = ws.write("c");
+      >     console.log(flag); // true 写入通道没有被填满 3/5
+      >     flag = ws.write("d");
+      >     console.log(flag); // true 写入通道没有被填满 4/5
+      >     flag = ws.write("e");
+      >     console.log(flag); // false 写入通道已经填满 5/5
+      >     flag = ws.write("f"); // 写入队列在内容从中排队
+      >     console.log(flag); // false 写入通道已经填满 6/5
+      >     ```
+      >
+      >     **特别注意：**要特别注意背压问题，因为写入队列是内存中的数据，是有限的。
+      >
+      >     由于我们的程序运行的速度非常快，导致通道被填满时，大量的写入队列在排队，导致阻塞
+      >
+      >     比如我们模拟写入 10M 的数据, 一定会导致背压的问题。
+      >
+      >     ```ts
+      >     for (let index = 0; index < 1024 * 1024 * 10; index++) {
+      >       ws.write("a");
+      >     }
+      >     ```
+      >
+      >     如何解决？？
+      >
+      >     可以利用 ws 的返回值，当 flag=true 时，继续写，而当 flag=false 时，暂停写入
+      >
+      >     ```ts
+      >     let i = 0;
+      >     // 一直写，知道到达上限，或无法再直接写入
+      >     function write() {
+      >       let flag = true;
+      >       while (i < 1024 * 1024 * 10 && flag) {
+      >         flag = ws.write("a"); // 写入a,得到下一次还能不能直接写的flag
+      >         i++;
+      >       }
+      >     }
+      >     write();
+      >     ```
+      >
+      >     这样写满 5 次就停止写入了。但是如何能保证写入全部内容？？使用下面的事件
+      >
+      > 4.  当写入队列清空时，会触发 drain 事件（通道已清空）
+      >
+      >     ```ts
+      >     ws.on("drain", () => {
+      >       write(); // 管道清空了，继续写入
+      >     });
+      >     ```
+
+    - end( [data] ) - 写入数据结束
+
+      > 1. 结束写入，将自动关闭文件 - 是否关闭取决于 autoClose 配置，默认是 true
+      > 2. data 是可选的，表示关闭前的最后一次写入
+
+- 练习 - 使用读写流复制一个大文件（上面 10M 的文件为例）
+
+  ```ts
+  import path from "path";
+  import fs from "fs";
+
+  // 方式 1 - 普通文件读写
+  async function method_1() {
+    const from = path.resolve(__dirname, "./myFiles/file.txt");
+    const to = path.resolve(__dirname, "./myFiles/file_copy.txt");
+    console.time("method 1");
+    const content = await fs.promises.readFile(from);
+    await fs.promises.writeFile(to, content);
+    console.timeEnd("method 1");
+    console.log("copy down");
+  }
+  method_1();
+
+  // 方式 2 - 文件读写流的方式
+  function method_2() {
+    const from = path.resolve(__dirname, "./myFiles/file.txt");
+    const to = path.resolve(__dirname, "./myFiles/file_copy.txt");
+    // 创建文件读取流
+    const rs = fs.createReadStream(from);
+    // 创建文件写入流
+    const ws = fs.createWriteStream(to);
+    console.time("method 2");
+    // 读取文件
     rs.on("data", (chunk) => {
-      console.log("reading data:", chunk);
+      // 读取到一部分数据，开始写
+      let flag = ws.write(chunk);
+
+      if (!flag) {
+        // 表示下次写入会造成被压, 读取暂停
+        rs.pause();
+      }
     });
-    
-    rs.on("end", () => {
-      console.log("reading data done");
+
+    // 写入通道清空了，触发
+    ws.on("drain", () => {
+      // 继续读取
+      rs.resume();
     });
-    
+
+    // 写入完成
     rs.on("close", () => {
-      console.log("file colesd");
+      // 关闭写入流
+      ws.end();
+      console.timeEnd("method 2");
+      console.log("copy down");
     });
-    ```
+  }
 
-    ```bash
-    file opend
-    reading data: h
-    reading data: e
-    reading data: l
-    reading data: l
-    reading data: o
-    reading data:
-    reading data: 你
-    reading data: 好
-    reading data done
-    file colesd
-    ```
+  method_2();
+  ```
 
-    - 方法：返回的类，有2个读取数据流时使用到的方法
-        - puase() - 暂停读取，会触发暂停事件
-        - resume() - 恢复读取, 会触发恢复读取事件
+- 管道方法 - rs.pipe() 
+
+    对于上面的使用文件流读写文件的方法method_2, 已经封装了管道方法（将读取流和写入流通过管道接通）
+
+    - 将可读流连接到可写流
+    - 返回参数的值
+    - **该方法可以解决背压问题**
 
     ```ts
-    rs.on("open", () => {
-      console.log("file opend");
-    });
+    // 方式 2 - 文件读写流的方式
+    function method_2() {
+      const from = path.resolve(__dirname, "./myFiles/file.txt");
+      const to = path.resolve(__dirname, "./myFiles/file_copy.txt");
     
-    rs.on("data", (chunk) => {
-      console.log("reading data:", chunk);
-      rs.pause();
-    });
+      const rs = fs.createReadStream(from);
     
-    rs.on("pause", () => {
-      console.log("reading puased");
-      setTimeout(() => {
-        rs.resume();
-      }, 1000);
-    });
+      const ws = fs.createWriteStream(to);
+      console.time("method 2");
+     
+      rs.pipe(ws); // 使用管道方法
+        
+      rs.on("close", () => {
+        console.timeEnd("method 2");
+        console.log("copy down");
+      });
+    }
     
-    rs.on("resume", () => {
-      console.log("reading resumed");
-    });
-    
-    rs.on("end", () => {
-      console.log("reading data done");
-    });
-    
-    rs.on("close", () => {
-      console.log("file colesd");
-    });
+    method_2();
     ```
 
-    ```bash
-    reading resumed
-    file opend
-    reading data: h
-    reading puased
-    reading resumed
-    reading data: e
-    reading puased
-    reading resumed
-    reading data: l
-    reading puased
-    reading resumed
-    reading data: l
-    reading puased
-    reading resumed
-    reading data: o
-    reading puased
-    reading resumed
-    reading data:  
-    reading puased
-    reading resumed
-    reading data: 你
-    reading puased
-    reading resumed
-    reading data: 好
-    reading puased
-    reading resumed
-    reading data done
-    file colesd
-    ```
-
-#### 6. 文件可写流
-
-
-
-
-
-
+    
 
 ## 2. mySql
 
