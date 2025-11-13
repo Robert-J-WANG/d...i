@@ -1778,7 +1778,209 @@ console.log(stream);
     method_2();
     ```
 
+
+### 1-8 net模块
+
+#### 1. 回顾HTTP请求
+
+HTTP的“连接模式”主要有以下几种：
+
+- 普通模式 - 每一次请求都要建立一次 TCP 连接，请求完成后立即断开
+
+    - 请求 → 建立连接 → 发送数据 → 关闭连接
+    - 每次请求都重新建立 TCP 三次握手，效率较低
+    - 传输结束后，还会进行 **四次挥手（Four-way Handshake）** 来关闭连接
+
+    ```bash
+    GET /index.html HTTP/1.0
+    Connection: close
+    ```
+
+- 长连接模式 - 一个 TCP 连接可以发送多个请求和响应，不会在每次请求后立即断开。
+
+    - 减少频繁建立 TCP 连接的开销
+    - 提高性能、加快响应速度
+
+    ```bash
+    GET /index.html HTTP/1.1
+    Connection: keep-alive
+    ```
+
     
+
+#### 2. net模块能干什么
+
+- net是一个通信模块
+- 利用它，可以实现：
+    - 进程间的通信IPC
+    - **网络通信 TCP/IP**
+
+#### 3. 创建客户端
+
+在node中主动创建一个请求到服务器
+
+- 创建 - net.**createConnection**(options[,connectlistener])
+
+```ts
+import net from "net";
+
+net.createConnection(
+  {
+    host: "duyi.ke.qq.com",
+    port: 80,
+  },
+  () => {
+    console.log("connection done");
+  }
+);
+```
+
+- 返回 - socket
+    - socket   →TCP/IP连接 →远程主机
+    - socket是一个特殊的文件，负责向应用程序（进程）和网络端口之间的通信数据
+    - 在node中表现为一个双工流对象 - 可以像普通的流一样的操作（读取，写入数据）
+    - 通过向流写入内容发生数据
+    - 通过监听流的内容获取数据
+
+```ts
+import net from "net";
+
+// 创建请求连接
+const socket = net.createConnection(
+  {
+    host: "duyi.ke.qq.com",
+    port: 80,
+  },
+  () => {
+    console.log("connection done");
+  }
+);
+
+// 写入流 - 向服务器发送数据
+socket.write("hello", () => {
+  console.log("send data to the server");
+});
+
+// 读取流 - 获取服务器的响应
+socket.on("data", (chunk) => {
+  console.log("data from server :", chunk.toString("utf8"));
+});
+```
+
+```bash
+connection done
+send data to the server
+
+data from server : 
+// 响应行
+HTTP/1.1 400 Bad Request
+// 响应头
+Date: Thu, 13 Nov 2025 01:31:19 GMT
+Content-Type: text/html
+Content-Length: 155
+Connection: close
+
+//响应体
+<html>
+<head><title>400 Bad Request</title></head>
+<body>
+<center><h1>400 Bad Request</h1></center>
+<hr><center>TencentWAF</center>
+</body>
+</html>
+```
+
+data from server 内容就是服务器响应的HTTP协议规定格式的数据（响应行+响应头+响应体), 就是一个普通的字符串，只是平常开发中我们使用了一些工具进行格式转换成规定的格式。
+
+**注意：** 为什么服务器给我们响应行内容是HTTP/1.1 400 Bad Request？ 因为我们发送的内容不是标准的Http协议规范的数据
+
+> 符合Http协议规范的数据格式应该是：
+>
+> socket.write(`"请求行"
+>
+>   "请求头"
+>
+>   
+>
+>   "请求体"`, (**chunk**) **=>** {
+>
+>   console.**log**("send data to the server");
+>
+> });
+
+重新发送标准的Http协议规范的数据
+
+```ts
+socket.write(
+  `GET / HTTP/1.1
+  Host: duyi.ke.qq.com
+  Connetion:keep-alive
+
+  `,
+  () => {
+    console.log("send data to the server");
+  }
+);
+```
+
+
+
+#### 4. 创建服务端
+
+- 创建 - net.**createServer**()
+
+```ts
+import net from "net";
+
+const server = net.createServer();
+```
+
+- 返回 - server对象
+    - server.listen(port) - 监听端口
+    - server.on("listening", ()=>{}) - 端口监听完成后触发（输出日志等等）
+    - server.on("connection", socket=>{}) - 请求已经连接，数据通过socket传递给客户端
+
+```ts
+import net from "net";
+
+const server = net.createServer();
+
+server.listen(9527);
+
+server.on("listening", () => {
+  console.log("port is listening");
+});
+
+server.on("connection", (socket) => {
+  console.log("server is conneted");
+  socket.on("data", (chunk) => {
+    console.log(chunk.toString("utf8"));
+    socket.write(`HTTP/1.1 200 OK
+
+      
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <h1>Hello</h1>
+</body>
+</html>`);
+
+    socket.end();
+  });
+
+  socket.on("end", () => {
+    console.log("server is close");
+  });
+});
+
+```
+
+
 
 ## 2. mySql
 
