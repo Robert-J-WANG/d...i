@@ -1980,6 +1980,428 @@ server.on("connection", (socket) => {
 
 ```
 
+### 1-9 http模块
+
+#### 1. 定义
+
+`http` 是 Node 内置的 **基于 `net` 构建的 HTTP 服务器模块**。
+
+- 无需手动管理socket
+- 无需手动组装消息格式
+
+> net  vs http:
+>
+> - **`net` 模块 = TCP 原生套接字编程**（底层、通用、没有协议），**`http` 模块 = 基于 `net` 封装出的 HTTP 协议服务器/客户端**（上层、带 HTTP 解析器）
+>
+> - `net` 模块用来创建最底层的网络连接。没有任何协议（就是纯粹的字节流），需要自己处理：
+>
+>     - 数据分包/粘包
+>     - 请求格式
+>     - 响应格式
+>
+>     快、底层、灵活
+>
+> - http 模块=net 模块基础上 + HTTP 协议解析器，每次 TCP 连接进来后，http 会用 *HTTP parser* 去解析数据。它自动处理：
+>
+>     - HTTP 请求解析（method, headers, body）
+>     - HTTP 响应封装（statusCode, headers）
+>     - keep-alive
+>     - 解析 chunked
+>     - MIME 类型、Content-Length 
+
+#### 2. 客户端请求
+
+- 创建 - [`http.request(url[, options\][, callback])`](https://nodejs.org/docs/latest/api/http.html#httprequesturl-options-callback)
+
+    ```ts
+    import http from "http";
+    
+    // 创建请求
+    http.request("http://www.skykiwi.com/", { method: "POST" }, (resp) => {
+      console.log(resp); // 响应结果,是一个Class: http.IncomingMessage 对象
+    });
+    ```
+
+- 返回值 - Class: `http.ClientRequest`对象
+
+    ```ts
+    const request = http.request(
+      "http://www.skykiwi.com/",
+      { method: "POST" },
+      (resp) => {
+        console.log(resp);
+        console.log("响应状态码", resp.statusCode);
+        console.log("响应消息", resp.statusMessage);
+        console.log("响应头", resp.headers);
+        console.log("响应类型", resp.headers["content-type"]);
+      }
+    );
+    
+    console.log(request);
+    ```
+
+- 发送请求
+
+    ClientRequest对象相当于是一个可写流，我们可以通过可写流写入数据
+
+    ```ts
+    // 写入请求体内容
+    request.write("Hello");
+    // 请求结束
+    request.end();
+    ```
+
+    ```bash
+    响应状态码 200
+    响应消息 OK
+    响应头 {
+      'accept-ranges': 'bytes',
+      'cache-control': 'no-cache',
+      'content-length': '29506',
+      'content-type': 'text/html',
+      date: 'Thu, 13 Nov 2025 23:23:10 GMT',
+      p3p: 'CP=" OTI DSP COR IVA OUR IND COM ", CP=" OTI DSP COR IVA OUR IND COM "',
+      pragma: 'no-cache',
+      server: 'BWS/1.1',
+      'set-cookie': [
+        'BAIDUID=7B829C01DCC05A50BFA9AFD4FA3FBBB5:FG=1; expires=Thu, 31-Dec-37 23:55:55 GMT; max-age=2147483647; path=/; domain=.baidu.com',
+        ...
+      ],
+      tr_id: 'pr_0x9c7f58b6001e8209',
+      traceid: '1763076190046453351411760687989786429393',
+      vary: 'Accept-Encoding',
+      'x-ua-compatible': 'IE=Edge,chrome=1',
+      'x-xss-protection': '1;mode=block',
+      connection: 'close'
+    }
+    响应类型 text/html
+    ```
+
+    注意：
+
+    - 响应头的信息，可以在回调函数中通过resp（http.IncomingMessage 对象）获得
+    - **==响应体的信息==**，无法在回调函数中获取，node认为响应体内容可长可短，如果太长，直接获取（需要放在内存）不合理。
+    - 可以通过最基础的流形式获取
+
+    ```ts
+    // 创建请求
+    const request = http.request(
+      "http://www.baidu.com/",
+      { method: "GET" },
+      (resp) => {
+       
+        console.log("响应状态码", resp.statusCode);
+        console.log("响应消息", resp.statusMessage);
+        console.log("响应头", resp.headers);
+        console.log("响应头类型", resp.headers["content-type"]);
+    
+        // 获取响应体
+        let respBody = "";
+        // 读取流
+        resp.on("data", (chunk) => {
+          respBody += chunk.toString("utf8");
+        });
+        resp.on("end", () => {
+          console.log(respBody);
+        });
+      }
+    );
+    ```
+
+    ```bash
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+        <meta content="always" name="referrer" />
+       ...
+        <title>百度一下，你就知道</title>
+        <style type="text/css">
+            body {
+                margin: 0;
+                padding: 0;
+                text-align: center;
+                background: #fff;
+                height: 100%;
+            }
+        ...
+        </style>
+    </head>
+    <body>
+        <div id="wrapper" class="wrapper_new">
+     ...
+        </div>
+        <script type="text/javascript">
+            var date = new Date();
+            var year = date.getFullYear();
+            document.getElementById('year').innerText = '©' + year + ' Baidu ';
+        </script>
+    </body>
+    </html>
+    ```
+
+#### 3. 服务器响应
+
+- 创建 - `http.createServer([options][, requestListener])`
+
+    - options - 可选配置
+    - requestListener - 监听函数，监听有没有请求来了， 2个参数
+        - `request` [<http.IncomingMessage>] 请求对象
+        - `response` [<http.ServerResponse>] 响应对象
+
+    ```ts
+    import http from "http";
+    
+    http.createServer((req, res) => {
+      // console.log("请求体对象", req);
+      // console.log("响应体对象", res);
+    });
+    ```
+
+- 返回值 - Server 对象
+
+    ```ts
+    import http from "http";
+    
+    const server = http.createServer((req, res) => {
+      // console.log("请求体对象", req);
+      console.log("请求路径", req.url);
+      // console.log("响应体对象", res);
+    });
+    
+    // 监听端口
+    server.listen(9528);
+    server.on("listening", () => {
+      console.log("server is listening on 9528");
+    });
+    ```
+
+    ```bash
+    server is listening on 9528
+    请求路径 /a/b/c?a=1&b=2
+    ```
+
+    结合其他模块，做一写操作。比如解请求路径对象
+
+    ```ts
+    import http from "http";
+    import url from "url";
+    
+    const server = http.createServer((req, res) => {
+      
+      const pathObj = url.parse(req.url!);
+      console.log(pathObj);
+    });
+    
+    server.listen(9530);
+    server.on("listening", () => {
+      console.log("server is listening on 9530");
+    });
+    
+    ```
+
+    ```bash
+    Url {
+      protocol: null,
+      slashes: null,
+      auth: null,
+      host: null,
+      port: null,
+      hostname: null,
+      hash: null,
+      search: '?d=1&e=2',
+      query: 'd=1&e=2',
+      pathname: '/a/bc/',
+      path: '/a/bc/?d=1&e=2',
+      href: '/a/bc/?d=1&e=2'
+    }
+    ```
+
+- 请求内容获取
+
+    ```ts
+    import http from "http";
+    import url from "url";
+    
+    function handleReq(req) {
+      const pathObj = url.parse(req.url!);
+      console.log("请求路径", pathObj);
+      console.log("请求方法", req.method);
+      console.log("请求头", req.headers);
+    
+      let reqBody = "";
+      req.on("data", (chunck) => {
+        reqBody += chunck.toString("utf-8");
+      });
+      req.on("end", () => {
+        console.log("请求体", reqBody);
+      });
+    }
+    
+    const server = http.createServer((req, res) => {
+      //请求体信息
+      handleReq(req);
+    });
+    
+    server.listen(9530);
+    server.on("listening", () => {
+      console.log("server is listening on 9530");
+    });
+    
+    
+    ```
+
+    ```bash
+    请求路径 Url {
+      protocol: null,
+      slashes: null,
+      auth: null,
+      host: null,
+      port: null,
+      hostname: null,
+      hash: null,
+      search: '?d=1&e=2',
+      query: 'd=1&e=2',
+      pathname: '/a/bc/',
+      path: '/a/bc/?d=1&e=2',
+      href: '/a/bc/?d=1&e=2'
+    }
+    请求方法 GET
+    请求头 {
+      'content-type': 'text/plain',
+      'user-agent': 'PostmanRuntime/7.43.3',
+      accept: '*/*',
+      'postman-token': '251e7eeb-e2bb-4254-a23e-8d345b54f8bc',
+      host: 'localhost:9530',
+      'accept-encoding': 'gzip, deflate, br',
+      connection: 'keep-alive',
+      'content-length': '7'
+    }
+    请求体 a=1&b=2
+    ```
+
+- 响应内容设置
+
+    ```ts
+    import http from "http";
+    import url from "url";
+    
+    function handleReq(req) {
+     ...
+    }
+    
+    function handlerRes(res) {
+      res.setHeader("a", 1);
+      res.setHeader("b", 1);
+      res.statusCode = 404;
+    
+      res.write("hello");
+      res.end();
+    }
+    
+    const server = http.createServer((req, res) => {
+      // 请求数据获取
+      handleReq(req);
+    
+      // 响应体对象设置
+      handlerRes(res);
+    });
+    
+    server.listen(9530);
+    server.on("listening", () => {
+      console.log("server is listening on 9530");
+    });
+    ```
+
+**总结：** 
+
+- 我是客户端
+    - 请求：ClientRequest对象 - 我发给别人（服务器）的
+    - 响应：IncomingMessage对象 - 别人（服务器）给我的，正在来的数据
+- 我是服务器
+    - 请求：IncomingMessage对象 - 别人（客户端）给我的，正在来的数据
+    - 响应：ServerResponse对象 - 我发给别人（客户端）的
+
+#### 4. 练习 - 搭建一个静态资源服务器
+
+node环境中读取今天资源的内容（html/js/css),作为服务器响应结果返回
+
+```ts
+// 静态资源服务器
+
+// http://localhost:9527/index.html -> public/index.html
+// http://localhost:9527/css/index.css -> public/css/index.css
+```
+
+```ts
+import http from "http";
+import URL from "url";
+import path from "path";
+import fs from "fs";
+
+const getStat = async (filename) => {
+  try {
+    return await fs.promises.stat(filename);
+  } catch {
+    return null;
+  }
+};
+
+const getFileInfo = async (url) => {
+  const urlObj = URL.parse(url);
+  // 文件资源的绝对路径
+  let filename = path.resolve(
+    __dirname,
+    "public",
+    urlObj.pathname!.substring(1)
+  );
+  let stat = await getStat(filename);
+  if (!stat) {
+    // 文件不存在
+    return null;
+  } else if (stat.isDirectory()) {
+    // 文件是目录
+    filename = path.resolve(__dirname, "public", filename, "index.html");
+    stat = await getStat(filename);
+
+    // 目录里没有此文件
+    if (!stat) {
+      return null;
+    } else {
+      // 目录里有此文件
+      console.log(filename);
+      return await fs.promises.readFile(filename);
+    }
+  } else {
+    // 正常文件
+    return await fs.promises.readFile(filename);
+  }
+};
+
+const handleServer = async (
+  req: http.IncomingMessage,
+  res: http.ServerResponse
+) => {
+  const fileInfo = await getFileInfo(req.url);
+  if (!fileInfo) {
+    res.statusCode = 404;
+    res.write("not found");
+  } else {
+    res.write(fileInfo);
+  }
+
+  res.end();
+};
+
+const server = http.createServer(handleServer);
+
+server.listen(9527);
+server.on("listening", () => {
+  console.log("server is runing on port 9527");
+});
+```
+
 
 
 ## 2. mySql
