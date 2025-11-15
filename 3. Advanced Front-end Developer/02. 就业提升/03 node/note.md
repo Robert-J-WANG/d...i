@@ -2486,9 +2486,102 @@ HTTPS 的核心——**加密机制**，它同时使用两种主要的加密方�
   - 验证完整性 (计算 B)：客户端独立地对**当前收到的证书文件重新计算（使用通用的算法，证书里标明）校验码，得到 **自己算的校验码 (**指纹 B**)。
   - 最终对比： **如果 A = B：** 验证通过！这证明证书是 **“原件”**（没有被篡改）且 **“身份真实”**（只有 CA 的私钥能生成 A），**如果 A ≠ B：** 验证失败！说明证书内容被篡改，连接中断。
 
-#### 
+
 
 ### 1-11 https 模块
+
+#### 1. 服务器结构
+
+- 普通服务器结构
+
+    浏览器 **⇌** nginx: https/443 ⇌ node:http / 9527
+
+- 本节练习的服务器结构
+
+    浏览器 **⇌** node: https/443 ， 这种结构实际生产中不常用
+
+#### 2. 模拟证书准备 - 了解
+
+- 方式1：网上购买权威机构证书（实际生产中使用）
+
+- 方式2：本地生产证书（模拟练习使用）， 自己作为权威机构发布证书
+
+    - 安装openssl
+
+        - 下载源码，自行构建
+        - 下载Windows安装包
+        - Mac系统自带openssl
+        - 通过终端输入命令openssl测试
+
+    - 生成CA私钥
+
+        ```bash
+        openssl genrsa -des3 -out ca-pri-key.pem 1024 
+        ```
+
+        - genrsa ： 密钥对生成算法
+        - -des3 ：使用对称加密算法des3对私钥进一步加密
+        - -out ca-pri-key.pem :  将加密后的私钥保存到当前目录下的ca-pri-key.pem文件中
+        - 1024 ：私钥的子节数
+
+    - 生成CA公钥（证书请求）
+
+        ```bash
+        openssl req -new -key ca-pri-key.pem -out ca-pub-key.pem
+        ```
+
+    - 生成CA证书
+
+        ```bash
+        openssl x509 -req -in ca-pub-key.pem -signkey ca-pri-key.pem -out ca-cert.
+        ```
+
+        
+
+    +++++++++++++++++++分割线+++++++++++++++++++++++
+
+    - 生成服务器私钥
+
+        ```bash
+        openssl genrsa -out server-key.pem 1024
+        ```
+
+    - 生成服务器公钥
+
+        ```bash
+        openssl req -new -key server-key.pem -out server-scr.pem
+        ```
+
+    - 生成服务器证书
+
+        ```bash
+        openssl x509 -req -CA ca-cert.crt -CAkey ca-pri-key.pem -CAcreateserial in server-scr.pem -out server-cert.crt
+        ```
+
+#### 3. https模块
+
+- 模拟使用上一节练习的静态资源服务器
+
+- 替换http模块为https模块
+
+- 创建server时添加配置对象, 并修改https默认的端口443
+
+    ```ts
+    const server = https.createServer(
+      {
+        key: fs.readFileSync(path.resolve(__dirname, "./server-key.pem")), // 服务器私钥
+        cert: fs.readFileSync(path.resolve(__dirname, "./server-cert.crt")), // 服务器私证书
+      },
+      handleServer
+    );
+    
+    server.listen(443);
+    server.on("listening", () => {
+      console.log("server is runing on port 443");
+    });
+    ```
+
+- 运行服务器，并在浏览器中打开 https://localhost/ 进行测试
 
 ### 1-12 node 生命周期
 
