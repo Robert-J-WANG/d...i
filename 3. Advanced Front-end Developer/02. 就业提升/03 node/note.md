@@ -1748,76 +1748,73 @@ console.log(stream);
   method_2();
   ```
 
-- 管道方法 - rs.pipe() 
+- 管道方法 - rs.pipe()
 
-    对于上面的使用文件流读写文件的方法method_2, 已经封装了管道方法（将读取流和写入流通过管道接通）
+  对于上面的使用文件流读写文件的方法 method_2, 已经封装了管道方法（将读取流和写入流通过管道接通）
 
-    - 将可读流连接到可写流
-    - 返回参数的值
-    - **该方法可以解决背压问题**
+  - 将可读流连接到可写流
+  - 返回参数的值
+  - **该方法可以解决背压问题**
 
-    ```ts
-    // 方式 2 - 文件读写流的方式
-    function method_2() {
-      const from = path.resolve(__dirname, "./myFiles/file.txt");
-      const to = path.resolve(__dirname, "./myFiles/file_copy.txt");
-    
-      const rs = fs.createReadStream(from);
-    
-      const ws = fs.createWriteStream(to);
-      console.time("method 2");
-     
-      rs.pipe(ws); // 使用管道方法
-        
-      rs.on("close", () => {
-        console.timeEnd("method 2");
-        console.log("copy down");
-      });
-    }
-    
-    method_2();
-    ```
+  ```ts
+  // 方式 2 - 文件读写流的方式
+  function method_2() {
+    const from = path.resolve(__dirname, "./myFiles/file.txt");
+    const to = path.resolve(__dirname, "./myFiles/file_copy.txt");
+  
+    const rs = fs.createReadStream(from);
+  
+    const ws = fs.createWriteStream(to);
+    console.time("method 2");
+  
+    rs.pipe(ws); // 使用管道方法
+  
+    rs.on("close", () => {
+      console.timeEnd("method 2");
+      console.log("copy down");
+    });
+  }
+  
+  method_2();
+  ```
 
+### 1-8 net 模块
 
-### 1-8 net模块
+#### 1. 回顾 HTTP 请求
 
-#### 1. 回顾HTTP请求
-
-HTTP的“连接模式”主要有以下几种：
+HTTP 的“连接模式”主要有以下几种：
 
 - 普通模式 - 每一次请求都要建立一次 TCP 连接，请求完成后立即断开
 
-    - 请求 → 建立连接 → 发送数据 → 关闭连接
-    - 每次请求都重新建立 TCP 三次握手，效率较低
-    - 传输结束后，还会进行 **四次挥手（Four-way Handshake）** 来关闭连接
+  - 请求 → 建立连接 → 发送数据 → 关闭连接
+  - 每次请求都重新建立 TCP 三次握手，效率较低
+  - 传输结束后，还会进行 **四次挥手（Four-way Handshake）** 来关闭连接
 
-    ```bash
-    GET /index.html HTTP/1.0
-    Connection: close
-    ```
+  ```bash
+  GET /index.html HTTP/1.0
+  Connection: close
+  ```
 
 - 长连接模式 - 一个 TCP 连接可以发送多个请求和响应，不会在每次请求后立即断开。
 
-    - 减少频繁建立 TCP 连接的开销
-    - 提高性能、加快响应速度
+  - 减少频繁建立 TCP 连接的开销
+  - 提高性能、加快响应速度
 
-    ```bash
-    GET /index.html HTTP/1.1
-    Connection: keep-alive
-    ```
+  ```bash
+  GET /index.html HTTP/1.1
+  Connection: keep-alive
+  ```
 
-    
+#### 2. net 模块能干什么
 
-#### 2. net模块能干什么
-
-- net是一个通信模块
+- net 是一个通信模块
 - 利用它，可以实现：
-    - 进程间的通信IPC
-    - **网络通信 TCP/IP**
+  - 进程间的通信 IPC
+  - **网络通信 TCP/IP**
 
 #### 3. 创建客户端
 
-在node中主动创建一个请求到服务器
+在 node 中主动创建一个请求到服务器
 
 - 创建 - net.**createConnection**(options[,connectlistener])
 
@@ -1836,11 +1833,11 @@ net.createConnection(
 ```
 
 - 返回 - socket
-    - socket   →TCP/IP连接 →远程主机
-    - socket是一个特殊的文件，负责向应用程序（进程）和网络端口之间的通信数据
-    - 在node中表现为一个双工流对象 - 可以像普通的流一样的操作（读取，写入数据）
-    - 通过向流写入内容发生数据
-    - 通过监听流的内容获取数据
+  - socket →TCP/IP 连接 → 远程主机
+  - socket 是一个特殊的文件，负责向应用程序（进程）和网络端口之间的通信数据
+  - 在 node 中表现为一个双工流对象 - 可以像普通的流一样的操作（读取，写入数据）
+  - 通过向流写入内容发生数据
+  - 通过监听流的内容获取数据
 
 ```ts
 import net from "net";
@@ -1871,7 +1868,7 @@ socket.on("data", (chunk) => {
 connection done
 send data to the server
 
-data from server : 
+data from server :
 // 响应行
 HTTP/1.1 400 Bad Request
 // 响应头
@@ -1890,25 +1887,23 @@ Connection: close
 </html>
 ```
 
-data from server 内容就是服务器响应的HTTP协议规定格式的数据（响应行+响应头+响应体), 就是一个普通的字符串，只是平常开发中我们使用了一些工具进行格式转换成规定的格式。
+data from server 内容就是服务器响应的 HTTP 协议规定格式的数据（响应行+响应头+响应体), 就是一个普通的字符串，只是平常开发中我们使用了一些工具进行格式转换成规定的格式。
 
-**注意：** 为什么服务器给我们响应行内容是HTTP/1.1 400 Bad Request？ 因为我们发送的内容不是标准的Http协议规范的数据
+**注意：** 为什么服务器给我们响应行内容是 HTTP/1.1 400 Bad Request？ 因为我们发送的内容不是标准的 Http 协议规范的数据
 
-> 符合Http协议规范的数据格式应该是：
+> 符合 Http 协议规范的数据格式应该是：
 >
 > socket.write(`"请求行"
 >
->   "请求头"
+> "请求头"
 >
->   
+> "请求体"`, (**chunk**) **=>** {
 >
->   "请求体"`, (**chunk**) **=>** {
->
->   console.**log**("send data to the server");
+> console.**log**("send data to the server");
 >
 > });
 
-重新发送标准的Http协议规范的数据
+重新发送标准的 Http 协议规范的数据
 
 ```ts
 socket.write(
@@ -1923,8 +1918,6 @@ socket.write(
 );
 ```
 
-
-
 #### 4. 创建服务端
 
 - 创建 - net.**createServer**()
@@ -1935,10 +1928,10 @@ import net from "net";
 const server = net.createServer();
 ```
 
-- 返回 - server对象
-    - server.listen(port) - 监听端口
-    - server.on("listening", ()=>{}) - 端口监听完成后触发（输出日志等等）
-    - server.on("connection", socket=>{}) - 请求已经连接，数据通过socket传递给客户端
+- 返回 - server 对象
+  - server.listen(port) - 监听端口
+  - server.on("listening", ()=>{}) - 端口监听完成后触发（输出日志等等）
+  - server.on("connection", socket=>{}) - 请求已经连接，数据通过 socket 传递给客户端
 
 ```ts
 import net from "net";
@@ -1977,355 +1970,349 @@ server.on("connection", (socket) => {
     console.log("server is close");
   });
 });
-
 ```
 
-### 1-9 http模块
+### 1-9 http 模块
 
 #### 1. 定义
 
 `http` 是 Node 内置的 **基于 `net` 构建的 HTTP 服务器模块**。
 
-- 无需手动管理socket
+- 无需手动管理 socket
 - 无需手动组装消息格式
 
-> net  vs http:
+> net vs http:
 >
 > - **`net` 模块 = TCP 原生套接字编程**（底层、通用、没有协议），**`http` 模块 = 基于 `net` 封装出的 HTTP 协议服务器/客户端**（上层、带 HTTP 解析器）
 >
 > - `net` 模块用来创建最底层的网络连接。没有任何协议（就是纯粹的字节流），需要自己处理：
 >
->     - 数据分包/粘包
->     - 请求格式
->     - 响应格式
+>   - 数据分包/粘包
+>   - 请求格式
+>   - 响应格式
 >
->     快、底层、灵活
+>   快、底层、灵活
 >
-> - http 模块=net 模块基础上 + HTTP 协议解析器，每次 TCP 连接进来后，http 会用 *HTTP parser* 去解析数据。它自动处理：
+> - http 模块=net 模块基础上 + HTTP 协议解析器，每次 TCP 连接进来后，http 会用 _HTTP parser_ 去解析数据。它自动处理：
 >
->     - HTTP 请求解析（method, headers, body）
->     - HTTP 响应封装（statusCode, headers）
->     - keep-alive
->     - 解析 chunked
->     - MIME 类型、Content-Length 
+>   - HTTP 请求解析（method, headers, body）
+>   - HTTP 响应封装（statusCode, headers）
+>   - keep-alive
+>   - 解析 chunked
+>   - MIME 类型、Content-Length
 
 #### 2. 客户端请求
 
 - 创建 - [`http.request(url[, options\][, callback])`](https://nodejs.org/docs/latest/api/http.html#httprequesturl-options-callback)
 
-    ```ts
-    import http from "http";
-    
-    // 创建请求
-    http.request("http://www.skykiwi.com/", { method: "POST" }, (resp) => {
-      console.log(resp); // 响应结果,是一个Class: http.IncomingMessage 对象
-    });
-    ```
+  ```ts
+  import http from "http";
+
+  // 创建请求
+  http.request("http://www.skykiwi.com/", { method: "POST" }, (resp) => {
+    console.log(resp); // 响应结果,是一个Class: http.IncomingMessage 对象
+  });
+  ```
 
 - 返回值 - Class: `http.ClientRequest`对象
 
-    ```ts
-    const request = http.request(
-      "http://www.skykiwi.com/",
-      { method: "POST" },
-      (resp) => {
-        console.log(resp);
-        console.log("响应状态码", resp.statusCode);
-        console.log("响应消息", resp.statusMessage);
-        console.log("响应头", resp.headers);
-        console.log("响应类型", resp.headers["content-type"]);
-      }
-    );
-    
-    console.log(request);
-    ```
+  ```ts
+  const request = http.request(
+    "http://www.skykiwi.com/",
+    { method: "POST" },
+    (resp) => {
+      console.log(resp);
+      console.log("响应状态码", resp.statusCode);
+      console.log("响应消息", resp.statusMessage);
+      console.log("响应头", resp.headers);
+      console.log("响应类型", resp.headers["content-type"]);
+    }
+  );
+
+  console.log(request);
+  ```
 
 - 发送请求
 
-    ClientRequest对象相当于是一个可写流，我们可以通过可写流写入数据
+  ClientRequest 对象相当于是一个可写流，我们可以通过可写流写入数据
 
-    ```ts
-    // 写入请求体内容
-    request.write("Hello");
-    // 请求结束
-    request.end();
-    ```
+  ```ts
+  // 写入请求体内容
+  request.write("Hello");
+  // 请求结束
+  request.end();
+  ```
 
-    ```bash
-    响应状态码 200
-    响应消息 OK
-    响应头 {
-      'accept-ranges': 'bytes',
-      'cache-control': 'no-cache',
-      'content-length': '29506',
-      'content-type': 'text/html',
-      date: 'Thu, 13 Nov 2025 23:23:10 GMT',
-      p3p: 'CP=" OTI DSP COR IVA OUR IND COM ", CP=" OTI DSP COR IVA OUR IND COM "',
-      pragma: 'no-cache',
-      server: 'BWS/1.1',
-      'set-cookie': [
-        'BAIDUID=7B829C01DCC05A50BFA9AFD4FA3FBBB5:FG=1; expires=Thu, 31-Dec-37 23:55:55 GMT; max-age=2147483647; path=/; domain=.baidu.com',
-        ...
-      ],
-      tr_id: 'pr_0x9c7f58b6001e8209',
-      traceid: '1763076190046453351411760687989786429393',
-      vary: 'Accept-Encoding',
-      'x-ua-compatible': 'IE=Edge,chrome=1',
-      'x-xss-protection': '1;mode=block',
-      connection: 'close'
+  ```bash
+  响应状态码 200
+  响应消息 OK
+  响应头 {
+    'accept-ranges': 'bytes',
+    'cache-control': 'no-cache',
+    'content-length': '29506',
+    'content-type': 'text/html',
+    date: 'Thu, 13 Nov 2025 23:23:10 GMT',
+    p3p: 'CP=" OTI DSP COR IVA OUR IND COM ", CP=" OTI DSP COR IVA OUR IND COM "',
+    pragma: 'no-cache',
+    server: 'BWS/1.1',
+    'set-cookie': [
+      'BAIDUID=7B829C01DCC05A50BFA9AFD4FA3FBBB5:FG=1; expires=Thu, 31-Dec-37 23:55:55 GMT; max-age=2147483647; path=/; domain=.baidu.com',
+      ...
+    ],
+    tr_id: 'pr_0x9c7f58b6001e8209',
+    traceid: '1763076190046453351411760687989786429393',
+    vary: 'Accept-Encoding',
+    'x-ua-compatible': 'IE=Edge,chrome=1',
+    'x-xss-protection': '1;mode=block',
+    connection: 'close'
+  }
+  响应类型 text/html
+  ```
+
+  注意：
+
+  - 响应头的信息，可以在回调函数中通过 resp（http.IncomingMessage 对象）获得
+  - **==响应体的信息==**，无法在回调函数中获取，node 认为响应体内容可长可短，如果太长，直接获取（需要放在内存）不合理。
+  - 可以通过最基础的流形式获取
+
+  ```ts
+  // 创建请求
+  const request = http.request(
+    "http://www.baidu.com/",
+    { method: "GET" },
+    (resp) => {
+      console.log("响应状态码", resp.statusCode);
+      console.log("响应消息", resp.statusMessage);
+      console.log("响应头", resp.headers);
+      console.log("响应头类型", resp.headers["content-type"]);
+  
+      // 获取响应体
+      let respBody = "";
+      // 读取流
+      resp.on("data", (chunk) => {
+        respBody += chunk.toString("utf8");
+      });
+      resp.on("end", () => {
+        console.log(respBody);
+      });
     }
-    响应类型 text/html
-    ```
+  );
+  ```
 
-    注意：
-
-    - 响应头的信息，可以在回调函数中通过resp（http.IncomingMessage 对象）获得
-    - **==响应体的信息==**，无法在回调函数中获取，node认为响应体内容可长可短，如果太长，直接获取（需要放在内存）不合理。
-    - 可以通过最基础的流形式获取
-
-    ```ts
-    // 创建请求
-    const request = http.request(
-      "http://www.baidu.com/",
-      { method: "GET" },
-      (resp) => {
-       
-        console.log("响应状态码", resp.statusCode);
-        console.log("响应消息", resp.statusMessage);
-        console.log("响应头", resp.headers);
-        console.log("响应头类型", resp.headers["content-type"]);
-    
-        // 获取响应体
-        let respBody = "";
-        // 读取流
-        resp.on("data", (chunk) => {
-          respBody += chunk.toString("utf8");
-        });
-        resp.on("end", () => {
-          console.log(respBody);
-        });
-      }
-    );
-    ```
-
-    ```bash
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-        <meta content="always" name="referrer" />
-       ...
-        <title>百度一下，你就知道</title>
-        <style type="text/css">
-            body {
-                margin: 0;
-                padding: 0;
-                text-align: center;
-                background: #fff;
-                height: 100%;
-            }
-        ...
-        </style>
-    </head>
-    <body>
-        <div id="wrapper" class="wrapper_new">
+  ```bash
+  <!DOCTYPE html>
+  <html>
+  <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+      <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+      <meta content="always" name="referrer" />
      ...
-        </div>
-        <script type="text/javascript">
-            var date = new Date();
-            var year = date.getFullYear();
-            document.getElementById('year').innerText = '©' + year + ' Baidu ';
-        </script>
-    </body>
-    </html>
-    ```
+      <title>百度一下，你就知道</title>
+      <style type="text/css">
+          body {
+              margin: 0;
+              padding: 0;
+              text-align: center;
+              background: #fff;
+              height: 100%;
+          }
+      ...
+      </style>
+  </head>
+  <body>
+      <div id="wrapper" class="wrapper_new">
+   ...
+      </div>
+      <script type="text/javascript">
+          var date = new Date();
+          var year = date.getFullYear();
+          document.getElementById('year').innerText = '©' + year + ' Baidu ';
+      </script>
+  </body>
+  </html>
+  ```
 
 #### 3. 服务器响应
 
 - 创建 - `http.createServer([options][, requestListener])`
 
-    - options - 可选配置
-    - requestListener - 监听函数，监听有没有请求来了， 2个参数
-        - `request` [<http.IncomingMessage>] 请求对象
-        - `response` [<http.ServerResponse>] 响应对象
+  - options - 可选配置
+  - requestListener - 监听函数，监听有没有请求来了， 2 个参数
+    - `request` [<http.IncomingMessage>] 请求对象
+    - `response` [<http.ServerResponse>] 响应对象
 
-    ```ts
-    import http from "http";
-    
-    http.createServer((req, res) => {
-      // console.log("请求体对象", req);
-      // console.log("响应体对象", res);
-    });
-    ```
+  ```ts
+  import http from "http";
+
+  http.createServer((req, res) => {
+    // console.log("请求体对象", req);
+    // console.log("响应体对象", res);
+  });
+  ```
 
 - 返回值 - Server 对象
 
-    ```ts
-    import http from "http";
-    
-    const server = http.createServer((req, res) => {
-      // console.log("请求体对象", req);
-      console.log("请求路径", req.url);
-      // console.log("响应体对象", res);
-    });
-    
-    // 监听端口
-    server.listen(9528);
-    server.on("listening", () => {
-      console.log("server is listening on 9528");
-    });
-    ```
+  ```ts
+  import http from "http";
 
-    ```bash
-    server is listening on 9528
-    请求路径 /a/b/c?a=1&b=2
-    ```
+  const server = http.createServer((req, res) => {
+    // console.log("请求体对象", req);
+    console.log("请求路径", req.url);
+    // console.log("响应体对象", res);
+  });
 
-    结合其他模块，做一写操作。比如解请求路径对象
+  // 监听端口
+  server.listen(9528);
+  server.on("listening", () => {
+    console.log("server is listening on 9528");
+  });
+  ```
 
-    ```ts
-    import http from "http";
-    import url from "url";
-    
-    const server = http.createServer((req, res) => {
-      
-      const pathObj = url.parse(req.url!);
-      console.log(pathObj);
-    });
-    
-    server.listen(9530);
-    server.on("listening", () => {
-      console.log("server is listening on 9530");
-    });
-    
-    ```
+  ```bash
+  server is listening on 9528
+  请求路径 /a/b/c?a=1&b=2
+  ```
 
-    ```bash
-    Url {
-      protocol: null,
-      slashes: null,
-      auth: null,
-      host: null,
-      port: null,
-      hostname: null,
-      hash: null,
-      search: '?d=1&e=2',
-      query: 'd=1&e=2',
-      pathname: '/a/bc/',
-      path: '/a/bc/?d=1&e=2',
-      href: '/a/bc/?d=1&e=2'
-    }
-    ```
+  结合其他模块，做一写操作。比如解请求路径对象
+
+  ```ts
+  import http from "http";
+  import url from "url";
+
+  const server = http.createServer((req, res) => {
+    const pathObj = url.parse(req.url!);
+    console.log(pathObj);
+  });
+
+  server.listen(9530);
+  server.on("listening", () => {
+    console.log("server is listening on 9530");
+  });
+  ```
+
+  ```bash
+  Url {
+    protocol: null,
+    slashes: null,
+    auth: null,
+    host: null,
+    port: null,
+    hostname: null,
+    hash: null,
+    search: '?d=1&e=2',
+    query: 'd=1&e=2',
+    pathname: '/a/bc/',
+    path: '/a/bc/?d=1&e=2',
+    href: '/a/bc/?d=1&e=2'
+  }
+  ```
 
 - 请求内容获取
 
-    ```ts
-    import http from "http";
-    import url from "url";
-    
-    function handleReq(req) {
-      const pathObj = url.parse(req.url!);
-      console.log("请求路径", pathObj);
-      console.log("请求方法", req.method);
-      console.log("请求头", req.headers);
-    
-      let reqBody = "";
-      req.on("data", (chunck) => {
-        reqBody += chunck.toString("utf-8");
-      });
-      req.on("end", () => {
-        console.log("请求体", reqBody);
-      });
-    }
-    
-    const server = http.createServer((req, res) => {
-      //请求体信息
-      handleReq(req);
-    });
-    
-    server.listen(9530);
-    server.on("listening", () => {
-      console.log("server is listening on 9530");
-    });
-    
-    
-    ```
+  ```ts
+  import http from "http";
+  import url from "url";
 
-    ```bash
-    请求路径 Url {
-      protocol: null,
-      slashes: null,
-      auth: null,
-      host: null,
-      port: null,
-      hostname: null,
-      hash: null,
-      search: '?d=1&e=2',
-      query: 'd=1&e=2',
-      pathname: '/a/bc/',
-      path: '/a/bc/?d=1&e=2',
-      href: '/a/bc/?d=1&e=2'
-    }
-    请求方法 GET
-    请求头 {
-      'content-type': 'text/plain',
-      'user-agent': 'PostmanRuntime/7.43.3',
-      accept: '*/*',
-      'postman-token': '251e7eeb-e2bb-4254-a23e-8d345b54f8bc',
-      host: 'localhost:9530',
-      'accept-encoding': 'gzip, deflate, br',
-      connection: 'keep-alive',
-      'content-length': '7'
-    }
-    请求体 a=1&b=2
-    ```
+  function handleReq(req) {
+    const pathObj = url.parse(req.url!);
+    console.log("请求路径", pathObj);
+    console.log("请求方法", req.method);
+    console.log("请求头", req.headers);
+
+    let reqBody = "";
+    req.on("data", (chunck) => {
+      reqBody += chunck.toString("utf-8");
+    });
+    req.on("end", () => {
+      console.log("请求体", reqBody);
+    });
+  }
+
+  const server = http.createServer((req, res) => {
+    //请求体信息
+    handleReq(req);
+  });
+
+  server.listen(9530);
+  server.on("listening", () => {
+    console.log("server is listening on 9530");
+  });
+  ```
+
+  ```bash
+  请求路径 Url {
+    protocol: null,
+    slashes: null,
+    auth: null,
+    host: null,
+    port: null,
+    hostname: null,
+    hash: null,
+    search: '?d=1&e=2',
+    query: 'd=1&e=2',
+    pathname: '/a/bc/',
+    path: '/a/bc/?d=1&e=2',
+    href: '/a/bc/?d=1&e=2'
+  }
+  请求方法 GET
+  请求头 {
+    'content-type': 'text/plain',
+    'user-agent': 'PostmanRuntime/7.43.3',
+    accept: '*/*',
+    'postman-token': '251e7eeb-e2bb-4254-a23e-8d345b54f8bc',
+    host: 'localhost:9530',
+    'accept-encoding': 'gzip, deflate, br',
+    connection: 'keep-alive',
+    'content-length': '7'
+  }
+  请求体 a=1&b=2
+  ```
 
 - 响应内容设置
 
-    ```ts
-    import http from "http";
-    import url from "url";
-    
-    function handleReq(req) {
-     ...
-    }
-    
-    function handlerRes(res) {
-      res.setHeader("a", 1);
-      res.setHeader("b", 1);
-      res.statusCode = 404;
-    
-      res.write("hello");
-      res.end();
-    }
-    
-    const server = http.createServer((req, res) => {
-      // 请求数据获取
-      handleReq(req);
-    
-      // 响应体对象设置
-      handlerRes(res);
-    });
-    
-    server.listen(9530);
-    server.on("listening", () => {
-      console.log("server is listening on 9530");
-    });
-    ```
+  ```ts
+  import http from "http";
+  import url from "url";
+  
+  function handleReq(req) {
+   ...
+  }
+  
+  function handlerRes(res) {
+    res.setHeader("a", 1);
+    res.setHeader("b", 1);
+    res.statusCode = 404;
+  
+    res.write("hello");
+    res.end();
+  }
+  
+  const server = http.createServer((req, res) => {
+    // 请求数据获取
+    handleReq(req);
+  
+    // 响应体对象设置
+    handlerRes(res);
+  });
+  
+  server.listen(9530);
+  server.on("listening", () => {
+    console.log("server is listening on 9530");
+  });
+  ```
 
-**总结：** 
+**总结：**
 
 - 我是客户端
-    - 请求：ClientRequest对象 - 我发给别人（服务器）的
-    - 响应：IncomingMessage对象 - 别人（服务器）给我的，正在来的数据
+  - 请求：ClientRequest 对象 - 我发给别人（服务器）的
+  - 响应：IncomingMessage 对象 - 别人（服务器）给我的，正在来的数据
 - 我是服务器
-    - 请求：IncomingMessage对象 - 别人（客户端）给我的，正在来的数据
-    - 响应：ServerResponse对象 - 我发给别人（客户端）的
+  - 请求：IncomingMessage 对象 - 别人（客户端）给我的，正在来的数据
+  - 响应：ServerResponse 对象 - 我发给别人（客户端）的
 
 #### 4. 练习 - 搭建一个静态资源服务器
 
-node环境中读取今天资源的内容（html/js/css),作为服务器响应结果返回
+node 环境中读取今天资源的内容（html/js/css),作为服务器响应结果返回
 
 ```ts
 // 静态资源服务器
@@ -2402,7 +2389,110 @@ server.on("listening", () => {
 });
 ```
 
+### 1-10 https 协议
 
+#### 1. 概述
+
+- **HTTPS** (Hypertext Transfer Protocol Secure) 实际上就是在 **HTTP**（普通的网页传输协议）的基础上，加上了 **TLS/SSL** 加密层。
+
+- HTTPS 能来保证数据在传输过程中不被窃取和篡改
+
+  > HTTP 的问题:
+  >
+  > - HTTP 传输数据是**明文**的，任何中间人（比如公共 Wi-Fi 的管理者、网络运营商或黑客）都可以看到和篡改
+  >
+  > HTTPS 的解决：
+  >
+  > - HTTPS 使用 **TLS/SSL** 技术对您浏览器和网站服务器之间传输的所有数据进行加密。中间人即使截获了数据包，看到的也只是一堆**乱码**，无法解读。
+
+#### 2. **加密机制**
+
+HTTPS 的核心——**加密机制**，它同时使用两种主要的加密方式：**非对称加密**（公钥/私钥）和**对称加密**。
+
+- 对此加密
+
+  - 产生一个密钥，可以用来加密，也能又用来解密
+  - 加密过程： 原始信息+密钥 = 加密信息
+  - 解密过程： 加密信息+密钥 = 原始信息
+  - 常用的算法： DES, 3SES, AES, Blowfish 等等
+
+  **问题： 密钥传递时，也可能会被窃取和篡改，从而会对原始信息进行破坏**
+
+- 非对称加密
+
+  - 产生一对密钥，一个用于加密，一个用于解密 （公钥+私钥）
+  - 公钥一般是公开的，任何人都可以获取；私钥则不能随便获取
+  - 加密过程： 原始信息 + 公钥 = 加密信息
+  - 解密过程 ：加密信息 + 私钥 = 原始信息
+  - 常用算法： RSA, Elagmal, Rabin, D-H, ECC 等等
+
+  **问题： 如果服务器不传递私密的话，客户端接收的信息无法解密**
+
+- HTTPS 加密机制
+
+  非对称加密和对称加密结合使用
+
+  - 传递密钥阶段
+    1. 服务端先传递公钥(key_pub)给客户端,自己保留私钥(key_prt)
+    2. 客户端在本地生成一个对称加密的密钥(key)，使用公钥对这个对称密钥加密，生成新的密钥（key_new), 并传递给服务端
+    3. 服务端使用私钥（key_prt）解密密钥（key_new），得到解密后的称加密的密钥(key)
+    4. 从此，只有服务端和客户端知道对称加密的密钥(key)， 而传输这个密钥的过程不会泄露，因为传输的的使用公钥加密后的，只能使用私密来解密
+  - 传递数据阶段
+    1. 客户端使用对称加密的密钥(key)**加密数据**并传递。
+    2. 服务端使用对称加密的密钥(key)解密数据。
+
+- 总结：
+  - **非对称加密**（公钥/私钥）用于**安全地协商/传输**那个秘密的**对称密钥**。
+  - 一旦密钥就位，后续所有的实际数据都使用**对称加密**进行**快速传输**。
+  - 只保证数据在**传输过程**中的安全， 不涉及数据存储的安全性
+
+#### 3. 中间人攻击问题
+
+上面使用 2 中加密的结合，还是有可能被窃取和篡改。
+
+- 服务端传递公钥(key_pub)给客户端时，被第三方拿到。第三方替换为自己生产的伪公钥（key_pub_feak)，并传递地客户端
+- 客户端不知情，使用伪公钥（key_pub_feak)加密对称密钥(key)，生成新的伪密钥（key_new_feak),并传递出去
+- 第三方拿到伪密钥（key_new_feak)，并使用自己的伪私钥（key_prt_feak)解密，知道了客户端的对称密钥(key)
+- 同时，第三方伪造一个自己的伪对称密钥（key_feak), 并使用服务端传递的公钥(key_pub)加密自己的伪对称密钥（key_feak)，生成一个新的伪密码（key_new_feak_2),并传递给服务端
+- 此时服务端不知情，并使用私钥 key_prt 解密，得到了伪对称密钥（key_feak)
+- 之后服务端使用伪对称密钥（key_feak)加密数据，第三方则能使用伪对称密钥（key_feak)能解密数据
+
+**结果：**
+
+- **客户端**和**中间人**共享 `key`。
+- **服务器**和**中间人**共享 `key_feak`。
+
+- 从此数据别窃取并可能篡改
+
+#### 4. 证书和身份验证
+
+为了在 **“公钥传递”** 这一步，**证明这个公钥是合法的服务器的，而不是中间人的**。因此，我们需要**权威证书颁发机构 (CA)** 签发的 **SSL/TLS 证书**，对公钥进行包装。
+
+- 证书的生成（CA 的核心工作）
+
+  CA 的工作不是加密，而是 **“担保”**，通过 **数字签名** 来实现。
+
+  - **服务器生成密钥对：** 服务器首先生成它自己的**公钥** (`Key_server_pub`) 和 **私钥** (`Key_server_prt`)。
+  - **提交 证书签名请求（CSR）：**服务器将域名和 `Key_server_pub` 等其他信息文件提交给 CA，请求签名。
+  - **计算指纹：** CA 对提交的文件计算出一个独一无二的 **“校验码” (指纹 A)**。
+  - **私钥加密：** CA 使用**自己秘密保管的私钥**对指纹 A 进行加密，生成一个 **“防伪标记”**（即数字签名）。
+  - 颁发证书：证书包含文件信息（未加密）和这个 **防伪标记**（已加密）。
+
+- 验证流程
+
+  - 客户端收到服务器发来的证书
+  - 从内置的、可信任的根库中，找到 CA 的**公钥**
+  - 使用这个公钥去解密防伪标记，成功得到 **CA 当初计算的校验码 (指纹 A)**。（如果解密失败，说明这个标记是假冒的，连接中断。）
+  - 验证完整性 (计算 B)：客户端独立地对**当前收到的证书文件重新计算（使用通用的算法，证书里标明）校验码，得到 **自己算的校验码 (**指纹 B**)。
+  - 最终对比： **如果 A = B：** 验证通过！这证明证书是 **“原件”**（没有被篡改）且 **“身份真实”**（只有 CA 的私钥能生成 A），**如果 A ≠ B：** 验证失败！说明证书内容被篡改，连接中断。
+
+#### 
+
+### 1-11 https 模块
+
+### 1-12 node 生命周期
+
+### 1-13 eventEmitter
 
 ## 2. mySql
 
