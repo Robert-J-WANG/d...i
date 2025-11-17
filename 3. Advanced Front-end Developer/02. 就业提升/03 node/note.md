@@ -2583,9 +2583,113 @@ HTTPS 的核心——**加密机制**，它同时使用两种主要的加密方�
 
 - 运行服务器，并在浏览器中打开 https://localhost/ 进行测试
 
-### 1-12 node 生命周期
+### 1-12 <font color="gray">node 生命周期 - 了解</font>
 
 ### 1-13 eventEmitter
+
+#### 1. 概述
+
+- *EventEmitter 是Node.js 中用于创建、注册和触发事件的核心模块*。
+- 它允许对象发布（`emit`）事件，并让其他对象（监听器）订阅（`on`）这些事件，并在事件发生时执行预先定义的回调函数。它实现了 **发布/订阅** 模式和 **观察者模式**。 
+- 在不直接引用彼此的情况下，让不同的模块通过事件进行通信。
+
+#### 2. 创建
+
+```ts
+import { EventEmitter } from "events";
+
+const event = new EventEmitter();
+event.on("hello", () => {  // 注册事件
+  console.log("hello");
+});
+
+event.emit("hello"); // 触发事件
+
+```
+
+可以注册多个事件，可以多次触发
+
+```ts
+import { EventEmitter } from "events";
+
+const event = new EventEmitter();
+event.on("hello1", () => {
+  console.log("hello1");
+});
+
+event.on("hello2", () => {
+  console.log("hello2");
+});
+
+event.on("hello3", () => {
+  console.log("hello3");
+});
+
+event.emit("hello1");
+event.emit("hello2");
+event.emit("hello3");
+```
+
+如何实现的？
+
+- 它内部维护多个事件队列，类型一个数组 - 事件是数组的成员，依次触发这些事件
+
+#### 3. 功能
+
+- **事件监听和注册：** 使用 `on()` 或 `addListener()` 方法来注册一个回调函数，用于监听特定的事件。
+- **事件触发：** 使用 `emit()` 方法来触发一个特定的事件，这将调用所有注册到该事件的监听器。
+- **参数传递：** 在触发事件时，可以向监听器传递参数。
+- **移除监听器：** 使用 `removeListener()` 方法可以移除特定的监听器。
+- **一次性监听器：** 使用 `once()` 方法可以注册一个只在事件触发一次后自动移除的监听器。
+- **错误事件：** `EventEmitter` 有一个特殊的 `error` 事件，当发生错误时会自动触发。如果未绑定 `error` 事件的监听器，程序可能会退出。 
+
+#### 4. 练习
+
+利用eventEmitter的注册和监听事件功能，封装一个http请求的类，监听res事件，可以直接拿到相应结果（响应头和响应体）
+
+```ts
+import { EventEmitter } from "events";
+import http from "http";
+
+export class MyRequest extends EventEmitter {
+  constructor(private url, private options = {}) {
+    super();
+  }
+
+  send(body = "") {
+    const request = http.request(this.url, this.options, (res) => {
+      let result = "";
+      res.on("data", (chunck) => {
+        result += chunck.toString("utf-8");
+      });
+
+      res.on("end", () => {
+        this.emit("res", res.headers, result);
+      });
+    });
+
+    request.write(body);
+    request.end();
+  }
+}
+
+```
+
+使用MyRequest
+
+```ts
+import { MyRequest } from "./myRequest";
+
+const request = new MyRequest("http://www.baidu.com/");
+
+request.send();
+request.on("res", (headers, result) => {
+  console.log(headers);
+  console.log(result);
+});
+```
+
+
 
 ## 2. mySql
 
