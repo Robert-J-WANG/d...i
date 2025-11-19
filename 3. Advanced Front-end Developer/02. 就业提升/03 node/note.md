@@ -155,14 +155,14 @@
 
   ````js
   console.log(__dirname);
-
+  
   // Users/aqiang/Desktop/myGitHub/upload/duyi/3. Advanced Front-end Developer/02. 就业提升/03 node/code/src
-
+  
   - \_\_filename ：当前模块文件的完整绝对路径
-
+  
   ```js
   console.log(__filename);
-
+  
   // /Users/aqiang/Desktop/myGitHub/upload/duyi/3. Advanced Front-end Developer/02. 就业提升/03 node/code/src/index.ts
   ````
 
@@ -259,7 +259,7 @@ process ：当前 Node 的**进程**对象，包含运行环境、参数、事�
   ```js
   const buf = Buffer.from("hello");
   console.log(buf);
-
+  
   // <Buffer 68 65 6c 6c 6f>
   ```
 
@@ -929,12 +929,12 @@ console.log(url.format(urlOjb)); // https://www.example.com:8080/path/to/resourc
     },
     f: 5,
   };
-
+  
   const obj2 = {
     a: 1,
     b: 2,
   };
-
+  
   console.log(util.isDeepStrictEqual(obj1, obj2)); // false
   ```
 
@@ -1486,15 +1486,15 @@ console.log(stream);
   rs.on("open", () => {
     console.log("file opend");
   });
-
+  
   rs.on("data", (chunk) => {
     console.log("reading data:", chunk);
   });
-
+  
   rs.on("end", () => {
     console.log("reading data done");
   });
-
+  
   rs.on("close", () => {
     console.log("file colesd");
   });
@@ -1522,27 +1522,27 @@ console.log(stream);
   rs.on("open", () => {
     console.log("file opend");
   });
-
+  
   rs.on("data", (chunk) => {
     console.log("reading data:", chunk);
     rs.pause();
   });
-
+  
   rs.on("pause", () => {
     console.log("reading puased");
     setTimeout(() => {
       rs.resume();
     }, 1000);
   });
-
+  
   rs.on("resume", () => {
     console.log("reading resumed");
   });
-
+  
   rs.on("end", () => {
     console.log("reading data done");
   });
-
+  
   rs.on("close", () => {
     console.log("file colesd");
   });
@@ -1761,20 +1761,20 @@ console.log(stream);
   function method_2() {
     const from = path.resolve(__dirname, "./myFiles/file.txt");
     const to = path.resolve(__dirname, "./myFiles/file_copy.txt");
-
+  
     const rs = fs.createReadStream(from);
-
+  
     const ws = fs.createWriteStream(to);
     console.time("method 2");
-
+  
     rs.pipe(ws); // 使用管道方法
-
+  
     rs.on("close", () => {
       console.timeEnd("method 2");
       console.log("copy down");
     });
   }
-
+  
   method_2();
   ```
 
@@ -2085,7 +2085,7 @@ server.on("connection", (socket) => {
       console.log("响应消息", resp.statusMessage);
       console.log("响应头", resp.headers);
       console.log("响应头类型", resp.headers["content-type"]);
-
+  
       // 获取响应体
       let respBody = "";
       // 读取流
@@ -2273,28 +2273,28 @@ server.on("connection", (socket) => {
   ```ts
   import http from "http";
   import url from "url";
-
+  
   function handleReq(req) {
    ...
   }
-
+  
   function handlerRes(res) {
     res.setHeader("a", 1);
     res.setHeader("b", 1);
     res.statusCode = 404;
-
+  
     res.write("hello");
     res.end();
   }
-
+  
   const server = http.createServer((req, res) => {
     // 请求数据获取
     handleReq(req);
-
+  
     // 响应体对象设置
     handlerRes(res);
   });
-
+  
   server.listen(9530);
   server.on("listening", () => {
     console.log("server is listening on 9530");
@@ -3054,6 +3054,63 @@ docker-compose up -d
 - 非主键列必须直接依赖于主键列
 
 ### 2-4 表记录的增删改
+
+对应表中数据记录的操作，通用使用DML（data manipulation language）数据操控语言，CRUD
+
+- CREATE - 增
+
+    **`INSERT INTO`**
+
+    增加一条记录 
+
+    ```sql
+    INSERT INTO student (sudtno, `name`, dob, sex, address, email, class_id)
+    VALUES
+    (3, 'lee', '2000-1-1', 1, '100 newnorth road, Mt Albert', 'leelee@gmail.com', 1);
+    ```
+
+    增加多条记录
+
+    ```sql
+    INSERT INTO student (sudtno, `name`, dob, sex, address, email, class_id)
+    VALUES
+    (3, 'PAR', '2002-1-2', 1, '101 newnorth road, Mt Albert', 'PAR@gmail.com', 1),
+    (3, 'JAY', '2003-1-3', 1, '102 newnorth road, Mt Albert', 'JAY@gmail.com', 2),
+    (3, 'KEN', '2004-1-4', 1, '188 newnorth road, Mt Albert', 'KEN@gmail.com', 2);
+    ```
+
+- RETRIEVE - 查
+
+- UPDATE - 改
+
+    **`UPDATE SET`**
+
+    ```sql
+    -- 修改记录
+    UPDATE student
+    SET `name` = 'ches'
+    WHERE id = 1;
+    	
+    UPDATE student
+    SET address = '111 newsouth road, Mt Roskill',
+    email = 'ches@gmail.com'
+    WHERE id = 1;
+    ```
+
+- DELETE - 删
+
+    **`DELETE FROM`**
+
+    ```sql
+    -- 删除表记录
+    DELETE
+    FROM
+    	student
+    WHERE
+    	id = 7
+    ```
+
+    
 
 ### 2-5 表单基本查询
 
