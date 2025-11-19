@@ -1,0 +1,16 @@
+
+services:
+  mysql:
+    container_name: mysql-study
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "123456"
+    ports:
+      - "3306:3306"
+    volumes:
+      - /Users/aqiang/docker/mysql-data:/var/lib/mysql
+      - /Users/aqiang/docker/mysql-data/config/my.cnf:/etc/mysql/conf.d/my.cnf  # 可选：自定义配置文件挂载
+
+volumes:
+  mysql-data:

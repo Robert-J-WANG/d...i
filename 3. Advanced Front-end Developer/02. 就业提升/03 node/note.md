@@ -2486,100 +2486,96 @@ HTTPS 的核心——**加密机制**，它同时使用两种主要的加密方�
   - 验证完整性 (计算 B)：客户端独立地对**当前收到的证书文件重新计算（使用通用的算法，证书里标明）校验码，得到 **自己算的校验码 (**指纹 B**)。
   - 最终对比： **如果 A = B：** 验证通过！这证明证书是 **“原件”**（没有被篡改）且 **“身份真实”**（只有 CA 的私钥能生成 A），**如果 A ≠ B：** 验证失败！说明证书内容被篡改，连接中断。
 
-
-
 ### 1-11 https 模块
 
 #### 1. 服务器结构
 
 - 普通服务器结构
 
-    浏览器 **⇌** nginx: https/443 ⇌ node:http / 9527
+  浏览器 **⇌** nginx: https/443 ⇌ node:http / 9527
 
 - 本节练习的服务器结构
 
-    浏览器 **⇌** node: https/443 ， 这种结构实际生产中不常用
+  浏览器 **⇌** node: https/443 ， 这种结构实际生产中不常用
 
 #### 2. 模拟证书准备 - 了解
 
-- 方式1：网上购买权威机构证书（实际生产中使用）
+- 方式 1：网上购买权威机构证书（实际生产中使用）
 
-- 方式2：本地生产证书（模拟练习使用）， 自己作为权威机构发布证书
+- 方式 2：本地生产证书（模拟练习使用）， 自己作为权威机构发布证书
 
-    - 安装openssl
+  - 安装 openssl
 
-        - 下载源码，自行构建
-        - 下载Windows安装包
-        - Mac系统自带openssl
-        - 通过终端输入命令openssl测试
+    - 下载源码，自行构建
+    - 下载 Windows 安装包
+    - Mac 系统自带 openssl
+    - 通过终端输入命令 openssl 测试
 
-    - 生成CA私钥
+  - 生成 CA 私钥
 
-        ```bash
-        openssl genrsa -des3 -out ca-pri-key.pem 1024 
-        ```
+    ```bash
+    openssl genrsa -des3 -out ca-pri-key.pem 1024
+    ```
 
-        - genrsa ： 密钥对生成算法
-        - -des3 ：使用对称加密算法des3对私钥进一步加密
-        - -out ca-pri-key.pem :  将加密后的私钥保存到当前目录下的ca-pri-key.pem文件中
-        - 1024 ：私钥的子节数
+    - genrsa ： 密钥对生成算法
+    - -des3 ：使用对称加密算法 des3 对私钥进一步加密
+    - -out ca-pri-key.pem : 将加密后的私钥保存到当前目录下的 ca-pri-key.pem 文件中
+    - 1024 ：私钥的子节数
 
-    - 生成CA公钥（证书请求）
+  - 生成 CA 公钥（证书请求）
 
-        ```bash
-        openssl req -new -key ca-pri-key.pem -out ca-pub-key.pem
-        ```
+    ```bash
+    openssl req -new -key ca-pri-key.pem -out ca-pub-key.pem
+    ```
 
-    - 生成CA证书
+  - 生成 CA 证书
 
-        ```bash
-        openssl x509 -req -in ca-pub-key.pem -signkey ca-pri-key.pem -out ca-cert.
-        ```
+    ```bash
+    openssl x509 -req -in ca-pub-key.pem -signkey ca-pri-key.pem -out ca-cert.
+    ```
 
-        
+  +++++++++++++++++++分割线+++++++++++++++++++++++
 
-    +++++++++++++++++++分割线+++++++++++++++++++++++
+  - 生成服务器私钥
 
-    - 生成服务器私钥
+    ```bash
+    openssl genrsa -out server-key.pem 1024
+    ```
 
-        ```bash
-        openssl genrsa -out server-key.pem 1024
-        ```
+  - 生成服务器公钥
 
-    - 生成服务器公钥
+    ```bash
+    openssl req -new -key server-key.pem -out server-scr.pem
+    ```
 
-        ```bash
-        openssl req -new -key server-key.pem -out server-scr.pem
-        ```
+  - 生成服务器证书
 
-    - 生成服务器证书
+    ```bash
+    openssl x509 -req -CA ca-cert.crt -CAkey ca-pri-key.pem -CAcreateserial in server-scr.pem -out server-cert.crt
+    ```
 
-        ```bash
-        openssl x509 -req -CA ca-cert.crt -CAkey ca-pri-key.pem -CAcreateserial in server-scr.pem -out server-cert.crt
-        ```
-
-#### 3. https模块
+#### 3. https 模块
 
 - 模拟使用上一节练习的静态资源服务器
 
-- 替换http模块为https模块
+- 替换 http 模块为 https 模块
 
-- 创建server时添加配置对象, 并修改https默认的端口443
+- 创建 server 时添加配置对象, 并修改 https 默认的端口 443
 
-    ```ts
-    const server = https.createServer(
-      {
-        key: fs.readFileSync(path.resolve(__dirname, "./server-key.pem")), // 服务器私钥
-        cert: fs.readFileSync(path.resolve(__dirname, "./server-cert.crt")), // 服务器私证书
-      },
-      handleServer
-    );
-    
-    server.listen(443);
-    server.on("listening", () => {
-      console.log("server is runing on port 443");
-    });
-    ```
+  ```ts
+  const server = https.createServer(
+    {
+      key: fs.readFileSync(path.resolve(__dirname, "./server-key.pem")), // 服务器私钥
+      cert: fs.readFileSync(path.resolve(__dirname, "./server-cert.crt")), // 服务器私证书
+    },
+    handleServer
+  );
+
+  server.listen(443);
+  server.on("listening", () => {
+    console.log("server is runing on port 443");
+  });
+  ```
 
 - 运行服务器，并在浏览器中打开 https://localhost/ 进行测试
 
@@ -2589,8 +2585,8 @@ HTTPS 的核心——**加密机制**，它同时使用两种主要的加密方�
 
 #### 1. 概述
 
-- *EventEmitter 是Node.js 中用于创建、注册和触发事件的核心模块*。
-- 它允许对象发布（`emit`）事件，并让其他对象（监听器）订阅（`on`）这些事件，并在事件发生时执行预先定义的回调函数。它实现了 **发布/订阅** 模式和 **观察者模式**。 
+- _EventEmitter 是 Node.js 中用于创建、注册和触发事件的核心模块_。
+- 它允许对象发布（`emit`）事件，并让其他对象（监听器）订阅（`on`）这些事件，并在事件发生时执行预先定义的回调函数。它实现了 **发布/订阅** 模式和 **观察者模式**。
 - 在不直接引用彼此的情况下，让不同的模块通过事件进行通信。
 
 #### 2. 创建
@@ -2599,12 +2595,12 @@ HTTPS 的核心——**加密机制**，它同时使用两种主要的加密方�
 import { EventEmitter } from "events";
 
 const event = new EventEmitter();
-event.on("hello", () => {  // 注册事件
+event.on("hello", () => {
+  // 注册事件
   console.log("hello");
 });
 
 event.emit("hello"); // 触发事件
-
 ```
 
 可以注册多个事件，可以多次触发
@@ -2641,11 +2637,11 @@ event.emit("hello3");
 - **参数传递：** 在触发事件时，可以向监听器传递参数。
 - **移除监听器：** 使用 `removeListener()` 方法可以移除特定的监听器。
 - **一次性监听器：** 使用 `once()` 方法可以注册一个只在事件触发一次后自动移除的监听器。
-- **错误事件：** `EventEmitter` 有一个特殊的 `error` 事件，当发生错误时会自动触发。如果未绑定 `error` 事件的监听器，程序可能会退出。 
+- **错误事件：** `EventEmitter` 有一个特殊的 `error` 事件，当发生错误时会自动触发。如果未绑定 `error` 事件的监听器，程序可能会退出。
 
 #### 4. 练习
 
-利用eventEmitter的注册和监听事件功能，封装一个http请求的类，监听res事件，可以直接拿到相应结果（响应头和响应体）
+利用 eventEmitter 的注册和监听事件功能，封装一个 http 请求的类，监听 res 事件，可以直接拿到相应结果（响应头和响应体）
 
 ```ts
 import { EventEmitter } from "events";
@@ -2672,10 +2668,9 @@ export class MyRequest extends EventEmitter {
     request.end();
   }
 }
-
 ```
 
-使用MyRequest
+使用 MyRequest
 
 ```ts
 import { MyRequest } from "./myRequest";
@@ -2689,9 +2684,385 @@ request.on("res", (headers, result) => {
 });
 ```
 
-
-
 ## 2. mySql
+
+### 2-1 数据库简介
+
+#### 1. 数据库能干什么
+
+- 持久的存储数据
+- 备份和恢复数据
+- 快速存取数据
+- 权限控制
+
+#### 2. 数据库的类型
+
+- 关系型数据库
+
+  - 特点 - 以表和表关联构成的数据结构
+
+  - 优点 - 能表达复杂的数据关系；强大的查询语言，尤其是海量数据的读写
+  - 缺点 - 数据结构比较死板
+  - 用途 - 存储结构复杂的数据
+  - 代表 - Oracle / MySql / Sql Server
+
+- 非关系型数据库
+
+  - 特点 - 以极其简单的解构存储数据， 比如文档型，键值对型
+
+  - 优点 - 格式灵活；海量数据读效率高
+  - 缺点 - 难以表达复杂的数据关系；对于复杂查询，效率不好
+  - 用途 - 存储结构简单的数据
+  - 代表 - MongoDB / Redis / Membase
+
+- ~~面向对象数据库 - 略~~
+
+#### 3. 术语
+
+- DB - database 数据库
+- DBA - database administer 数据库管理员
+- DBMS - database management system 数据库管理系统
+- DBS - database system 数据库系统
+
+### 2-2 MySql 的安装
+
+通过 docker 安装 mysql，并结合 Navicat 工具管理。同时实现数据持久化
+
+#### 1. 拉取 MySQL 镜像
+
+从 Docker Hub 拉取官方的 MySQL 镜像。推荐使用特定版本号以保持环境稳定。
+
+```bash
+docker pull mysql:8.0
+```
+
+#### 2. 创建本地持久化目录：
+
+在 Docker 中运行数据库，数据持久化是**至关重要**的一步，以确保即使容器被删除，数据也不会丢失。
+
+实现数据持久化最常用的方法是使用 **Docker 卷（Volume）**，首先，创建用于持久化 MySQL 数据的本地目录
+
+```bash
+mkdir -p /Users/aqiang/docker/mysql-data
+```
+
+#### 3. 运行 MySQL 容器，并实现数据的持久化
+
+使用 `docker run` 命令启动 MySQL 容器， 并将本地目录挂载到容器的 `/var/lib/mysql`，实现数据持久化。
+
+```bash
+docker run --name mysql-study \
+-e MYSQL_ROOT_PASSWORD=123456 \
+-p 3306:3306 \
+-v /Users/aqiang/docker/mysql-data:/var/lib/mysql \
+-d mysql:8.0
+```
+
+| **参数**                                              | **含义**                                                                                                           |
+| ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `--name mysql-study`                                  | 容器命名为 `mysql-study`，方便管理和停止。                                                                         |
+| `-e MYSQL_ROOT_PASSWORD=...`                          | **环境变量：** 设置 `root` 用户的密码。                                                                            |
+| `-p 3306:3306`                                        | **端口映射：** 将容器内部的 3306 端口映射到主机上的 3306 端口。这样可以通过 `localhost:3306` 来连接数据库。        |
+| `-d`                                                  | **后台运行 (Detached)：** 让容器在后台持续运行。                                                                   |
+| `-v /Users/aqiang/docker/mysql-data:/var/lib/mysql \` | 使用 `-v` 参数将本地目录(`/Users/aqiang/docker/mysql-data`) 挂载到容器内部的 `/var/lib/mysql` 目录，实现数据持久化 |
+| `mysql:8.0`                                           | 指定要运行的镜像版本。                                                                                             |
+
+命令行操作
+
+```bash
+docker exec -it mysql-study mysql -uroot -p123456
+```
+
+查看编码字符配置
+
+```bash
+mysql> SHOW VARIABLES LIKE 'character_set%';
+```
+
+```bash
++--------------------------+--------------------------------+
+| Variable_name            | Value                          |
++--------------------------+--------------------------------+
+| character_set_client     | latin1                         |
+| character_set_connection | latin1                         |
+| character_set_database   | utf8mb4                        |
+| character_set_filesystem | binary                         |
+| character_set_results    | latin1                         |
+| character_set_server     | utf8mb4                        |
+| character_set_system     | utf8mb3                        |
+| character_sets_dir       | /usr/share/mysql-8.0/charsets/ |
++--------------------------+--------------------------------+
+8 rows in set (0.09 sec)
+```
+
+查看数据库
+
+```
+mysql> show databases;
+```
+
+```
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+4 rows in set (0.00 sec)
+```
+
+退出
+
+```bash
+exit
+```
+
+修改配置, 使用 docker-compose.yml, 方便统一管理更新配置
+
+```yaml
+services:
+  mysql:
+    container_name: mysql-study
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "123456"
+    ports:
+      - "3306:3306"
+    volumes:
+      - /Users/aqiang/docker/mysql-data:/var/lib/mysql
+      - /Users/aqiang/docker/mysql-data/config/my.cnf:/etc/mysql/conf.d/my.cnf # 可选：自定义配置文件挂载
+
+volumes:
+  mysql-data:
+```
+
+```cnf
+// /Users/aqiang/docker/mysql-data/config/my.cnf
+
+[mysqld]
+# --- 服务器端字符集配置 ---
+character-set-server = utf8mb4
+collation-server = utf8mb4_general_ci
+
+[mysql]
+# --- 客户端命令行默认字符集配置 ---
+default-character-set = utf8mb4
+
+[client]
+# --- 客户端通用配置 ---
+default-character-set = utf8mb4
+```
+
+停止容器
+
+```bash
+docker-compose down
+```
+
+重启
+
+```bash
+docker-compose up -d
+```
+
+#### 4. 使用图形化工具
+
+使用任何图形化客户端（如 DBeaver、Navicat 等）连接到 Docker 上的 MySQL：
+
+| **配置项**          | **值**                     |
+| ------------------- | -------------------------- |
+| **主机 (Host)**     | `localhost` 或 `127.0.0.1` |
+| **端口 (Port)**     | `3306`                     |
+| **用户 (User)**     | `root`                     |
+| **密码 (Password)** | 123456                     |
+
+#### 5. 验证和管理
+
+- 检查容器状态： `docker ps`
+
+- 停止容器（数据保留）： `docker stop mysql`
+
+- 启动容器（数据恢复）： `docker start mysql`
+
+### 2-3 数据库设计
+
+#### 1. SQL
+
+- Structured query language 结构化查询语言
+- 大部分关系型数据库，拥有基本一致的 SQL 语法
+- 分支
+  - DDL - data definition language 数据定义语句 - 操作数据库对象，包括
+    - 库
+    - 表
+    - 视图
+    - 存储过程
+  - DML - data manipulation language 数据操控语句 - 操作数据库中的记录 （某一行数据的增删改查）
+  - DCL - data control language 数据控制语言 - 控制用户权限
+
+#### 2. 管理库
+
+- 创建库
+
+  ```sql
+  CREATE DATABASE test
+  ```
+
+- 切换库
+
+  ```sql
+  SHOW DATABASES; // 显示数据库列表
+  USE test; // 切换库
+  ```
+
+- 删除库
+
+  ```sql
+  DROP DATABASE test;
+  ```
+
+#### 3. 管理表
+
+管理表之前，先切换到当前的数据库
+
+- 创建表 - **CREATE TABLE**
+
+  - 字段名
+  - 字段类型
+    - bit - 占 1 位，0 或 1，false 或 true
+    - int - 占 32 位，整数
+    - decimal（M,N) - 能精确计算的实数。M 是总的数字位数，N 是小数位数
+    - char(n) - 固定长度位 n 的字符
+    - ==**varchar(n) - 长度可变，最大长度位 n 的字符**==
+    - text - 大量的字符
+    - date - 仅日期
+    - datetime - 日期+时间
+    - time - 仅时间
+  - 是不是 null - 必填？是不是有值？
+  - 自增 - 数字自增的话，必须要设置主键
+  - 默认值
+
+  ```sql
+  CREATE TABLE `students`  (
+    `sudtno` int NOT NULL AUTO_INCREMENT,
+    `name` varchar(255) NOT NULL,
+    `dob` date NOT NULL,
+    `sex` bit NOT NULL DEFAULT 1,
+    `address` varchar(255) NULL,
+    PRIMARY KEY (`sudtno` DESC)
+  );
+  ```
+
+- 修改表 - **ALTER TABLE**
+
+  比如添加一个字段 ADD COLUMN
+
+  ```sql
+  ALTER TABLE `students`
+  ADD COLUMN `email` varchar(255) NOT NULL AFTER `address`;
+  ```
+
+  删除一个字段 DROP COLUMN
+
+  ```sql
+  ALTER TABLE `students`
+  DROP COLUMN `email`;
+  ```
+
+- 删除表 - DROP TABLE
+
+  ```sql
+  DROP TABLE students;
+  ```
+
+#### 4. 主键和外键
+
+- 主键
+
+  - 根据设计原理，每张表都必须要求主键，保证数据的唯一性
+
+  - 主键必须满足如下要求：
+
+    - 唯一
+    - 不能更改
+    - 无业务含义
+
+    因此，上面表格中的 student no. 不能作为主键，需重新设计表格（增加 ID 作为主键）
+
+  ```sql
+  ALTER TABLE `students`
+  ADD COLUMN `id` int NOT NULL AUTO_INCREMENT FIRST,
+  DROP PRIMARY KEY,
+  ADD PRIMARY KEY (`id`) USING BTREE;
+  ```
+
+  可以使用内置的函数 uuid(), 获得唯一的 id
+
+- 外键
+
+  - 用来产生表关系的列
+  - 外键列会连接到另一张表（或自己）的主键
+
+  关系型数据库中，有多张表格，表格直接往往存在着关系，外键可以来连接有关系的表。
+
+  > 比如：我们已经有了上面的学生表，表里缺少班级或者课程的信息。我们可以再设计一张班级的表格，并给学生表添加班级字段，同时使用外键连接到班级表
+  
+  创建班级表
+  
+  ```sql
+  CREATE TABLE `class`  (
+    `ID` int NOT NULL AUTO_INCREMENT,
+    `class_name` varchar(255) NOT NULL,
+    `create_time` datetime NOT NULL,
+    PRIMARY KEY (`ID`)
+  );
+  ```
+  
+  修改学生表 - 添加班级id字段，并使用外键关联班级表
+  
+  ```sql
+  ALTER TABLE `students` 
+  ADD COLUMN `class_id` int NOT NULL AFTER `email`;
+  ```
+  
+  ```sql
+  ALTER TABLE `students` 
+  ADD FOREIGN KEY (`class_id`) REFERENCES `test`.`class` (`ID`);
+  ```
+  
+
+#### 5. 表关系
+
+- 一对一
+    - 一个A对应一个B，同时一个B对应一个A
+    - 例如：用户和用户信息
+    - 把任意一张表的主键同时设置为外键
+- 一对多
+    - 一个A对应多个B， 同时一个B对应一个A，A和B是一对多，B对A是多对一
+    - 例如：班级和学生， 用户和文章
+    - 在多的一端的表中设置外键，对应到另一张表的主键
+- 多对多
+    - 一个A对应多个B， 同时一个B对应多个A
+    - 例如：学生和老师
+    - 需要新建一张关系表，关系表至少包含两个外键，分别对应到两张表
+
+#### 6. 三大范式设计
+
+- 要求数据库表的每一列都是不可分割的原子数据项
+- 非主键列必须依赖于主键列
+- 非主键列必须直接依赖于主键列
+
+### 2-4 表记录的增删改
+
+### 2-5 表单基本查询
+
+### 2-6 联表查询
+
+### 2-7 函数和分组
+
+### 2-8 视图
 
 ## 3. 数据驱动和 ORM
 
