@@ -155,14 +155,14 @@
 
   ````js
   console.log(__dirname);
-  
+
   // Users/aqiang/Desktop/myGitHub/upload/duyi/3. Advanced Front-end Developer/02. 就业提升/03 node/code/src
-  
+
   - \_\_filename ：当前模块文件的完整绝对路径
-  
+
   ```js
   console.log(__filename);
-  
+
   // /Users/aqiang/Desktop/myGitHub/upload/duyi/3. Advanced Front-end Developer/02. 就业提升/03 node/code/src/index.ts
   ````
 
@@ -259,7 +259,7 @@ process ：当前 Node 的**进程**对象，包含运行环境、参数、事�
   ```js
   const buf = Buffer.from("hello");
   console.log(buf);
-  
+
   // <Buffer 68 65 6c 6c 6f>
   ```
 
@@ -929,12 +929,12 @@ console.log(url.format(urlOjb)); // https://www.example.com:8080/path/to/resourc
     },
     f: 5,
   };
-  
+
   const obj2 = {
     a: 1,
     b: 2,
   };
-  
+
   console.log(util.isDeepStrictEqual(obj1, obj2)); // false
   ```
 
@@ -1486,15 +1486,15 @@ console.log(stream);
   rs.on("open", () => {
     console.log("file opend");
   });
-  
+
   rs.on("data", (chunk) => {
     console.log("reading data:", chunk);
   });
-  
+
   rs.on("end", () => {
     console.log("reading data done");
   });
-  
+
   rs.on("close", () => {
     console.log("file colesd");
   });
@@ -1522,27 +1522,27 @@ console.log(stream);
   rs.on("open", () => {
     console.log("file opend");
   });
-  
+
   rs.on("data", (chunk) => {
     console.log("reading data:", chunk);
     rs.pause();
   });
-  
+
   rs.on("pause", () => {
     console.log("reading puased");
     setTimeout(() => {
       rs.resume();
     }, 1000);
   });
-  
+
   rs.on("resume", () => {
     console.log("reading resumed");
   });
-  
+
   rs.on("end", () => {
     console.log("reading data done");
   });
-  
+
   rs.on("close", () => {
     console.log("file colesd");
   });
@@ -1761,20 +1761,20 @@ console.log(stream);
   function method_2() {
     const from = path.resolve(__dirname, "./myFiles/file.txt");
     const to = path.resolve(__dirname, "./myFiles/file_copy.txt");
-  
+
     const rs = fs.createReadStream(from);
-  
+
     const ws = fs.createWriteStream(to);
     console.time("method 2");
-  
+
     rs.pipe(ws); // 使用管道方法
-  
+
     rs.on("close", () => {
       console.timeEnd("method 2");
       console.log("copy down");
     });
   }
-  
+
   method_2();
   ```
 
@@ -2085,7 +2085,7 @@ server.on("connection", (socket) => {
       console.log("响应消息", resp.statusMessage);
       console.log("响应头", resp.headers);
       console.log("响应头类型", resp.headers["content-type"]);
-  
+
       // 获取响应体
       let respBody = "";
       // 读取流
@@ -2273,28 +2273,28 @@ server.on("connection", (socket) => {
   ```ts
   import http from "http";
   import url from "url";
-  
+
   function handleReq(req) {
    ...
   }
-  
+
   function handlerRes(res) {
     res.setHeader("a", 1);
     res.setHeader("b", 1);
     res.statusCode = 404;
-  
+
     res.write("hello");
     res.end();
   }
-  
+
   const server = http.createServer((req, res) => {
     // 请求数据获取
     handleReq(req);
-  
+
     // 响应体对象设置
     handlerRes(res);
   });
-  
+
   server.listen(9530);
   server.on("listening", () => {
     console.log("server is listening on 9530");
@@ -3008,9 +3008,9 @@ docker-compose up -d
   关系型数据库中，有多张表格，表格直接往往存在着关系，外键可以来连接有关系的表。
 
   > 比如：我们已经有了上面的学生表，表里缺少班级或者课程的信息。我们可以再设计一张班级的表格，并给学生表添加班级字段，同时使用外键连接到班级表
-  
+
   创建班级表
-  
+
   ```sql
   CREATE TABLE `class`  (
     `ID` int NOT NULL AUTO_INCREMENT,
@@ -3019,34 +3019,33 @@ docker-compose up -d
     PRIMARY KEY (`ID`)
   );
   ```
-  
-  修改学生表 - 添加班级id字段，并使用外键关联班级表
-  
+
+  修改学生表 - 添加班级 id 字段，并使用外键关联班级表
+
   ```sql
-  ALTER TABLE `students` 
+  ALTER TABLE `students`
   ADD COLUMN `class_id` int NOT NULL AFTER `email`;
   ```
-  
+
   ```sql
-  ALTER TABLE `students` 
+  ALTER TABLE `students`
   ADD FOREIGN KEY (`class_id`) REFERENCES `test`.`class` (`ID`);
   ```
-  
 
 #### 5. 表关系
 
 - 一对一
-    - 一个A对应一个B，同时一个B对应一个A
-    - 例如：用户和用户信息
-    - 把任意一张表的主键同时设置为外键
+  - 一个 A 对应一个 B，同时一个 B 对应一个 A
+  - 例如：用户和用户信息
+  - 把任意一张表的主键同时设置为外键
 - 一对多
-    - 一个A对应多个B， 同时一个B对应一个A，A和B是一对多，B对A是多对一
-    - 例如：班级和学生， 用户和文章
-    - 在多的一端的表中设置外键，对应到另一张表的主键
+  - 一个 A 对应多个 B， 同时一个 B 对应一个 A，A 和 B 是一对多，B 对 A 是多对一
+  - 例如：班级和学生， 用户和文章
+  - 在多的一端的表中设置外键，对应到另一张表的主键
 - 多对多
-    - 一个A对应多个B， 同时一个B对应多个A
-    - 例如：学生和老师
-    - 需要新建一张关系表，关系表至少包含两个外键，分别对应到两张表
+  - 一个 A 对应多个 B， 同时一个 B 对应多个 A
+  - 例如：学生和老师
+  - 需要新建一张关系表，关系表至少包含两个外键，分别对应到两张表
 
 #### 6. 三大范式设计
 
