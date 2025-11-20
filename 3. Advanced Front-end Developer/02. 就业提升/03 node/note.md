@@ -3057,60 +3057,60 @@ docker-compose up -d
 
 对应表中数据记录的操作，通用使用DML（data manipulation language）数据操控语言，CRUD
 
-- CREATE - 增
+#### 1. CREATE - 增
 
-    **`INSERT INTO`**
+**`INSERT INTO`**
 
-    增加一条记录 
+增加一条记录 
 
-    ```sql
-    INSERT INTO student (sudtno, `name`, dob, sex, address, email, class_id)
-    VALUES
-    (3, 'lee', '2000-1-1', 1, '100 newnorth road, Mt Albert', 'leelee@gmail.com', 1);
-    ```
+```sql
+INSERT INTO student (sudtno, `name`, dob, sex, address, email, class_id)
+VALUES
+(3, 'lee', '2000-1-1', 1, '100 newnorth road, Mt Albert', 'leelee@gmail.com', 1);
+```
 
-    增加多条记录
+增加多条记录
 
-    ```sql
-    INSERT INTO student (sudtno, `name`, dob, sex, address, email, class_id)
-    VALUES
-    (3, 'PAR', '2002-1-2', 1, '101 newnorth road, Mt Albert', 'PAR@gmail.com', 1),
-    (3, 'JAY', '2003-1-3', 1, '102 newnorth road, Mt Albert', 'JAY@gmail.com', 2),
-    (3, 'KEN', '2004-1-4', 1, '188 newnorth road, Mt Albert', 'KEN@gmail.com', 2);
-    ```
+```sql
+INSERT INTO student (sudtno, `name`, dob, sex, address, email, class_id)
+VALUES
+(3, 'PAR', '2002-1-2', 1, '101 newnorth road, Mt Albert', 'PAR@gmail.com', 1),
+(3, 'JAY', '2003-1-3', 1, '102 newnorth road, Mt Albert', 'JAY@gmail.com', 2),
+(3, 'KEN', '2004-1-4', 1, '188 newnorth road, Mt Albert', 'KEN@gmail.com', 2);
+```
 
-- RETRIEVE - 查
 
-- UPDATE - 改
 
-    **`UPDATE SET`**
+#### 2. UPDATE - 改
 
-    ```sql
-    -- 修改记录
-    UPDATE student
-    SET `name` = 'ches'
-    WHERE id = 1;
-    	
-    UPDATE student
-    SET address = '111 newsouth road, Mt Roskill',
-    email = 'ches@gmail.com'
-    WHERE id = 1;
-    ```
+**`UPDATE SET`**
 
-- DELETE - 删
+```sql
+-- 修改记录
+UPDATE student
+SET `name` = 'ches'
+WHERE id = 1;
+	
+UPDATE student
+SET address = '111 newsouth road, Mt Roskill',
+email = 'ches@gmail.com'
+WHERE id = 1;
+```
 
-    **`DELETE FROM`**
+#### 3. DELETE - 删
 
-    ```sql
-    -- 删除表记录
-    DELETE
-    FROM
-    	student
-    WHERE
-    	id = 7
-    ```
+**`DELETE FROM`**
 
-    
+```sql
+-- 删除表记录
+DELETE
+FROM
+	student
+WHERE
+	id = 7
+```
+
+
 
 ### 2-5 单表的基本查询
 
@@ -3120,9 +3120,9 @@ docker-compose up -d
 
 `selete...from...where...order by...limit...`
 
-- select
+#### 1. select
 
-    - 最简单的查询
+- 最简单的查询
 
     ```sql
     SELECT
@@ -3133,7 +3133,7 @@ docker-compose up -d
 
     从原始数据记录（存储在硬盘）中的company表中，依次取出id的值，放入查询结果（内存中）并返回
 
-    - 可以查多个字段
+- 可以查多个字段
 
     ```sql
     -- 查询多个字段
@@ -3145,7 +3145,7 @@ docker-compose up -d
     	company;
     ```
 
-    - 查询全部
+- 查询全部
 
     ```sql
     SELECT
@@ -3154,7 +3154,7 @@ docker-compose up -d
     	company;
     ```
 
-    - 别名 as
+- 别名 as
 
     ```sql
     SELECT
@@ -3163,7 +3163,7 @@ docker-compose up -d
     	employee
     ```
 
-    - 对某一列数据进行进一步处理 case...end
+- 对某一列数据进行进一步处理 case...end
 
     ```sql
     SELECT
@@ -3264,11 +3264,15 @@ docker-compose up -d
     +----+---------+--------+----------+--------------+---------+
     ```
 
-- from - 绝大多数情况下，是表名
+#### 2. from
 
-- where - 对数据先进行筛选， 比如只需要性别是男的
+绝大多数情况下，是表名
 
-    - 基础用法
+#### 3. where 
+
+对数据先进行筛选，比如只需要性别是男的
+
+- 基础用法
 
     ```sql
     SELECT
@@ -3335,214 +3339,212 @@ docker-compose up -d
 
     注意：执行的逻辑顺序，**先进行筛选，在进行查询处理**， 不能对处理的结果进行查询，比如，不能 `WHERE sex = 'male';`因为where操作的是原始表数据，原始表数据里没有sex字段
 
-    - where删选条件的写法：
+- in
 
-        - =
+    ```sql
+    SELECT *
+    FROM department
+    WHERE companyId in (1,2,4);
+    ```
 
-        - in
+    ```bash
+    +----+-------------------+-----------+------------+
+    | id | name              | companyId | buildDate  |
+    +----+-------------------+-----------+------------+
+    |  1 | HR                |         1 | 2001-04-01 |
+    |  2 | Finance           |         1 | 2002-06-15 |
+    |  3 | R&D               |         2 | 2006-08-10 |
+    |  4 | Marketing         |         2 | 2007-07-22 |
+    |  7 | Support           |         4 | 1999-12-15 |
+    |  8 | Quality Assurance |         4 | 2000-01-01 |
+    +----+-------------------+-----------+------------+
+    ```
 
-        ```sql
-        SELECT *
-        FROM department
-        WHERE companyId in (1,2,4);
-        ```
+- is / is not - 对值是null的查询
 
-        ```bash
-        +----+-------------------+-----------+------------+
-        | id | name              | companyId | buildDate  |
-        +----+-------------------+-----------+------------+
-        |  1 | HR                |         1 | 2001-04-01 |
-        |  2 | Finance           |         1 | 2002-06-15 |
-        |  3 | R&D               |         2 | 2006-08-10 |
-        |  4 | Marketing         |         2 | 2007-07-22 |
-        |  7 | Support           |         4 | 1999-12-15 |
-        |  8 | Quality Assurance |         4 | 2000-01-01 |
-        +----+-------------------+-----------+------------+
-        ```
+    ```sql
+    SELECT
+    	*
+    FROM
+    	employee
+    WHERE
+    	location IS NULL;
+    ```
 
-        - is / is not - 对值是null的查询
+    ```bash
+    +----+---------+----------+--------+------------+---------+--------+------------+
+    | id | name    | location | ismale | joinDate   | salary  | deptId | birthday   |
+    +----+---------+----------+--------+------------+---------+--------+------------+
+    |  3 | Charlie | NULL     |      1 | 2019-03-10 | 8000.50 |      2 | 1992-12-02 |
+    |  5 | Eric    | NULL     |      1 | 2021-03-16 | 5500.00 |      3 | 1995-06-30 |
+    | 10 | Julia   | NULL     |      0 | 2014-07-25 | 9900.50 |      5 | 1986-02-09 |
+    +----+---------+----------+--------+------------+---------+--------+------------+
+    ```
 
-        ```sql
-        SELECT
-        	*
-        FROM
-        	employee
-        WHERE
-        	location IS NULL;
-        ```
+    ```sql
+    SELECT
+    	*
+    FROM
+    	employee
+    WHERE
+    	location IS NOT NULL;
+    ```
 
-        ```bash
-        +----+---------+----------+--------+------------+---------+--------+------------+
-        | id | name    | location | ismale | joinDate   | salary  | deptId | birthday   |
-        +----+---------+----------+--------+------------+---------+--------+------------+
-        |  3 | Charlie | NULL     |      1 | 2019-03-10 | 8000.50 |      2 | 1992-12-02 |
-        |  5 | Eric    | NULL     |      1 | 2021-03-16 | 5500.00 |      3 | 1995-06-30 |
-        | 10 | Julia   | NULL     |      0 | 2014-07-25 | 9900.50 |      5 | 1986-02-09 |
-        +----+---------+----------+--------+------------+---------+--------+------------+
-        ```
+    ```bash
+    +----+--------+----------+--------+------------+---------+--------+------------+
+    | id | name   | location | ismale | joinDate   | salary  | deptId | birthday   |
+    +----+--------+----------+--------+------------+---------+--------+------------+
+    |  1 | Alice  | New York |      0 | 2020-01-01 | 6500.00 |      1 | 1990-04-12 |
+    |  2 | Bob    | New York |      1 | 2018-06-14 | 7200.00 |      1 | 1988-09-23 |
+    |  4 | Diana  | London   |      0 | 2017-10-05 | 9000.00 |      2 | 1987-05-18 |
+    |  6 | Fiona  | Beijing  |      0 | 2016-11-20 | 7800.25 |      3 | 1991-01-07 |
+    |  7 | George | Tokyo    |      1 | 2015-04-01 | 9500.00 |      4 | 1985-08-08 |
+    |  8 | Helen  | Tokyo    |      0 | 2022-02-10 | 6200.00 |      4 | 1997-11-21 |
+    |  9 | Ian    | Sydney   |      1 | 2019-09-01 | 8300.00 |      5 | 1993-03-12 |
+    +----+--------+----------+--------+------------+---------+--------+------------+
+    ```
 
-        ```sql
-        SELECT
-        	*
-        FROM
-        	employee
-        WHERE
-        	location IS NOT NULL;
-        ```
+- '<' , '<=' ,'>', '>=' 
 
-        ```BASH
-        +----+--------+----------+--------+------------+---------+--------+------------+
-        | id | name   | location | ismale | joinDate   | salary  | deptId | birthday   |
-        +----+--------+----------+--------+------------+---------+--------+------------+
-        |  1 | Alice  | New York |      0 | 2020-01-01 | 6500.00 |      1 | 1990-04-12 |
-        |  2 | Bob    | New York |      1 | 2018-06-14 | 7200.00 |      1 | 1988-09-23 |
-        |  4 | Diana  | London   |      0 | 2017-10-05 | 9000.00 |      2 | 1987-05-18 |
-        |  6 | Fiona  | Beijing  |      0 | 2016-11-20 | 7800.25 |      3 | 1991-01-07 |
-        |  7 | George | Tokyo    |      1 | 2015-04-01 | 9500.00 |      4 | 1985-08-08 |
-        |  8 | Helen  | Tokyo    |      0 | 2022-02-10 | 6200.00 |      4 | 1997-11-21 |
-        |  9 | Ian    | Sydney   |      1 | 2019-09-01 | 8300.00 |      5 | 1993-03-12 |
-        +----+--------+----------+--------+------------+---------+--------+------------+
-        ```
+    ```SQL
+    SELECT
+    	*
+    FROM
+    	employee
+    WHERE
+    	salary >= 8000;
+    ```
 
-        - '<' , '<=' ,'>', '>=' 
+    ```BASH
+    +----+---------+----------+--------+------------+---------+--------+------------+
+    | id | name    | location | ismale | joinDate   | salary  | deptId | birthday   |
+    +----+---------+----------+--------+------------+---------+--------+------------+
+    |  3 | Charlie | NULL     |      1 | 2019-03-10 | 8000.50 |      2 | 1992-12-02 |
+    |  4 | Diana   | London   |      0 | 2017-10-05 | 9000.00 |      2 | 1987-05-18 |
+    |  7 | George  | Tokyo    |      1 | 2015-04-01 | 9500.00 |      4 | 1985-08-08 |
+    |  9 | Ian     | Sydney   |      1 | 2019-09-01 | 8300.00 |      5 | 1993-03-12 |
+    | 10 | Julia   | NULL     |      0 | 2014-07-25 | 9900.50 |      5 | 1986-02-09 |
+    +----+---------+----------+--------+------------+---------+--------+------------+
+    ```
 
-            ```SQL
-            SELECT
-            	*
-            FROM
-            	employee
-            WHERE
-            	salary >= 8000;
-            ```
+- between and
 
-            ```BASH
-            +----+---------+----------+--------+------------+---------+--------+------------+
-            | id | name    | location | ismale | joinDate   | salary  | deptId | birthday   |
-            +----+---------+----------+--------+------------+---------+--------+------------+
-            |  3 | Charlie | NULL     |      1 | 2019-03-10 | 8000.50 |      2 | 1992-12-02 |
-            |  4 | Diana   | London   |      0 | 2017-10-05 | 9000.00 |      2 | 1987-05-18 |
-            |  7 | George  | Tokyo    |      1 | 2015-04-01 | 9500.00 |      4 | 1985-08-08 |
-            |  9 | Ian     | Sydney   |      1 | 2019-09-01 | 8300.00 |      5 | 1993-03-12 |
-            | 10 | Julia   | NULL     |      0 | 2014-07-25 | 9900.50 |      5 | 1986-02-09 |
-            +----+---------+----------+--------+------------+---------+--------+------------+
-            ```
+    ```sql
+    SELECT
+    	*
+    FROM
+    	employee
+    WHERE
+    	salary BETWEEN 5500
+    	AND 7400;
+    ```
 
-        - between and
+    ```bash
+    +----+-------+----------+--------+------------+---------+--------+------------+
+    | id | name  | location | ismale | joinDate   | salary  | deptId | birthday   |
+    +----+-------+----------+--------+------------+---------+--------+------------+
+    |  1 | Alice | New York |      0 | 2020-01-01 | 6500.00 |      1 | 1990-04-12 |
+    |  2 | Bob   | New York |      1 | 2018-06-14 | 7200.00 |      1 | 1988-09-23 |
+    |  5 | Eric  | NULL     |      1 | 2021-03-16 | 5500.00 |      3 | 1995-06-30 |
+    |  8 | Helen | Tokyo    |      0 | 2022-02-10 | 6200.00 |      4 | 1997-11-21 |
+    +----+-------+----------+--------+------------+---------+--------+------------+
+    ```
 
-            ```sql
-            SELECT
-            	*
-            FROM
-            	employee
-            WHERE
-            	salary BETWEEN 5500
-            	AND 7400;
-            ```
+- like - 模糊匹配
 
-            ```bash
-            +----+-------+----------+--------+------------+---------+--------+------------+
-            | id | name  | location | ismale | joinDate   | salary  | deptId | birthday   |
-            +----+-------+----------+--------+------------+---------+--------+------------+
-            |  1 | Alice | New York |      0 | 2020-01-01 | 6500.00 |      1 | 1990-04-12 |
-            |  2 | Bob   | New York |      1 | 2018-06-14 | 7200.00 |      1 | 1988-09-23 |
-            |  5 | Eric  | NULL     |      1 | 2021-03-16 | 5500.00 |      3 | 1995-06-30 |
-            |  8 | Helen | Tokyo    |      0 | 2022-02-10 | 6200.00 |      4 | 1997-11-21 |
-            +----+-------+----------+--------+------------+---------+--------+------------+
-            ```
+    ```sql
+    SELECT
+    	*
+    FROM
+    	employee
+    WHERE
+    	`name` LIKE '%a%';
+    ```
 
-        - like - 模糊匹配
+    ```bash
+    +----+---------+----------+--------+------------+---------+--------+------------+
+    | id | name    | location | ismale | joinDate   | salary  | deptId | birthday   |
+    +----+---------+----------+--------+------------+---------+--------+------------+
+    |  1 | Alice   | New York |      0 | 2020-01-01 | 6500.00 |      1 | 1990-04-12 |
+    |  3 | Charlie | NULL     |      1 | 2019-03-10 | 8000.50 |      2 | 1992-12-02 |
+    |  4 | Diana   | London   |      0 | 2017-10-05 | 9000.00 |      2 | 1987-05-18 |
+    |  6 | Fiona   | Beijing  |      0 | 2016-11-20 | 7800.25 |      3 | 1991-01-07 |
+    |  9 | Ian     | Sydney   |      1 | 2019-09-01 | 8300.00 |      5 | 1993-03-12 |
+    | 10 | Julia   | NULL     |      0 | 2014-07-25 | 9900.50 |      5 | 1986-02-09 |
+    +----+---------+----------+--------+------------+---------+--------+------------+
+    ```
 
-            ```sql
-            SELECT
-            	*
-            FROM
-            	employee
-            WHERE
-            	`name` LIKE '%a%';
-            ```
+    或者
 
-            ```bash
-            +----+---------+----------+--------+------------+---------+--------+------------+
-            | id | name    | location | ismale | joinDate   | salary  | deptId | birthday   |
-            +----+---------+----------+--------+------------+---------+--------+------------+
-            |  1 | Alice   | New York |      0 | 2020-01-01 | 6500.00 |      1 | 1990-04-12 |
-            |  3 | Charlie | NULL     |      1 | 2019-03-10 | 8000.50 |      2 | 1992-12-02 |
-            |  4 | Diana   | London   |      0 | 2017-10-05 | 9000.00 |      2 | 1987-05-18 |
-            |  6 | Fiona   | Beijing  |      0 | 2016-11-20 | 7800.25 |      3 | 1991-01-07 |
-            |  9 | Ian     | Sydney   |      1 | 2019-09-01 | 8300.00 |      5 | 1993-03-12 |
-            | 10 | Julia   | NULL     |      0 | 2014-07-25 | 9900.50 |      5 | 1986-02-09 |
-            +----+---------+----------+--------+------------+---------+--------+------------+
-            ```
+    ```sql
+    SELECT
+    	*
+    FROM
+    	employee
+    WHERE
+    	`name` LIKE '_a_';
+    ```
 
-            或者
+    ```bash
+    +----+------+----------+--------+------------+---------+--------+------------+
+    | id | name | location | ismale | joinDate   | salary  | deptId | birthday   |
+    +----+------+----------+--------+------------+---------+--------+------------+
+    |  9 | Ian  | Sydney   |      1 | 2019-09-01 | 8300.00 |      5 | 1993-03-12 |
+    +----+------+----------+--------+------------+---------+--------+------------+
+    ```
 
-            ```sql
-            SELECT
-            	*
-            FROM
-            	employee
-            WHERE
-            	`name` LIKE '_a_';
-            ```
+- and - 逻辑与
 
-            ```bash
-            +----+------+----------+--------+------------+---------+--------+------------+
-            | id | name | location | ismale | joinDate   | salary  | deptId | birthday   |
-            +----+------+----------+--------+------------+---------+--------+------------+
-            |  9 | Ian  | Sydney   |      1 | 2019-09-01 | 8300.00 |      5 | 1993-03-12 |
-            +----+------+----------+--------+------------+---------+--------+------------+
-            ```
+    ```sql
+    SELECT
+    	*
+    FROM
+    	employee
+    WHERE
+    	`name` LIKE '%a%'
+    	AND ismale = 0
+    	AND salary >= 7000;
+    ```
 
-        - and - 逻辑与
+    ```bash
+    +----+-------+----------+--------+------------+---------+--------+------------+
+    | id | name  | location | ismale | joinDate   | salary  | deptId | birthday   |
+    +----+-------+----------+--------+------------+---------+--------+------------+
+    |  4 | Diana | London   |      0 | 2017-10-05 | 9000.00 |      2 | 1987-05-18 |
+    |  6 | Fiona | Beijing  |      0 | 2016-11-20 | 7800.25 |      3 | 1991-01-07 |
+    | 10 | Julia | NULL     |      0 | 2014-07-25 | 9900.50 |      5 | 1986-02-09 |
+    +----+-------+----------+--------+------------+---------+--------+------------+
+    ```
 
-            ```sql
-            SELECT
-            	*
-            FROM
-            	employee
-            WHERE
-            	`name` LIKE '%a%'
-            	AND ismale = 0
-            	AND salary >= 7000;
-            ```
+- or - 逻辑或
 
-            ```bash
-            +----+-------+----------+--------+------------+---------+--------+------------+
-            | id | name  | location | ismale | joinDate   | salary  | deptId | birthday   |
-            +----+-------+----------+--------+------------+---------+--------+------------+
-            |  4 | Diana | London   |      0 | 2017-10-05 | 9000.00 |      2 | 1987-05-18 |
-            |  6 | Fiona | Beijing  |      0 | 2016-11-20 | 7800.25 |      3 | 1991-01-07 |
-            | 10 | Julia | NULL     |      0 | 2014-07-25 | 9900.50 |      5 | 1986-02-09 |
-            +----+-------+----------+--------+------------+---------+--------+------------+
-            ```
+    ```sql
+    SELECT
+    	*
+    FROM
+    	employee
+    WHERE
+    	`name` LIKE '%a%'
+    	AND ismale = 0
+    	OR (salary <7000 AND birthday <= (1980-1-1));
+    ```
 
-        - or - 逻辑或
+    ```bash
+    +----+-------+----------+--------+------------+---------+--------+------------+
+    | id | name  | location | ismale | joinDate   | salary  | deptId | birthday   |
+    +----+-------+----------+--------+------------+---------+--------+------------+
+    |  1 | Alice | New York |      0 | 2020-01-01 | 6500.00 |      1 | 1990-04-12 |
+    |  4 | Diana | London   |      0 | 2017-10-05 | 9000.00 |      2 | 1987-05-18 |
+    |  6 | Fiona | Beijing  |      0 | 2016-11-20 | 7800.25 |      3 | 1991-01-07 |
+    | 10 | Julia | NULL     |      0 | 2014-07-25 | 9900.50 |      5 | 1986-02-09 |
+    +----+-------+----------+--------+------------+---------+--------+------------+
+    ```
 
-            ```sql
-            SELECT
-            	*
-            FROM
-            	employee
-            WHERE
-            	`name` LIKE '%a%'
-            	AND ismale = 0
-            	OR (salary <7000 AND birthday <= (1980-1-1));
-            ```
+#### 4. order by 
 
-            ```bash
-            +----+-------+----------+--------+------------+---------+--------+------------+
-            | id | name  | location | ismale | joinDate   | salary  | deptId | birthday   |
-            +----+-------+----------+--------+------------+---------+--------+------------+
-            |  1 | Alice | New York |      0 | 2020-01-01 | 6500.00 |      1 | 1990-04-12 |
-            |  4 | Diana | London   |      0 | 2017-10-05 | 9000.00 |      2 | 1987-05-18 |
-            |  6 | Fiona | Beijing  |      0 | 2016-11-20 | 7800.25 |      3 | 1991-01-07 |
-            | 10 | Julia | NULL     |      0 | 2014-07-25 | 9900.50 |      5 | 1986-02-09 |
-            +----+-------+----------+--------+------------+---------+--------+------------+
-            ```
+对筛选的结果继续排序
 
-- order by - 对筛选的结果继续排序
-
-    - asc - 升序
+- asc - 升序
 
     ```sql
     SELECT
@@ -3568,9 +3570,7 @@ docker-compose up -d
     +----+-------+----------+--------+------------+---------+--------+------------+
     ```
 
-    
-
-    - Desc- 降序
+- Desc- 降序
 
     ```sql
     SELECT
@@ -3623,127 +3623,434 @@ docker-compose up -d
     +----+--------+----------+--------+------------+---------+--------+------------+
     ```
 
-- limit (m, n ) - 对筛选结果跳过m条数据，取n条
+#### 5. limit (m, n ) 
+
+对筛选结果跳过m条数据，取n条
+
+```sql
+SELECT
+	*
+FROM
+	company
+	LIMIT 2, 4;
+```
+
+```bash
++----+-------------+-------------+------------+
+| id | name        | location    | buildDate  |
++----+-------------+-------------+------------+
+|  3 | Sunrise Ltd | Beijing     | 2010-05-01 |
+|  4 | GlobalWorks | Tokyo       | 1998-11-11 |
+|  5 | OceanData   | Sydney      | 2012-09-09 |
+|  6 | SkyNet      | Los Angeles | 2015-12-01 |
++----+-------------+-------------+------------+
+```
+
+如果先排序
+
+```sql
+SELECT
+	*
+FROM
+	company
+ORDER BY
+	location
+	LIMIT 2,4;
+```
+
+```bash
++----+------------+-------------+------------+
+| id | name       | location    | buildDate  |
++----+------------+-------------+------------+
+|  2 | GreenSoft  | London      | 2005-07-20 |
+|  6 | SkyNet     | Los Angeles | 2015-12-01 |
+|  1 | TechCorp   | New York    | 2000-03-15 |
+|  9 | PrimeLogic | Paris       | 2007-01-19 |
++----+------------+-------------+------------+
+```
+
+**==注意：运行顺序 from -> where -> select ->order by -> limit==**
+
+#### 6. 项目练习
+
+- 用户登录 
+
+    比如查询user表，得到账号为admin, 密码为123456的用户， 如果查不到，登录失败
 
     ```sql
     SELECT
     	*
     FROM
-    	company
-    	LIMIT 2, 4;
+    	`user`
+    WHERE
+    	loginId = 'admin'
+    	AND loginPwd = '123456';
     ```
 
     ```bash
-    +----+-------------+-------------+------------+
-    | id | name        | location    | buildDate  |
-    +----+-------------+-------------+------------+
-    |  3 | Sunrise Ltd | Beijing     | 2010-05-01 |
-    |  4 | GlobalWorks | Tokyo       | 1998-11-11 |
-    |  5 | OceanData   | Sydney      | 2012-09-09 |
-    |  6 | SkyNet      | Los Angeles | 2015-12-01 |
-    +----+-------------+-------------+------------+
+    +----+---------+----------+
+    | id | loginId | loginPwd |
+    +----+---------+----------+
+    |  1 | admin   | 123456   |
+    +----+---------+----------+
     ```
 
-    如果先排序
+- 分页查询
+
+    比如： 查询员工表，按照员工的入职时间降序排序，并且使用分页查询
+
+    - 查询第3页，每页4条数据
+    - limit （page-1)*pagesize, pagesize
 
     ```sql
     SELECT
     	*
     FROM
-    	company
+    	employee
     ORDER BY
-    	location
-    	LIMIT 2,4;
+    	joinDate DESC
+    	LIMIT 8,4;
     ```
 
     ```bash
-    +----+------------+-------------+------------+
-    | id | name       | location    | buildDate  |
-    +----+------------+-------------+------------+
-    |  2 | GreenSoft  | London      | 2005-07-20 |
-    |  6 | SkyNet     | Los Angeles | 2015-12-01 |
-    |  1 | TechCorp   | New York    | 2000-03-15 |
-    |  9 | PrimeLogic | Paris       | 2007-01-19 |
-    +----+------------+-------------+------------+
+    +----+--------+----------+--------+------------+---------+--------+------------+
+    | id | name   | location | ismale | joinDate   | salary  | deptId | birthday   |
+    +----+--------+----------+--------+------------+---------+--------+------------+
+    |  7 | George | Tokyo    |      1 | 2015-04-01 | 9500.00 |      4 | 1985-08-08 |
+    | 10 | Julia  | NULL     |      0 | 2014-07-25 | 9900.50 |      5 | 1986-02-09 |
+    +----+--------+----------+--------+------------+---------+--------+------------+
     ```
 
-- 运行顺序 from -> where -> select ->order by -> limit
+- 查询工资最高的女员工
 
-- 项目练习
+    ```sql
+    SELECT
+    	*
+    FROM
+    	employee
+    WHERE
+    	ismale = 0
+    ORDER BY
+    	salary DESC
+    	LIMIT 0, 1;
+    ```
 
-    - 用户登录 
-
-        比如查询user表，得到账号为admin, 密码为123456的用户， 如果查不到，登录失败
-
-        ```sql
-        SELECT
-        	*
-        FROM
-        	`user`
-        WHERE
-        	loginId = 'admin'
-        	AND loginPwd = '123456';
-        ```
-
-        ```bash
-        +----+---------+----------+
-        | id | loginId | loginPwd |
-        +----+---------+----------+
-        |  1 | admin   | 123456   |
-        +----+---------+----------+
-        ```
-
-    - 分页查询
-
-        比如： 查询员工表，按照员工的入职时间降序排序，并且使用分页查询
-
-        - 查询第3页，每页4条数据
-        - limit （page-1)*pagesize, pagesize
-
-        ```sql
-        SELECT
-        	*
-        FROM
-        	employee
-        ORDER BY
-        	joinDate DESC
-        	LIMIT 8,4;
-        ```
-
-        ```bash
-        +----+--------+----------+--------+------------+---------+--------+------------+
-        | id | name   | location | ismale | joinDate   | salary  | deptId | birthday   |
-        +----+--------+----------+--------+------------+---------+--------+------------+
-        |  7 | George | Tokyo    |      1 | 2015-04-01 | 9500.00 |      4 | 1985-08-08 |
-        | 10 | Julia  | NULL     |      0 | 2014-07-25 | 9900.50 |      5 | 1986-02-09 |
-        +----+--------+----------+--------+------------+---------+--------+------------+
-        ```
-
-    - 查询工资最高的女员工
-
-        ```sql
-        SELECT
-        	*
-        FROM
-        	employee
-        WHERE
-        	ismale = 0
-        ORDER BY
-        	salary DESC
-        	LIMIT 0, 1;
-        ```
-
-        ```bash
-        +----+-------+----------+--------+------------+---------+--------+------------+
-        | id | name  | location | ismale | joinDate   | salary  | deptId | birthday   |
-        +----+-------+----------+--------+------------+---------+--------+------------+
-        | 10 | Julia | NULL     |      0 | 2014-07-25 | 9900.50 |      5 | 1986-02-09 |
-        +----+-------+----------+--------+------------+---------+--------+------------+
-        ```
-
-        
+    ```bash
+    +----+-------+----------+--------+------------+---------+--------+------------+
+    | id | name  | location | ismale | joinDate   | salary  | deptId | birthday   |
+    +----+-------+----------+--------+------------+---------+--------+------------+
+    | 10 | Julia | NULL     |      0 | 2014-07-25 | 9900.50 |      5 | 1986-02-09 |
+    +----+-------+----------+--------+------------+---------+--------+------------+
+    ```
 
 ### 2-6 联表查询
+
+#### ~~1. 全连接 - 了解~~
+
+笛卡尔积，表之间数据的组合
+
+不常用，比如NBA球队之间主客场对阵表
+
+```sql
+SELECT
+	t1.`name` as 'home', t2.`name` as 'away'
+FROM
+	nba_team AS t1,
+	nba_team AS t2
+WHERE t1.id != t2.id
+  AND t1.conference = t2.conference
+	LIMIT 24,10;
+```
+
+```bash
++--------------------+-----------------+
+| home               | away            |
++--------------------+-----------------+
+| Toronto Raptors    | Brooklyn Nets   |
+| Philadelphia 76ers | Brooklyn Nets   |
+| New York Knicks    | Brooklyn Nets   |
+| Boston Celtics     | Brooklyn Nets   |
+| Washington Wizards | New York Knicks |
+| Orlando Magic      | New York Knicks |
+| Miami Heat         | New York Knicks |
+| Charlotte Hornets  | New York Knicks |
+| Atlanta Hawks      | New York Knicks |
+| Milwaukee Bucks    | New York Knicks |
++--------------------+-----------------+
+```
+
+
+
+#### ~~2. 左连接 - 了解~~
+
+左外连接，left join
+
+以一张表作为基准，去连接另一张表，并满足特定的条件
+
+```sql
+SELECT
+    e.id,
+    e.name AS empName,
+    e.deptId,
+    d.name AS deptName,
+    d.buildDate
+FROM
+    employee AS e
+LEFT JOIN department AS d 
+ON e.deptId = d.id;
+```
+
+```bash
++----+---------+--------+-------------+------------+
+| id | empName | deptId | deptName    | buildDate  |
++----+---------+--------+-------------+------------+
+|  1 | Alice   |      1 | HR          | 2001-04-01 |
+|  2 | Bob     |      1 | HR          | 2001-04-01 |
+|  3 | Charlie |      2 | Finance     | 2002-06-15 |
+|  4 | Diana   |      2 | Finance     | 2002-06-15 |
+|  5 | Eric    |      3 | R&D         | 2006-08-10 |
+|  6 | Fiona   |      3 | R&D         | 2006-08-10 |
+|  7 | George  |      4 | Marketing   | 2007-07-22 |
+|  8 | Helen   |      4 | Marketing   | 2007-07-22 |
+|  9 | Ian     |      5 | Engineering | 2011-03-12 |
+| 10 | Julia   |      5 | Engineering | 2011-03-12 |
++----+---------+--------+-------------+------------+
+```
+
+如果不满足条件，至少要记录一条基准表的记录(左表为基准)
+
+#### ~~3. 右连接 - 了解~~
+
+右外连接， right join
+
+```sql
+SELECT
+    e.id,
+    e.name AS empName,
+    e.deptId,
+    d.name AS deptName,
+    d.buildDate
+FROM
+    employee AS e
+RIGHT JOIN department AS d 
+ON e.deptId = d.id;
+```
+
+```bash
++------+---------+--------+-------------------+------------+
+| id   | empName | deptId | deptName          | buildDate  |
++------+---------+--------+-------------------+------------+
+|    1 | Alice   |      1 | HR                | 2001-04-01 |
+|    2 | Bob     |      1 | HR                | 2001-04-01 |
+|    3 | Charlie |      2 | Finance           | 2002-06-15 |
+|    4 | Diana   |      2 | Finance           | 2002-06-15 |
+|    5 | Eric    |      3 | R&D               | 2006-08-10 |
+|    6 | Fiona   |      3 | R&D               | 2006-08-10 |
+|    7 | George  |      4 | Marketing         | 2007-07-22 |
+|    8 | Helen   |      4 | Marketing         | 2007-07-22 |
+|    9 | Ian     |      5 | Engineering       | 2011-03-12 |
+|   10 | Julia   |      5 | Engineering       | 2011-03-12 |
+| NULL | NULL    |   NULL | Sales             | 2012-02-01 |
+| NULL | NULL    |   NULL | Support           | 1999-12-15 |
+| NULL | NULL    |   NULL | Quality Assurance | 2000-01-01 |
+| NULL | NULL    |   NULL | Product           | 2013-05-20 |
+| NULL | NULL    |   NULL | Operations        | 2014-08-30 |
+| NULL | NULL    |   NULL | New Dept          | 2025-11-20 |
++------+---------+--------+-------------------+------------+
+```
+
+如果不满足条件，至少要记录一条基准表的记录(右表为基准)
+
+#### 4. 内连接
+
+显示的是必须满足条件的记录
+
+```sql
+SELECT
+    e.id,
+    e.name AS empName,
+    e.deptId,
+    d.name AS deptName,
+    d.buildDate
+FROM
+    employee AS e
+INNER JOIN department AS d 
+ON e.deptId = d.id;
+```
+
+```bash
++----+---------+--------+-------------+------------+
+| id | empName | deptId | deptName    | buildDate  |
++----+---------+--------+-------------+------------+
+|  1 | Alice   |      1 | HR          | 2001-04-01 |
+|  2 | Bob     |      1 | HR          | 2001-04-01 |
+|  3 | Charlie |      2 | Finance     | 2002-06-15 |
+|  4 | Diana   |      2 | Finance     | 2002-06-15 |
+|  5 | Eric    |      3 | R&D         | 2006-08-10 |
+|  6 | Fiona   |      3 | R&D         | 2006-08-10 |
+|  7 | George  |      4 | Marketing   | 2007-07-22 |
+|  8 | Helen   |      4 | Marketing   | 2007-07-22 |
+|  9 | Ian     |      5 | Engineering | 2011-03-12 |
+| 10 | Julia   |      5 | Engineering | 2011-03-12 |
++----+---------+--------+-------------+------------+
+```
+
+可以进行多张表的连接
+
+```sql
+SELECT
+	e.id,
+	e.`name` AS empName,
+	e.deptId,
+	d.`name` AS deptName,
+	d.buildDate,
+	d.companyId,
+	c.`name` AS cName
+FROM
+	employee AS e
+	INNER JOIN department AS d ON e.deptId = d.id
+	INNER JOIN company AS c ON d.companyId = c.id;
+```
+
+```bash
++----+---------+--------+-------------+------------+-----------+-------------+
+| id | empName | deptId | deptName    | buildDate  | companyId | cName       |
++----+---------+--------+-------------+------------+-----------+-------------+
+|  1 | Alice   |      1 | HR          | 2001-04-01 |         1 | TechCorp    |
+|  2 | Bob     |      1 | HR          | 2001-04-01 |         1 | TechCorp    |
+|  3 | Charlie |      2 | Finance     | 2002-06-15 |         1 | TechCorp    |
+|  4 | Diana   |      2 | Finance     | 2002-06-15 |         1 | TechCorp    |
+|  5 | Eric    |      3 | R&D         | 2006-08-10 |         2 | GreenSoft   |
+|  6 | Fiona   |      3 | R&D         | 2006-08-10 |         2 | GreenSoft   |
+|  7 | George  |      4 | Marketing   | 2007-07-22 |         2 | GreenSoft   |
+|  8 | Helen   |      4 | Marketing   | 2007-07-22 |         2 | GreenSoft   |
+|  9 | Ian     |      5 | Engineering | 2011-03-12 |         3 | Sunrise Ltd |
+| 10 | Julia   |      5 | Engineering | 2011-03-12 |         3 | Sunrise Ltd |
++----+---------+--------+-------------+------------+-----------+-------------+
+```
+
+#### 5. 练习
+
+显示出所有员工的姓名，性别（使用男或者女），入职时间，薪水，所属部门（名称），所属公司（名称）
+
+```sql
+SELECT
+	e.`name` AS eName,
+	CASE
+		WHEN e.ismale = 1 THEN 'male'
+		ELSE 'female'
+	END AS sex,
+	e.joinDate,
+	e.salary,
+	d.`name` AS dName,
+	c.`name` AS cName
+FROM
+	employee AS e
+	INNER JOIN department AS d ON e.deptId = d.id
+	INNER JOIN company AS c ON d.companyId = c.id;
+```
+
+```bash
++---------+--------+------------+---------+-------------+-------------+
+| eName   | sex    | joinDate   | salary  | dName       | cName       |
++---------+--------+------------+---------+-------------+-------------+
+| Alice   | female | 2020-01-01 | 6500.00 | HR          | TechCorp    |
+| Bob     | male   | 2018-06-14 | 7200.00 | HR          | TechCorp    |
+| Charlie | male   | 2019-03-10 | 8000.50 | Finance     | TechCorp    |
+| Diana   | female | 2017-10-05 | 9000.00 | Finance     | TechCorp    |
+| Eric    | male   | 2021-03-16 | 5500.00 | R&D         | GreenSoft   |
+| Fiona   | female | 2016-11-20 | 7800.25 | R&D         | GreenSoft   |
+| George  | male   | 2015-04-01 | 9500.00 | Marketing   | GreenSoft   |
+| Helen   | female | 2022-02-10 | 6200.00 | Marketing   | GreenSoft   |
+| Ian     | male   | 2019-09-01 | 8300.00 | Engineering | Sunrise Ltd |
+| Julia   | female | 2014-07-25 | 9900.50 | Engineering | Sunrise Ltd |
++---------+--------+------------+---------+-------------+-------------+
+```
+
+查看GreenSoft 和Sunrise Ltd 所有员工姓名，性别，入职时间，部门名，公司名
+
+```sql
+SELECT
+	e.`name` AS eName,
+	CASE
+		WHEN e.ismale = 1 THEN 'male'
+		ELSE 'female'
+	END AS sex,
+	e.joinDate,
+	d.`name` AS dName,
+	c.`name` AS cName
+FROM
+	employee AS e
+	INNER JOIN department AS d ON e.deptId = d.id
+	INNER JOIN company AS c ON d.companyId = c.id
+WHERE
+	c.`name` = 'GreenSoft'
+	OR c.NAME = 'Sunrise Ltd';
+```
+
+```bash
++--------+--------+------------+-------------+-------------+
+| eName  | sex    | joinDate   | dName       | cName       |
++--------+--------+------------+-------------+-------------+
+| Eric   | male   | 2021-03-16 | R&D         | GreenSoft   |
+| Fiona  | female | 2016-11-20 | R&D         | GreenSoft   |
+| George | male   | 2015-04-01 | Marketing   | GreenSoft   |
+| Helen  | female | 2022-02-10 | Marketing   | GreenSoft   |
+| Ian    | male   | 2019-09-01 | Engineering | Sunrise Ltd |
+| Julia  | female | 2014-07-25 | Engineering | Sunrise Ltd |
++--------+--------+------------+-------------+-------------+
+```
+
+查询Engineering部门的所有员工姓名，性别，入职时间，部门名，公司名
+
+```sql
+SELECT
+	e.`name` AS eName,
+	CASE
+		WHEN e.ismale = 1 THEN 'male'
+		ELSE 'female'
+	END AS sex,
+	e.joinDate,
+	d.`name` AS dName,
+	c.`name` AS cName
+FROM
+	employee AS e
+	INNER JOIN department AS d ON e.deptId = d.id
+	INNER JOIN company AS c ON d.companyId = c.id
+WHERE
+	d.`name`='Engineering';
+```
+
+```bash
++-------+--------+------------+-------------+-------------+
+| eName | sex    | joinDate   | dName       | cName       |
++-------+--------+------------+-------------+-------------+
+| Ian   | male   | 2019-09-01 | Engineering | Sunrise Ltd |
+| Julia | female | 2014-07-25 | Engineering | Sunrise Ltd |
++-------+--------+------------+-------------+-------------+
+```
+
+列出所有员工居住的地址**==（要求去重）-  DISTINCT==**
+
+```sql
+SELECT DISTINCT location
+FROM employee 
+WHERE location is not NULL
+```
+
+```bash
++----------+
+| location |
++----------+
+| New York |
+| London   |
+| Beijing  |
+| Tokyo    |
+| Sydney   |
++----------+
+```
+
+
 
 ### 2-7 函数和分组
 
