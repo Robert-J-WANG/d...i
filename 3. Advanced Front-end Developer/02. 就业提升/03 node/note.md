@@ -4574,6 +4574,62 @@ GROUP BY 语句根据一个或多个列对结果集进行分组
 
 ### 2-8 视图
 
+#### 1. 概述
+
+一种虚拟表，它本身不存储数据，而是基于一个或多个实际表的**查询结果而创建的逻辑**。
+
+可以理解为对查询结果的过程进行一次封装，类似于一个函数，使用这个视图，就能返回查询结果。
+
+#### 2. 创建
+
+对视图的操作使用DDL语句，视图基于数据记录的查询
+
+基础语句：CREATE VIEW 视图名 AS 查询语句
+
+```sql
+CREATE VIEW eInfo_of_company AS SELECT
+	e.NAME AS eName,
+	d.NAME AS dName,
+	c.NAME AS cName,
+	e.salary AS salary,
+	e.location AS location
+FROM
+	employee AS e
+	INNER JOIN department AS d ON e.deptId = d.id
+	INNER JOIN company AS c ON d.companyId = c.id;
+```
+
+#### 3. 使用
+
+视图的使用，查询数据时直接从VIEW视图表中选择数据，而不用再去写重复的DML语句
+
+```sql
+SELECT
+	*
+FROM
+	einfo_of_company AS v
+WHERE
+	V.salary > 8000
+	AND V.eName LIKE '%E%';
+```
+
+```bash
++---------+-------------+-------------+---------+----------+
+| eName   | dName       | cName       | salary  | location |
++---------+-------------+-------------+---------+----------+
+| Charlie | Finance     | TechCorp    | 8000.50 | NULL     |
+| George  | R&D         | GreenSoft   | 9500.00 | Tokyo    |
+| Xena    | Marketing   | GreenSoft   | 9000.00 | Tokyo    |
+| Sophie  | Marketing   | GreenSoft   | 8400.00 | Tokyo    |
+| Xavier  | Marketing   | GreenSoft   | 8600.00 | Tokyo    |
+| Henry   | Marketing   | GreenSoft   | 8300.00 | Tokyo    |
+| Xander  | Engineering | Sunrise Ltd | 8800.00 | Sydney   |
+| Blake   | Marketing   | GreenSoft   | 8600.00 | Tokyo    |
++---------+-------------+-------------+---------+----------+
+```
+
+总之，视图的出现，是方便数据的查询，减少sql语句的使用，从而优化数据交互的性能
+
 ## 3. 数据驱动和 ORM
 
 ## 4. Express.js
