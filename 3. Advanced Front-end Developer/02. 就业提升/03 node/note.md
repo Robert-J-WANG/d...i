@@ -4054,6 +4054,524 @@ WHERE location is not NULL
 
 ### 2-7 函数和分组
 
+#### 1. 内置函数
+
+- ~~数学 - 了解~~
+
+    - ABS(x) - x的绝对值
+    - CEILING(x) - 向下取整
+    - FLOOR(x) - 向上取整
+    - MOD(x,y) - x/y的模（余数）
+    - PI() - 圆周率
+    - RAND() - 0-1内的随机数
+    - ROUND(x,y) - 参数x的四舍五入，y位小数的值
+    - TRUNCATE(x,y) - 数组x截短为y位小数的结果
+
+    ```sql
+    SELECT
+    	ABS(- 1.2119),
+    	CEILING(- 1.2119),
+    	FLOOR(- 1.2119),
+    	ROUND(- 1.2119, 3),
+    	TRUNCATE(- 1.2119, 3);
+    ```
+
+    ```bash
+    +---------------+-------------------+-----------------+--------------------+-----------------------+
+    | ABS(- 1.2119) | CEILING(- 1.2119) | FLOOR(- 1.2119) | ROUND(- 1.2119, 3) | TRUNCATE(- 1.2119, 3) |
+    +---------------+-------------------+-----------------+--------------------+-----------------------+
+    |        1.2119 |                -1 |              -2 |             -1.212 |                -1.211 |
+    +---------------+-------------------+-----------------+--------------------+-----------------------+
+    ```
+
+    ```sql
+    SELECT
+    	PI(),
+    	RAND();
+    ```
+
+    ```bash
+    +----------+--------------------+
+    | PI()     | RAND()             |
+    +----------+--------------------+
+    | 3.141593 | 0.5691646687399267 |
+    +----------+--------------------+
+    ```
+
+- **==聚合==**
+
+    - AVG(col) - 指定列的平均值
+    - COUNT(col) - 指定列中非null值的个数
+    - MIN(col) - 指定列的最小值
+    - MAX(col) - 指定列的最大值
+    - SUN(col) - 指定列的所有值之和
+
+    ```sql
+    SELECT
+    	AVG(salary) AS sal_avg,
+    	MAX(salary) AS sal_max,
+    	MIN(salary) AS sal_min,
+    	COUNT(salary) AS sal_count,
+    	SUM(salary) AS sal_sum
+    FROM
+    	employee;
+    ```
+
+    ```bash
+    +-------------+---------+---------+-----------+----------+
+    | sal_avg     | sal_max | sal_min | sal_count | sal_sum  |
+    +-------------+---------+---------+-----------+----------+
+    | 7790.125000 | 9900.50 | 5500.00 |        10 | 77901.25 |
+    +-------------+---------+---------+-----------+----------+
+    ```
+
+- ~~字符- 了解~~
+
+    - CONCAT(s1,s2...sn) - 合并多个字符串
+    - CONCAT_WS(x, s1,s2...sn) - 合并多个字符串，并添加分隔符：
+    - TRIM(s) - 去掉字符串 s 开始和结尾处所以的空格
+    - RTRIM(s) - 去掉字符串 s 结尾处的空格
+    - LTRIM(s) - 去掉字符串 s 开始处的空格
+
+    ```sql
+    SELECT
+    CONCAT('hello', 'mySql') as 'CONCAT',
+    CONCAT_WS('_','hello','mySql') as 'CONCAT_WS',
+    TRIM('  hello mySql  ') as 'TRIM',
+    LTRIM('  hello mySql  ') as 'LTRIM',
+    RTRIM('  hello mySql  ') as 'RTRIM';
+    ```
+
+    ```bash
+    +------------+-------------+-------------+---------------+---------------+
+    | CONCAT     | CONCAT_WS   | TRIM        | LTRIM         | RTRIM         |
+    +------------+-------------+-------------+---------------+---------------+
+    | hellomySql | hello_mySql | hello mySql | hello mySql   |   hello mySql |
+    +------------+-------------+-------------+---------------+---------------+
+    ```
+
+- 日期
+
+    - CURDATE() / CURRENT_DATE() - 当前的日期
+    - CURTIME() / CURRENT_TIME() - 当前的时间
+    - TIMESTAMPDIFF(unit,datetime_expr1,datetime_expr2) - 计算时间差，返回 datetime_expr2 − datetime_expr1 的时间差,**向下取整**
+
+    ```sql
+    SELECT
+    	CURDATE() AS 'CURDATE',
+    	CURRENT_DATE() AS 'CURRENT_DATE',
+    	CURTIME() AS 'CURTIME',
+    	CURRENT_TIME() AS 'CURRENT_TIME',
+    	TIMESTAMPDIFF(YEAR, '2020-1-1', CURDATE()) AS 'TIMESTAMPDIFF';
+    ```
+
+    ```bash
+    +------------+--------------+----------+--------------+---------------+
+    | CURDATE    | CURRENT_DATE | CURTIME  | CURRENT_TIME | TIMESTAMPDIFF |
+    +------------+--------------+----------+--------------+---------------+
+    | 2025-11-20 | 2025-11-20   | 06:13:48 | 06:13:48     |             5 |
+    +------------+--------------+----------+--------------+---------------+
+    ```
+
+    练习 - 计算员工的年龄
+
+    ```sql
+    SELECT
+    	`name`,
+    	TIMESTAMPDIFF(YEAR,birthday,CURRENT_DATE()) as age,
+    	TIMESTAMPDIFF(YEAR,joinDate,CURRENT_DATE()) as work_years
+    FROM
+    	employee;
+    ```
+
+    ```bash
+    +---------+------+------------+
+    | name    | age  | work_years |
+    +---------+------+------------+
+    | Alice   |   35 |          5 |
+    | Bob     |   37 |          7 |
+    | Charlie |   32 |          6 |
+    | Diana   |   38 |          8 |
+    | Eric    |   30 |          4 |
+    | Fiona   |   34 |          9 |
+    | George  |   40 |         10 |
+    | Helen   |   27 |          3 |
+    | Ian     |   32 |          6 |
+    | Julia   |   39 |         11 |
+    +---------+------+------------+
+    ```
+
+#### ~~2. 自定义函数~~
+
+#### 3. 分组
+
+GROUP BY 语句根据一个或多个列对结果集进行分组 
+
+- 基础用法
+
+    ```sql
+    SELECT
+    	d.`name` AS dName
+    FROM
+    	employee AS e
+    	INNER JOIN department AS d ON e.deptId = d.id
+    GROUP BY
+    	d.`name`;
+    ```
+
+    ```bash
+    +-------------------+
+    | dName             |
+    +-------------------+
+    | HR                |
+    | Finance           |
+    | R&D               |
+    | Marketing         |
+    | Engineering       |
+    | Sales             |
+    | Support           |
+    | Quality Assurance |
+    | Product           |
+    +-------------------+
+    ```
+
+- 结合聚合函数 - 在分组的列上可以使用 COUNT, SUM, AVG,等 函数
+
+    ```sql
+    SELECT
+    	d.`name` AS dName,
+    	COUNT(e.id) AS number_of_employee,
+    	AVG(e.salary) AS avrage_salary
+    FROM
+    	employee AS e
+    	INNER JOIN department AS d ON e.deptId = d.id
+    GROUP BY
+    	d.`name`;
+    ```
+
+    ```bash
+    +-------------------+--------------------+---------------+
+    | dName             | number_of_employee | avrage_salary |
+    +-------------------+--------------------+---------------+
+    | HR                |                 14 |   6835.714286 |
+    | Finance           |                 14 |   7135.750000 |
+    | R&D               |                 14 |   6671.446429 |
+    | Marketing         |                 16 |   8462.500000 |
+    | Engineering       |                 12 |   7375.041667 |
+    | Sales             |                  4 |   6850.000000 |
+    | Support           |                  5 |   6740.000000 |
+    | Quality Assurance |                  2 |   7850.000000 |
+    | Product           |                  4 |   7000.000000 |
+    +-------------------+--------------------+---------------+
+    ```
+
+- `HAVING` 子句
+
+    专门为分组查询（`GROUP BY`）设计的，用于筛选满足特定条件的分组
+
+    ```sql
+    SELECT
+    	d.`name` AS dName,
+    	COUNT(e.id) AS number_of_employee,
+    	AVG(e.salary) AS avrage_salary
+    FROM
+    	employee AS e
+    	INNER JOIN department AS d ON e.deptId = d.id
+    GROUP BY
+    	d.`name`
+    HAVING
+    	number_of_employee > 5;
+    ```
+
+    ```bash
+    +-------------+--------------------+---------------+
+    | dName       | number_of_employee | avrage_salary |
+    +-------------+--------------------+---------------+
+    | HR          |                 14 |   6835.714286 |
+    | Finance     |                 14 |   7135.750000 |
+    | R&D         |                 14 |   6671.446429 |
+    | Marketing   |                 16 |   8462.500000 |
+    | Engineering |                 12 |   7375.041667 |
+    +-------------+--------------------+---------------+
+    ```
+
+    
+
+- 结合条件查询
+
+    ```sql
+    SELECT
+    	d.`name` AS dName,
+    	COUNT(e.id) AS number_of_employee,
+    	AVG(e.salary) AS avrage_salary
+    FROM
+    	employee AS e
+    	INNER JOIN department AS d ON e.deptId = d.id
+    WHERE
+    	e.salary >= 5000
+    	AND TIMESTAMPDIFF(YEAR, e.birthday, CURRENT_DATE()) >= 30
+    GROUP BY
+    	d.`name`
+    HAVING
+    	number_of_employee > 5;
+    ```
+
+    ```bash
+    +-------------+--------------------+---------------+
+    | dName       | number_of_employee | avrage_salary |
+    +-------------+--------------------+---------------+
+    | HR          |                  9 |   7122.222222 |
+    | Finance     |                 12 |   7325.041667 |
+    | R&D         |                 10 |   6940.025000 |
+    | Marketing   |                 12 |   8341.666667 |
+    | Engineering |                  7 |   8057.214286 |
+    +-------------+--------------------+---------------+
+    ```
+
+- 结合排序
+
+    ```sql
+    SELECT
+    	d.`name` AS dName,
+    	COUNT(e.id) AS number_of_employee,
+    	AVG(e.salary) AS avrage_salary
+    FROM
+    	employee AS e
+    	INNER JOIN department AS d ON e.deptId = d.id
+    WHERE
+    	e.salary >= 5000
+    	AND TIMESTAMPDIFF(YEAR, e.birthday, CURRENT_DATE()) >= 30
+    GROUP BY
+    	d.`name`
+    HAVING
+    	number_of_employee > 5
+    ORDER BY
+    	avrage_salary DESC;
+    ```
+
+    ```bash
+    +-------------+--------------------+---------------+
+    | dName       | number_of_employee | avrage_salary |
+    +-------------+--------------------+---------------+
+    | Marketing   |                 12 |   8341.666667 |
+    | Engineering |                  7 |   8057.214286 |
+    | Finance     |                 12 |   7325.041667 |
+    | HR          |                  9 |   7122.222222 |
+    | R&D         |                 10 |   6940.025000 |
+    +-------------+--------------------+---------------+
+    ```
+
+​	**==总体执行顺序：from ...where ... select...group by....having....order by ....limit==**
+
+- 综合练习
+
+    查询 GreenSoft 公司每个部门员工的数量
+
+    ```sql
+    SELECT
+    	d.`name` AS dName,
+    	COUNT(e.id) AS count_employee
+    FROM
+    	employee AS e
+    	INNER JOIN department AS d ON e.deptId = d.id
+    	INNER JOIN company AS c ON d.companyId = c.id
+    WHERE
+    	c.`name` = 'GreenSoft'
+    GROUP BY
+    	d.id;
+    ```
+
+    ```bash
+    +-----------+----------------+
+    | dName     | count_employee |
+    +-----------+----------------+
+    | R&D       |             14 |
+    | Marketing |             16 |
+    +-----------+----------------+
+    ```
+
+    查询每个公司员工的数量
+
+    ```sql
+    SELECT
+    	c.`name` AS cName,
+    	COUNT(e.id) AS count_employee
+    FROM
+    	employee AS e
+    	INNER JOIN department AS d ON e.deptId = d.id
+    	INNER JOIN company AS c ON d.companyId = c.id
+    GROUP BY
+    	c.id;
+    ```
+
+    ```bash
+    +-------------+----------------+
+    | cName       | count_employee |
+    +-------------+----------------+
+    | TechCorp    |             28 |
+    | GreenSoft   |             30 |
+    | Sunrise Ltd |             16 |
+    | GlobalWorks |              7 |
+    | OceanData   |              4 |
+    +-------------+----------------+
+    ```
+
+    查询员工人数大于10的公司信息
+
+    ```sql
+    SELECT
+    	c.id,
+    	c.NAME AS cNAME,
+    	c.location,
+    	c.buildDate,
+    	COUNT(e.id) AS count_employee
+    FROM
+    	employee e
+    	INNER JOIN department d ON e.deptId = d.id
+    	INNER JOIN company c ON d.companyId = c.id
+    GROUP BY
+    	c.id
+    HAVING
+    	count_employee > 10;
+    ```
+
+    ```bash
+    +----+-------------+----------+------------+----------------+
+    | id | cNAME       | location | buildDate  | count_employee |
+    +----+-------------+----------+------------+----------------+
+    |  1 | TechCorp    | New York | 2000-03-15 |             28 |
+    |  2 | GreenSoft   | London   | 2005-07-20 |             30 |
+    |  3 | Sunrise Ltd | Beijing  | 2010-05-01 |             16 |
+    +----+-------------+----------+------------+----------------+
+    ```
+
+    查询所有员工分布在哪些居住地，统计居住地的数量
+
+    ```sql
+    SELECT
+    	e.location AS location,
+    	COUNT(e.id) AS count_employee
+    FROM
+    	employee AS e
+    	INNER JOIN department AS d ON e.deptId = d.id
+    	INNER JOIN company AS c ON d.companyId = c.id
+    GROUP BY
+    	location
+    HAVING
+    	location IS NOT NULL;
+    ```
+
+    ```bash
+    +----------+----------------+
+    | location | count_employee |
+    +----------+----------------+
+    | New York |             17 |
+    | London   |             16 |
+    | Beijing  |             16 |
+    | Tokyo    |             17 |
+    | Sydney   |             16 |
+    +----------+----------------+
+    ```
+
+    查询所有公司5年内入职的居住在beijing的女员工数量
+
+    ```sql
+    SELECT
+    	c.NAME AS cName,
+    	COUNT(e.id) AS count_employee
+    FROM
+    	employee AS e
+    	INNER JOIN department AS d ON e.deptId = d.id
+    	INNER JOIN company AS c ON d.companyId = c.id
+    WHERE
+    	e.isMale = 0
+    	AND e.location = 'Beijing'
+    	GROUP BY c.id;
+    ```
+
+    ```bash
+    +-------------+----------------+
+    | cName       | count_employee |
+    +-------------+----------------+
+    | GreenSoft   |              7 |
+    | GlobalWorks |              1 |
+    +-------------+----------------+
+    ```
+
+    **查询GreenSoft公司里比平均工资高的员工 - 子查询**
+
+    ```sql
+    SELECT
+        c.name AS cName,
+        e.name AS eName,
+        e.salary AS salary
+    FROM
+        employee e
+        INNER JOIN department d ON e.deptId = d.id
+        INNER JOIN company c ON d.companyId = c.id
+    WHERE
+        c.name = 'GreenSoft'
+        AND e.salary > (
+            SELECT AVG(e2.salary)
+            FROM employee e2
+            INNER JOIN department d2 ON e2.deptId = d2.id
+            INNER JOIN company c2 ON d2.companyId = c2.id
+            WHERE c2.name = 'GreenSoft'
+        );
+    
+    ```
+
+    ```bash
+    +-----------+--------+---------+
+    | cName     | eName  | salary  |
+    +-----------+--------+---------+
+    | GreenSoft | Fiona  | 7800.25 |
+    | GreenSoft | George | 9500.00 |
+    | GreenSoft | Ian    | 8300.00 |
+    | GreenSoft | Nina   | 8000.00 |
+    | GreenSoft | Sam    | 8100.00 |
+    | GreenSoft | Xena   | 9000.00 |
+    | GreenSoft | Carl   | 8800.00 |
+    | GreenSoft | Holly  | 8100.00 |
+    | GreenSoft | Morris | 8300.00 |
+    | GreenSoft | Sophie | 8400.00 |
+    | GreenSoft | Xavier | 8600.00 |
+    | GreenSoft | Cathy  | 8100.00 |
+    | GreenSoft | Henry  | 8300.00 |
+    | GreenSoft | Monica | 8400.00 |
+    | GreenSoft | Ray    | 9000.00 |
+    | GreenSoft | Willa  | 8200.00 |
+    | GreenSoft | Blake  | 8600.00 |
+    | GreenSoft | Gloria | 9200.00 |
+    +-----------+--------+---------+
+    ```
+
+    查询每个公司每个月的总支出薪水，并从高到低排序
+
+    ```sql
+    SELECT
+    	c.NAME AS cName,
+    	SUM(e.salary)
+    FROM
+    	employee e
+    	INNER JOIN department d ON e.deptId = d.id
+    	INNER JOIN company c ON d.companyId = c.id
+    GROUP BY
+    	c.id
+    ```
+
+    ```bash
+    +-------------+---------------+
+    | cName       | SUM(e.salary) |
+    +-------------+---------------+
+    | TechCorp    |     195600.50 |
+    | GreenSoft   |     228800.25 |
+    | Sunrise Ltd |     115900.50 |
+    | GlobalWorks |      49400.00 |
+    | OceanData   |      28000.00 |
+    +-------------+---------------+
+    ```
+
 ### 2-8 视图
 
 ## 3. 数据驱动和 ORM

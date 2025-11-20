@@ -1,0 +1,8 @@
+SELECT
+	ABS(- 1.2119),
+	CEILING(- 1.2119),
+	FLOOR(- 1.2119),
+	ROUND(- 1.2119, 3),
+	TRUNCATE(- 1.2119, 3),
+	PI(),
+	RAND();
