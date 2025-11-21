@@ -4630,7 +4630,422 @@ WHERE
 
 总之，视图的出现，是方便数据的查询，减少sql语句的使用，从而优化数据交互的性能
 
+
+
 ## 3. 数据驱动和 ORM
+
+### 3-1 mysql驱动程序
+
+#### 1. 什么是驱动程序？
+
+- 驱动是连接内存和其他存储介质的桥梁
+
+- mysql驱动程序是连接内存数据和mysql数据的桥梁
+
+    > 数据库数据时存储在硬盘中的，而软件程序处理数据需要再内存中处理，所以需要mysql驱动程序mysql驱动程序来连接
+
+- mysql驱动程序通常使用 (nodejs环境)
+
+    - mysql1 - 官方提供的
+    - mysql2 - 第三方优化的
+
+#### 2. mysql2的使用
+
+- 安装mysql2驱动
+
+    ```bash
+    npm install --save mysql2
+    ```
+
+- 创建连接 - 主机（我们操作程序）和数据库连接的通道，通过这个通道来处理数据库里的数据：主机发送sql语句， 数据库返回sql语句执行的结果
+
+    ```ts
+    import mysql from "mysql2";
+    
+    const connection = mysql.createConnection({
+      host: "localhost",
+      user: "root",
+      password: "123456",
+      database: "companydb",
+    });
+    ```
+
+    断开连接
+
+    ```ts
+    connection.end();
+    ```
+
+- 发送一个sql请求 - query(**sql: string**, ((err, result) => {})
+
+    ```ts
+    connection.query(
+        "SELECT * FROM company", // sql查询
+        (err, res) => console.log(res) // 返回查询结果 - 对象数组
+    );
+    ```
+
+    ```bash
+    [
+      {
+        id: 1,
+        name: 'TechCorp',
+        location: 'New York',
+        buildDate: 2000-03-14T11:00:00.000Z
+      },
+     ...
+      {
+        id: 10,
+        name: 'NextGen',
+        location: 'Toronto',
+        buildDate: 2013-10-29T11:00:00.000Z
+      }
+    ]
+    ```
+
+#### 3. CRUD简单体验
+
+- 新增数据
+
+    ```ts
+    const queryAdd ="INSERT INTO department (`name`, companyId, buildDate) VALUES ('New Dept', 7, '2025-04-01')";
+    connection.query(queryAdd, (err, res) => console.log(res));
+    
+    ```
+
+    ```bash
+    ResultSetHeader {
+      fieldCount: 0,
+      affectedRows: 1,
+      insertId: 14,
+      info: '',
+      serverStatus: 2,
+      warningStatus: 0,
+      changedRows: 0
+    }
+    ```
+
+    
+
+- 修改数据
+
+    ```ts
+    const queryUpdate =
+      "update department set `name`='Office', buildDate='2025-12-31' where id=14";
+    connection.query(queryUpdate, (err, res) => console.log(res));
+    ```
+
+    ```bash
+    ResultSetHeader {
+      fieldCount: 0,
+      affectedRows: 1,
+      insertId: 0,
+      info: 'Rows matched: 1  Changed: 1  Warnings: 0',
+      serverStatus: 2,
+      warningStatus: 0,
+      changedRows: 1
+    }
+    ```
+
+    
+
+- 删除数据
+
+    ```ts
+    const queryDelete = "delete from department  where id in (12,13)";
+    connection.query(queryDelete, (err, res) => console.log(res));
+    ```
+
+    ```bash
+    ResultSetHeader {
+      fieldCount: 0,
+      affectedRows: 2,
+      insertId: 0,
+      info: '',
+      serverStatus: 2,
+      warningStatus: 0,
+      changedRows: 0
+    }
+    ```
+
+    
+
+- 查询数据 - 也可是使用view
+
+    ```ts
+    const queryView =
+      "SELECT * FROM einfo_of_company AS v WHERE V.salary > 8000 AND V.eName LIKE '%E%'";
+    connection.query(queryView, (err, res) => console.log(res));
+    ```
+
+    ```bash
+    [
+      {
+        eName: 'Charlie',
+        dName: 'Finance',
+        cName: 'TechCorp',
+        salary: '8000.50',
+        location: null
+      },
+     ...
+      {
+        eName: 'Xander',
+        dName: 'Engineering',
+        cName: 'Sunrise Ltd',
+        salary: '8800.00',
+        location: 'Sydney'
+      },
+      {
+        eName: 'Blake',
+        dName: 'Marketing',
+        cName: 'GreenSoft',
+        salary: '8600.00',
+        location: 'Tokyo'
+      }
+    ]
+    ```
+
+#### 4. promise的使用
+
+​	mysql2提供了promise的功能，避免回调函数的使用，方便我们使用ES6新语法
+
+- 创建promise连接
+
+    ```ts
+    import mysql from "mysql2/promise";
+    
+    const getData = async (queryStr) => {
+      const connection = await mysql.createConnection({
+        host: "localhost",
+        user: "root",
+        password: "123456",
+        database: "companydb",
+      });
+      const [res] = await connection.query(queryStr);
+      console.log(res);
+    };
+    getData("SELECT * FROM company");
+    ```
+
+    ```bash
+    [
+      {
+        id: 1,
+        name: 'TechCorp',
+        location: 'New York',
+        buildDate: 2000-03-14T11:00:00.000Z
+      },
+     ...
+      {
+        id: 10,
+        name: 'NextGen',
+        location: 'Toronto',
+        buildDate: 2013-10-29T11:00:00.000Z
+      }
+    ]
+    ```
+
+#### 5. 防止sql注入
+
+- sql注入 
+
+    用户通过注入sql语句到最终查询中，导致这个sql与预期行为不符
+
+    > 例如：查询id=5的产品信息，而这个id的值往往是来自客户端，通过ajax传递来的。那么不能保证用户传递的值就是我们预期的5，有可能会注入其他信息（一些sql语句字符串进来），从而导致对原始数据的删除或者修改。
+    >
+    > 假设我们设计如下查询：
+    >
+    > ```ts
+    > const getData = async (id) => {
+    >   const connection = await mysql.createConnection({
+    >     host: "localhost",
+    >     user: "root",
+    >     password: "123456",
+    >     database: "companydb",
+    >   });
+    >   const [res] = await connection.query(`SELECT * FROM employee where id=${id}`);
+    >   console.log(res);
+    > };
+    > getData(5);
+    > ```
+    >
+    > 但从客户端来的参数id=`null,  delete from employee where id=1`, 此时如果我们允许执行多条sql语句，此时，会删掉原始数据
+    >
+    > ```ts
+    > const getData = async (id) => {
+    >   const connection = await mysql.createConnection({
+    >     host: "localhost",
+    >     user: "root",
+    >     password: "123456",
+    >     database: "companydb",
+    >     multipleStatements: true, // 允许执行多条sql语句
+    >   });
+    >   const [res] = await connection.query(`SELECT * FROM employee where id=${id}`);
+    >   console.log(res);
+    > };
+    > getData(`null;  delete from employee where id=1`);
+    > ```
+    >
+    > ```bash
+    > [
+    >   [],
+    >   ResultSetHeader {
+    >     fieldCount: 0,
+    >     affectedRows: 1,  // 一行数据被删
+    >     insertId: 0,
+    >     info: '',
+    >     serverStatus: 2,
+    >     warningStatus: 0,
+    >     changedRows: 0
+    >   }
+    > ]
+    > ```
+
+- mysql支持变量
+
+    - 防止如上直接使用拼接sql字符串方式，mysql推荐使用变量控制 - 变量的内容不会作为sql语句关键字，而只传递变量的值。 
+
+    - 比如上面实例中参数id= ' null;  delete from employee where id=1',  会计算为id=null
+
+    - 如何使用？
+
+        **使用占位符？，然后跟一个参数数组，一一对应占位符**
+
+        ```ts
+        const getData = async (id) => {
+          const connection = await mysql.createConnection({
+            host: "localhost",
+            user: "root",
+            password: "123456",
+            database: "companydb",
+            multipleStatements: true,
+          });
+          const [res] = await connection.query(`SELECT * FROM employee where id=?`, [
+            id,
+          ]);
+          console.log(res);
+        };
+        getData(`3;  delete from employee where id=2`);
+        
+        ```
+
+        ```bash
+        [
+          {
+            id: 3,
+            name: 'Charlie',
+            location: null,
+            ismale: 1,
+            joinDate: 2019-03-09T11:00:00.000Z,
+            salary: '8000.50',
+            deptId: 2,
+            birthday: 1992-12-01T11:00:00.000Z
+          }
+        ]
+        ```
+
+    - 关于模糊查询 
+
+        sql语句中的模糊查询 '....LIKE "% ? %".....', 占位符？会被包裹成一个字符串，而无法识别成变量，因此使用**字符函数concat拼接**
+
+        ```ts
+        
+        const getData = async (name) => {
+          const connection = await mysql.createConnection({
+            host: "localhost",
+            user: "root",
+            password: "123456",
+            database: "companydb",
+            multipleStatements: true,
+          });
+          const [res] = await connection.execute(
+            `SELECT * FROM employee where name like concat('%',?,'%')`,
+            [name]
+          );
+          console.log(res);
+        };
+        getData("ab");
+        ```
+
+        ```bash
+        [
+          {
+            id: 52,
+            name: 'Abby',
+            location: 'London',
+            ismale: 0,
+            joinDate: 2019-08-23T12:00:00.000Z,
+            salary: '6900.00',
+            deptId: 2,
+            birthday: 1994-02-17T11:00:00.000Z
+          }
+        ]
+        ```
+
+        
+
+- Mysql 预编译语句
+
+    mysql更推荐使用预编译语句，使用 **excute** 替代 ~~query~~ , 这样保证拼接sql语句使用的参数是参数的值，而不是参数的字面内容
+
+    ```ts
+    const getData = async (id) => {
+      const connection = await mysql.createConnection({
+        host: "localhost",
+        user: "root",
+        password: "123456",
+        database: "companydb",
+        multipleStatements: true,
+      });
+      const [res] = await connection.execute(`SELECT * FROM employee where id=?`, [
+        id,
+      ]);
+      console.log(res);
+    };
+    getData(`3;  delete from employee where id=2`);
+    ```
+
+#### 6. 使用连接池 - connection pool
+
+不需要给每个query创建一个连接， 而可以对相同的连接复用。从而能减少连接数据库服务器的时间，而且能按需控制某个连接的开关
+
+- 创建连接池
+
+    ```ts
+    import mysql from "mysql2/promise";
+    
+    const connecttionPool = mysql.createPool({
+      host: "localhost",
+      user: "root",
+      password: "123456",
+      database: "companydb",
+      multipleStatements: true,
+    });
+    ```
+
+- 使用连接池 - 多次使用同一个连接
+
+    ```ts
+    const getEmployee = async (id) => {
+      const [res] = await connecttionPool.execute(
+        `SELECT * FROM employee where id=?`,
+        [id]
+      );
+      console.log(res);
+    };
+    
+    const getCompany = async (id) => {
+      const [res] = await connecttionPool.execute(
+        `SELECT * FROM company where id=?`,
+        [id]
+      );
+      console.log(res);
+    };
+    getEmployee(10);
+    getCompany(1);
+    ```
+
+#### 
 
 ## 4. Express.js
 

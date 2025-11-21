@@ -6,5 +6,8 @@
   "scripts": {
     "build": "tsc",
     "dev": "nodemon --watch src -e ts --exec \"ts-node\" src/index.ts"
+  },
+  "dependencies": {
+    "mysql2": "^3.15.3"
   }
 }
