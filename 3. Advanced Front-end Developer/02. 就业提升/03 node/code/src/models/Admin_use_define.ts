@@ -4,11 +4,11 @@ import sequelize from "./db";
 const Admin = sequelize.define(
   "Admin",
   {
-    liginID: {
+    loginID: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    liginPwd: {
+    loginPwd: {
       type: DataTypes.STRING,
       allowNull: false,
     },

@@ -4351,7 +4351,7 @@ GROUP BY 语句根据一个或多个列对结果集进行分组
   +-------------+--------------------+---------------+
   ```
 
- **==总体执行顺序：from ...where ... select...group by....having....order by ....limit==**
+  **==总体执行顺序：from ...where ... select...group by....having....order by ....limit==**
 
 - 综合练习
 
@@ -4789,7 +4789,7 @@ WHERE
 
 #### 4. promise 的使用
 
- mysql2 提供了 promise 的功能，避免回调函数的使用，方便我们使用 ES6 新语法
+mysql2 提供了 promise 的功能，避免回调函数的使用，方便我们使用 ES6 新语法
 
 - 创建 promise 连接
 
@@ -5049,8 +5049,6 @@ WHERE
 
 - Drizzle
 
-    
-
 ### 3-3 模型定义和同步
 
 #### 1. 连接数据库
@@ -5261,6 +5259,164 @@ WHERE
   export { sequelize, Admin, Book, Class, Student };
   
   ```
+
+### 3-4 模型的增删改
+
+#### 1. 三层架构
+
+后端项目通常采用三层架构
+
+```
+
+— —— —— ——— ——— —— ——  —— —— —— —
+路由层 Route: 提供对外的 API 访问接口
+— —— —— ——— ——— —— ——  —— —— —— —
+               ⇅
+— —— —— ——— ——— —— ——  —— —— —— —
+服务层 Service: 提供业务逻辑的支持
+— —— —— ——— ——— —— ——  —— —— —— —
+               ⇅
+— —— —— ——— ——— —— ——  —— —— —— —  — —— —— ——— ——— ——
+数据访问层 DAO: 提供与数据库或其他持久化设备的通信，通常为 ORM
+— —— —— ——— ——— —— ——  —— —— —— —  — —— —— ——— ——— ——
+```
+
+- 路由层 Route - 不做任何业务，不处理数据，只负责接收请求、返回结果
+
+- 服务层 Service - 处理业务逻辑的地方， 例如
+
+  - 判断用户是否存在
+
+  - 检查密码是否正确
+
+  - 查询学生列表
+
+  - 添加图书前检查库存
+
+  - 做复杂计算、校验
+
+  服务层不直接操作数据库，而是调用下面一层的 DAO
+
+- 数据访问层 DAO - 负责跟数据库打交道，比如数据库的 CRUD（增删改查），不管业务逻辑
+
+总之： 路由层：接到用户请求 → 服务层：处理业务逻辑 → 数据访问层: 操作数据库 → 服务层：拿到数据，处理返回 → 拿到处理后的数据，返回给用户
+
+#### 2. 案例架构设计
+
+分别创建 3 个文件夹，对应 3 层架构。业务层省略掉复杂的验证等等，只体验 ORM 和 servers 的互动来实现数据库数据的 CURD
+
+- routers
+- servers - 业务
+- models - ORM
+
+#### 3. 模型实例的增删改
+
+以 Admin 模型为例
+
+- 增加数据
+
+  ```ts
+  // .src/servers/admin.ts
+  import { Admin } from "../models/sync";
+  
+  const adminAdd = async (adminObj) => {
+      
+    /* ------ 方式1- 先构建一个模型实例，再保存实例 ---------------- */
+    const inst = Admin.build(adminObj);
+    await inst.save();
+    console.log(inst.toJSON());
+    console.log("add data done"); 
+  
+    /* ---------------------- 方式2- 使用模型一键生成 --------------------- */
+    const inst = await Admin.create(adminObj);
+    console.log(inst.toJSON());
+    console.log("add data done");
+  };
+  ```
+
+  构建的实例对象inst, 本身包含大量的属性和方法，可使用**toJSON**()得到纯数据的平面对象
+
+  ```
+  console.log(inst.toJSON());
+  ```
+
+  ```
+  { id: 12, loginID: 'fasfd111', loginPwd: '123456', name: 'asdas' }
+  ```
+
+  使用adminAdd
+
+  ```ts
+  import { adminAdd } from "./servers/admin";
+  
+  async function main() {
+    await adminAdd({
+      loginID: "fasfd111",
+      loginPwd: "123456",
+      name: "asdas",
+    });
+  }
+  
+  main();
+  ```
+
+- 删除数据
+
+    ```ts
+    const adminDelete = async (adminID) => {
+      /* ---------- 方式1 - 通过实例删除 ---------- */
+      // 1. 找到实例
+      const inst = await Admin.findByPk(adminID);
+      // 2. 删除实例
+      if (inst) {
+        const result = await inst.destroy();
+        console.log(result); // 返回的结果是被删除的实例对象
+        console.log("delete done");
+      }
+    
+      /* ---------- 方式2 - 直接通过模型删除 ---------- */
+        const result = await Admin.destroy({
+        where: {
+          id: adminID,
+        },
+      });
+      console.log(result); // 返回的结果是影响的行数
+    };
+    ```
+
+    
+
+- 修改数据
+
+    ```ts
+    const adminUpdate = async (adminID, adminObj) => {
+      /* ------------ 方式1- 通过实例 ----------- */
+      // 1. 找到实例
+      const inst = await Admin.findByPk(adminID);
+      // console.log(inst);
+      if (inst) {
+        inst.name = adminObj.name;
+        const result = await inst.save();
+        console.log(result);
+        console.log("update done");
+      } 
+        
+      /* ------------ 2.通过模型修改 ------------ */
+      await Admin.update(adminObj, {
+        where: {
+          id: adminID,
+        },
+      });
+      console.log("update done");
+    };
+    
+    export { adminAdd, adminDelete, adminUpdate };
+    
+    ```
+
+    
+
+    
 
 ## 4. Express.js
 
