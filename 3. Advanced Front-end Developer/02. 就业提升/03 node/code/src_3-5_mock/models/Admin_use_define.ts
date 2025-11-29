@@ -1,23 +1,8 @@
-import {
-  DataTypes,
-  InferAttributes,
-  InferCreationAttributes,
-  Model,
-} from "sequelize";
+import { DataTypes } from "sequelize";
 import sequelize from "./db";
 
-export class Admin extends Model<
-  InferAttributes<Admin>,
-  InferCreationAttributes<Admin>
-> {
-  declare id?: number;
-  declare loginID: string;
-  declare loginPwd: string;
-  declare name: string;
-  declare deletedAt?: Date | null;
-}
-
-Admin.init(
+const Admin = sequelize.define(
+  "Admin",
   {
     loginID: {
       type: DataTypes.STRING,
@@ -34,7 +19,6 @@ Admin.init(
   },
   // 可选配置
   {
-    sequelize,
     freezeTableName: true, ////让生成的数据表名称和模型名称一致。 默认变成复数，Admin -> Admins
     // tableName: 'NewAdmin', //也可以自定义表名
     createdAt: false, // 移出创建时间列

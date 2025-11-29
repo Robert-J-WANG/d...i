@@ -5414,9 +5414,310 @@ mysql2 提供了 promise 的功能，避免回调函数的使用，方便我们�
     
     ```
 
+- 完成Class, Student, Book模型的增删改业务
+
+### 3.5 mock数据
+
+在进行数据查询之前，先mock一些模拟数据，使用facker.js库。 facker.js提供了大量模块和API
+
+#### 1. 基础模块
+
+- **字符串 / ID / 编码类**
+
+    ```ts
+    faker.string.uuid(); //UUID
     
+    faker.string.alpha();     // 随机字母
+    faker.string.numeric();   // 随机数字
+    faker.string.alphanumeric(); // 字母+数字
+    
+    // 固定长度
+    faker.string.alpha(10);
+    faker.string.numeric(6);
+    ```
+
+- 数字（number）
+
+    ```js
+    faker.number.int(100); // 0~100
+    faker.number.int({ min: 50, max: 60 });
+    faker.number.float({ min: 1, max: 100, precision: 0.01 });
+    
+    ```
+
+- 日期（date）
+
+    ```js
+    faker.date.past();
+    faker.date.future();
+    faker.date.recent();
+    faker.date.birthdate();
+    faker.date.between({ from: "2020-01-01", to: "2024-01-01" });
+    
+    ```
+
+- 名字 / 个人信息（person）
+
+    ```ts
+    faker.person.firstName();
+    faker.person.lastName();
+    faker.person.fullName();
+    faker.person.gender();
+    faker.person.jobTitle();
+    ```
+
+- 互联网（internet）
+
+    ```ts
+    faker.internet.username();
+    faker.internet.email();
+    faker.internet.password();
+    faker.internet.url();
+    faker.internet.ip();
+    faker.internet.color();
+    
+    ```
+
+- 地点（location）
+
+    ```ts
+    faker.location.city();
+    faker.location.country();
+    faker.location.streetAddress();
+    faker.location.zipCode();
+    ```
+
+- 电话（phone）
+
+    ```ts
+    faker.phone.number();
+    faker.phone.imei();
+    ```
+
+- 图像（image）
+
+    ```ts
+    faker.image.url();   // 随机图片
+    faker.image.urlLoremFlickr({ category: "city" });
+    ```
+
+- 文本（lorem）
+
+    ```ts
+    faker.lorem.word();
+    faker.lorem.sentence();
+    faker.lorem.paragraph();
+    faker.lorem.text(); // 随机段落
+    
+    ```
+
+#### 2. 高级模块 helper
+
+- 正则表达式：fromRegExp() 
+
+    ```ts
+    faker.helpers.fromRegExp('#{5}') // '#####'
+    faker.helpers.fromRegExp('#{2,9}') // '#######'
+    faker.helpers.fromRegExp('[1-7]') // '5'
+    faker.helpers.fromRegExp('#{3}test[1-5]') // '###test3'
+    faker.helpers.fromRegExp('[0-9a-dmno]') // '5'
+    faker.helpers.fromRegExp('[^a-zA-Z0-8]') // '9'
+    faker.helpers.fromRegExp('[a-d0-6]{2,8}') // 'a0dc45b0'
+    faker.helpers.fromRegExp('[-a-z]{5}') // 'a-zab'
+    faker.helpers.fromRegExp(/[A-Z0-9]{4}-[A-Z0-9]{4}/) // 'BS4G-485H'
+    faker.helpers.fromRegExp(/[A-Z]{5}/i) // 'pDKfh'
+    faker.helpers.fromRegExp(/.{5}/) // '14(#B'
+    faker.helpers.fromRegExp(/Joh?n/) // 'Jon'
+    faker.helpers.fromRegExp(/ABC*DE/) // 'ABDE'
+    faker.helpers.fromRegExp(/bee+p/) // 'beeeeeeeep'
+    ```
 
     
+
+- 生成数组：multiple()
+
+    ```js
+    faker.helpers.multiple(() => faker.person.fullName(), {
+      count: 10,
+    });
+    
+    ```
+
+- 从数组中随机取值：arrayElement()
+
+    ```ts
+    faker.helpers.arrayElement(["一班", "二班", "三班"]);
+    ```
+
+    
+
+#### 3.示例 - 快速生成 Mock 对象数据
+
+```ts
+import { faker } from "@faker-js/faker";
+
+const users = faker.helpers.multiple(
+  () => {
+    return {
+      id: faker.string.uuid(),
+      name: faker.person.fullName(),
+      email: faker.internet.email(),
+      phone: faker.phone.number(),
+      address: faker.location.city(),
+      birthday: faker.date.birthdate({ mode: "age", min: 18, max: 65 }),
+      bio: faker.lorem.sentence(),
+    };
+  },
+  {
+    count: 5,
+  }
+);
+console.log(users);
+```
+
+```bash
+[
+  {
+    id: '652bea33-609d-4a2f-bcf4-b6a9d0b95d4f',
+    name: 'Tyrone Runolfsdottir',
+    email: 'Reina75@yahoo.com',
+    phone: '899.358.1113 x77903',
+    address: 'Goyettetown',
+    birthday: 1971-04-01T02:38:38.665Z,
+    bio: 'Tardus animadverto vis.'
+  },
+  {
+    id: '3f4542bc-999e-4696-829a-28eb096392fb',
+    name: 'Mamie Feeney',
+    email: 'German_Beier@gmail.com',
+    phone: '573-222-8571 x79871',
+    address: 'Roswell',
+    birthday: 1993-08-22T03:49:42.480Z,
+    bio: 'Eos reprehenderit comparo tracto administratio vinum theatrum audeo.'
+  },
+  {
+    id: '6c487682-b77f-455d-89e0-b517103e0c77',
+    name: 'Jan Dare',
+    email: 'Alvena49@yahoo.com',
+    phone: '597.840.1282',
+    address: 'Rancho Cordova',
+    birthday: 2006-11-10T06:56:56.029Z,
+    bio: 'Sequi defessus crustulum alter tantum vis.'
+  },
+  {
+    id: '2b83cc76-fb63-4cee-a98d-2ef865c64a4c',
+    name: 'Wendell Mertz',
+    email: 'Michale.Emard@hotmail.com',
+    phone: '(414) 632-2835 x913',
+    address: 'North Coltonville',
+    birthday: 2005-07-18T15:48:22.969Z,
+    bio: 'Currus tibi stultus.'
+  },
+  {
+    id: 'af402dd5-609d-4a63-9164-15b6b8565968',
+    name: 'Miss Denise Klocko',
+    email: 'Coby_Fritsch91@hotmail.com',
+    phone: '1-546-303-0131 x78653',
+    address: 'Gottliebborough',
+    birthday: 1972-03-01T00:07:52.070Z,
+    bio: 'Amor bis amor sulum.'
+  }
+]
+```
+
+
+
+#### 4. 生成模型数据
+
+使用facker.js库生成模拟数据，使用sequelize内置的**bulkCreate()** 方法快速批量添加数据
+
+- 添加5个随机的admin
+
+    ```ts
+    // ESM
+    import { faker } from "@faker-js/faker";
+    import { Admin } from "../models/sync";
+    
+    export const admins = faker.helpers.multiple(
+      () => {
+        return {
+          loginID: faker.string.uuid(),
+          loginPwd: faker.internet.password(),
+          name: faker.internet.username(),
+        };
+      },
+      {
+        count: 5,
+      }
+    );
+    
+    Admin.bulkCreate(admins); // 批量添加数据
+    ```
+
+- 添加班级数据
+
+    ```ts
+    // ESM
+    import { faker } from "@faker-js/faker";
+    import { Class } from "../models/sync";
+    
+    function randomClassName() {
+      const subjects = ["前端", "Java", "UI", "产品", "测试", "大数据", "AI"];
+      const num = faker.number.int({ min: 1, max: 20 });
+      return `${faker.helpers.arrayElement(subjects)} 第${num}期`;
+    }
+    
+    export const classes = faker.helpers.multiple(
+      () => {
+        return {
+          name: randomClassName(),
+          openDate: faker.date.between({
+            from: "2023-11-11",
+            to: "2025-12-12",
+          }),
+        };
+      },
+      {
+        count: 20,
+      }
+    );
+    console.log(classes);
+    
+    Class.bulkCreate(classes);
+    
+    ```
+
+- 添加学生数据
+
+    ```ts
+    import { faker } from "@faker-js/faker";
+    import { Student } from "../models/sync";
+    
+    export const students = faker.helpers.multiple(
+      () => {
+        return {
+          name: faker.person.fullName(),
+          dob: faker.date.birthdate({ mode: "age", min: 18, max: 35 }),
+          sex: faker.datatype.boolean(),
+          mobile: faker.helpers.fromRegExp(/02[1-8]{1}-[0-9]{7}/),
+          ClassId: faker.number.int({
+            min: 1,
+            max: 40,
+          }),
+        };
+      },
+      {
+        count: 20,
+      }
+    );
+    console.log(students);
+    
+    Student.bulkCreate(students);
+    ```
+
+    
+
+- 添加Book数据
 
 ## 4. Express.js
 

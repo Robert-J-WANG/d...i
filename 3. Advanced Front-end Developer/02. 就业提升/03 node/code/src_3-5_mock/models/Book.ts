@@ -1,22 +1,22 @@
 import { DataTypes } from "sequelize";
 import sequelize from "./db";
 
-const Student = sequelize.define(
-  "Student",
+const Book = sequelize.define(
+  "Book",
   {
     name: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    dob: {
+    imgUrl: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    publishDate: {
       type: DataTypes.DATE,
       allowNull: false,
     },
-    sex: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-    },
-    mobile: {
+    author: {
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -29,4 +29,4 @@ const Student = sequelize.define(
   }
 );
 
-export default Student;
+export default Book;
