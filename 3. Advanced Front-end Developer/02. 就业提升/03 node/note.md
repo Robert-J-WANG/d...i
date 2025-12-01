@@ -5793,6 +5793,584 @@ bookMock();
 
 ```
 
+### 3.7 查询数据
+
+#### 1. 查询单个数据
+
+findOne - 用户登录功能 (adim登录为例)
+
+```TS
+const login = async (loginID, loginPwd) => {
+  const res = await Admin.findOne({
+    where: {
+      loginID,
+      loginPwd,
+    },
+  });
+  console.log(res);
+};
+```
+
+```bash
+Admin {
+  dataValues: {
+    id: 19,
+    loginID: '9be48b88-1537-46d0-b5b8-67a1d3c5fcc4',
+    loginPwd: 'pTAZOxz1mMBlVR0',
+    name: 'Murphy.Feeney94',
+    deletedAt: null
+  },
+  _previousDataValues: {
+    id: 19,
+    loginID: '9be48b88-1537-46d0-b5b8-67a1d3c5fcc4',
+    loginPwd: 'pTAZOxz1mMBlVR0',
+    name: 'Murphy.Feeney94',
+    deletedAt: null
+  },
+  uniqno: 1,
+  _changed: Set(0) {},
+  _options: {
+    isNewRecord: false,
+    _schema: null,
+    _schemaDelimiter: '',
+    raw: true,
+    attributes: [ 'id', 'loginID', 'loginPwd', 'name', 'deletedAt' ]
+  },
+  isNewRecord: false
+}
+```
+
+**注意：SQL里不区分大小写，如果要严格匹配大小写，可以使用ts代码处理**
+
+```ts
+const login = async (loginID, loginPwd) => {
+  const res = await Admin.findOne({
+    where: {
+      loginID,
+      loginPwd,
+    },
+  });
+  // 验证大小写
+  if (res && res.loginID === loginID && res.loginPwd === loginPwd) {
+    return res.toJSON();
+  }
+  return null;
+};
+```
+
+```TS
+/* ----- 5. 查询数据 findOne - 登录验证 ----- */
+  const result = await login(
+    "9be48b88-1537-46d0-b5b8-67a1d3c5fcc4",
+    "pTAZOxz1mMBlVR0"
+  );
+  console.log(result);
+```
+
+```BASH
+{
+  id: 19,
+  loginID: '9be48b88-1537-46d0-b5b8-67a1d3c5fcc4',
+  loginPwd: 'pTAZOxz1mMBlVR0',
+  name: 'Murphy.Feeney94',
+  deletedAt: null
+}
+```
+
+#### 2. 按照主键查询单个数据
+
+findByPK - 通过主键查询
+
+```ts
+/* ----------- findByPK方法 ----------- */
+const getAdminByID = async (adminID) => {
+  const res = await Admin.findByPk(adminID);
+  return res ? res.toJSON() : null;
+};
+```
+
+```bash
+{
+  id: 1,
+  loginID: 'fasfd',
+  loginPwd: '123456',
+  name: 'new name',
+  deletedAt: null
+}
+```
+
+#### 3. 查询多个数据
+
+findAll - 查询全部或者多条数据
+
+- 查询全部 - 适合管理员管理数据
+
+    ```ts
+    /* ------------- 1. 查询全部 ------------ */
+    const getStudentsAll = async () => {
+      const res = await Student.findAll();
+      const students = res ? JSON.parse(JSON.stringify(res)) : null;  // 先将数组转成字符串，再转成json对象
+      console.log(students);
+      console.log("retrive done");
+    };
+    ```
+
+    ```json
+    [
+      ...   
+      {
+        id: 120,
+        name: 'Miss Edith Pouros',
+        dob: '1997-08-30T20:29:26.000Z',
+        sex: false,
+        mobile: '021-6321212',
+        deletedAt: null,
+        ClassId: 14
+      },
+      ... 421 more items
+    ]
+    ```
+
+    
+
+- 查询多条数据 - 页面数据的分页显示
+
+    ```ts
+    /* --------- 2. 查询部分 - 分页数据 --------- */
+    const getStudents = async (page = 1, limit = 10) => {
+      const res = await Student.findAll({
+        offset: (page - 1) * limit, // 跳过多少条数据
+        limit, // 每页显示多少条数据
+      });
+      const students = res ? JSON.parse(JSON.stringify(res)) : null;  // 先将数组转成字符串，再转成json对象
+      console.log(students);
+      console.log("retrive done");
+    };
+    ```
+
+    ```bash
+    [
+      {
+        id: 26,
+        name: 'Jack Pagac',
+        dob: '1991-09-05T11:37:33.000Z',
+        sex: false,
+        mobile: '024-3556976',
+        deletedAt: null,
+        ClassId: 4
+      },
+      {
+        id: 27,
+        name: 'Sherry Predovic',
+        dob: '2007-05-14T07:53:27.000Z',
+        sex: true,
+        mobile: '024-8004229',
+        deletedAt: null,
+        ClassId: 14
+      },
+      {
+        id: 28,
+        name: 'Toby Fritsch',
+        dob: '1993-06-04T04:13:15.000Z',
+        sex: true,
+        mobile: '025-0601624',
+        deletedAt: null,
+        ClassId: 20
+      },
+      {
+        id: 29,
+        name: 'Alison Lueilwitz-Langworth',
+        dob: '1998-03-25T03:40:25.000Z',
+        sex: false,
+        mobile: '022-3399459',
+        deletedAt: null,
+        ClassId: 13
+      },
+      {
+        id: 30,
+        name: 'Miss Vanessa Wunsch',
+        dob: '1996-02-21T10:02:19.000Z',
+        sex: true,
+        mobile: '028-3917624',
+        deletedAt: null,
+        ClassId: 5
+      }
+    ]
+    ```
+
+- 按条件查询 - 比如只查询女同学
+
+    ```ts
+    /* --------- 3. 按条件查询 - 女同学 --------- */
+    const getStudentsBySex = async (page = 1, limit = 10, sex: boolean = false) => {
+      const res = await Student.findAll({
+        offset: (page - 1) * limit, // 跳过多少条数据
+        limit, // 每页显示多少条数据
+        where: {
+          sex, // 按性别查询
+        },
+      });
+    
+      const students = res ? JSON.parse(JSON.stringify(res)) : null;  // 先将数组转成字符串，再转成json对象
+    
+      // 获取总数
+      const total = await Student.count({
+        where: { sex },
+      });
+        
+      // 包装数据 并返回
+      const data = {
+        total,
+        page,
+        students,
+      };
+      console.log(data);
+      console.log("retrive done");
+      return data;
+    };
+    ```
+
+    ```bash
+    {
+      total: 260,
+      page: 5,
+      students: [
+        {
+          id: 64,
+          name: 'Janet Lebsack II',
+          dob: '2003-03-03T07:33:16.000Z',
+          sex: false,
+          mobile: '023-5558736',
+          deletedAt: null,
+          ClassId: 23
+        },
+        {
+          id: 65,
+          name: 'Ernest Moen',
+          dob: '2003-08-15T02:58:45.000Z',
+          sex: false,
+          mobile: '021-2603397',
+          deletedAt: null,
+          ClassId: 8
+        },
+        {
+          id: 66,
+          name: 'Michael Smitham',
+          dob: '1994-12-01T07:21:36.000Z',
+          sex: false,
+          mobile: '023-8225533',
+          deletedAt: null,
+          ClassId: 32
+        },
+        {
+          id: 67,
+          name: 'Belinda Anderson',
+          dob: '2002-09-07T10:53:27.000Z',
+          sex: false,
+          mobile: '028-7939822',
+          deletedAt: null,
+          ClassId: 22
+        },
+        {
+          id: 70,
+          name: 'Miss Lillie Fadel',
+          dob: '1998-01-29T19:33:37.000Z',
+          sex: false,
+          mobile: '022-2453863',
+          deletedAt: null,
+          ClassId: 20
+        }
+      ]
+    }
+    ```
+
+    
+
+#### 4. 查询数量
+
+findAndCountAll - 已经封装的查询总数和分页数据的方法, 结合了上面方法中使用到的findAll 和 count方法
+
+```ts
+const getStudentsByPage = async (page = 1, limit = 10) => {
+  const res = await Student.findAndCountAll({
+    offset: (page - 1) * limit,
+    limit,
+  });
+
+  const data = {
+    total: res.count,
+    students: JSON.parse(JSON.stringify(res.rows)),
+  };
+  console.log(data);
+  return data;
+};
+```
+
+```bash
+{
+  total: 521,
+  students: [
+    {
+      id: 41,
+      name: 'Dora Renner',
+      dob: '2007-05-10T23:02:48.000Z',
+      sex: true,
+      mobile: '023-3946458',
+      deletedAt: null,
+      ClassId: 18
+    },
+    {
+      id: 42,
+      name: 'Jane McLaughlin I',
+      dob: '1995-08-16T17:51:53.000Z',
+      sex: false,
+      mobile: '024-7203970',
+      deletedAt: null,
+      ClassId: 38
+    },
+    {
+      id: 43,
+      name: 'Alejandro Schuster',
+      dob: '1997-09-04T08:51:40.000Z',
+      sex: true,
+      mobile: '026-9581938',
+      deletedAt: null,
+      ClassId: 16
+    },
+    {
+      id: 44,
+      name: 'Kenneth Fahey IV',
+      dob: '1993-09-03T02:35:09.000Z',
+      sex: true,
+      mobile: '026-0872017',
+      deletedAt: null,
+      ClassId: 30
+    },
+    {
+      id: 45,
+      name: 'Brenda Dooley',
+      dob: '2004-11-10T16:37:25.000Z',
+      sex: true,
+      mobile: '028-1647069',
+      deletedAt: null,
+      ClassId: 17
+    }
+  ]
+}
+```
+
+#### 5. 模糊查询 - [Op.like]
+
+查询数据时，根据关键字查询。 sequelize内置了操作符{ Op }模块，使用 `[Op.like]: '%hat` 
+
+比如，查询名字类似于 arr 的同学
+
+```ts
+const getStudetsLike = async (page = 1, limit = 10, keyword) => {
+  const res = await Student.findAndCountAll({
+    offset: (page - 1) * limit,
+    limit,
+    where: {
+      name: {
+        [Op.like]: `%${keyword}%`,
+      },
+    },
+  });
+  const data = {
+    total: res.count,
+    students: JSON.parse(JSON.stringify(res.rows)),
+  };
+  console.log(data);
+  return data;
+};
+```
+
+```bash
+await getStudetsLike(1, 5, "arr");
+
+{
+  total: 8,
+  students: [
+    {
+      id: 23,
+      name: 'Larry Collins',
+      dob: '1996-03-14T09:33:00.000Z',
+      sex: true,
+      mobile: '023-9415244',
+      deletedAt: null,
+      ClassId: 40
+    },
+    {
+      id: 236,
+      name: 'Warren Franey-Schuppe',
+      dob: '1991-01-11T05:00:20.000Z',
+      sex: false,
+      mobile: '027-7096487',
+      deletedAt: null,
+      ClassId: 7
+    },
+    {
+      id: 297,
+      name: 'Darrel Bode',
+      dob: '1993-04-05T12:46:32.000Z',
+      sex: false,
+      mobile: '022-1376489',
+      deletedAt: null,
+      ClassId: 19
+    },
+    {
+      id: 378,
+      name: 'Mr. Warren Effertz',
+      dob: '1990-11-11T10:23:25.000Z',
+      sex: true,
+      mobile: '024-3723465',
+      deletedAt: null,
+      ClassId: 20
+    },
+    {
+      id: 441,
+      name: 'Harry Cole',
+      dob: '1991-11-09T21:10:39.000Z',
+      sex: true,
+      mobile: '026-3173860',
+      deletedAt: null,
+      ClassId: 24
+    }
+  ]
+}
+```
+
+#### 6. 查询特定属性  - attributes
+
+不需要显示数据的全部属性，而仅需要查询部分特定的属性值，可以使用attributes参数配置
+
+```ts
+/* ------ 6. 查询特定属性  - attributes ------ */
+/**
+ *
+ * @param page 当前页数
+ * @param limit 每页显示的数量
+ * @param atrrs 需要查询的特点属性的数组
+ * @returns
+ */
+const getStudentsAttr = async (page = 1, limit = 10, atrrs) => {
+  const res = await Student.findAndCountAll({
+    attributes: atrrs,
+    offset: (page - 1) * limit,
+    limit,
+  });
+  const data = {
+    total: res.count,
+    students: JSON.parse(JSON.stringify(res.rows)),
+  };
+  console.log(data);
+  return data;
+};
+```
+
+```bash
+/* ----------- 10. 查询特定属性 ----------- */
+  await getStudentsAttr(2, 3, ["name", "dob", "sex"]);
+  
+  
+{
+  total: 521,
+  students: [
+    {
+      name: 'Rosemarie Littel',
+      dob: '1999-03-22T01:33:33.000Z',
+      sex: false
+    },
+    {
+      name: 'Lucia Leannon',
+      dob: '1990-11-03T14:19:05.000Z',
+      sex: false
+    },
+    { name: 'Jack Pagac', dob: '1991-09-05T11:37:33.000Z', sex: false }
+  ]
+}
+```
+
+#### 7. 包含关系 - include
+
+查询关联表的信息，使用include配置属性
+
+```ts
+/* -------- 7. 包含关系 - include ------- */
+const getStudentsInclude = async (page = 1, limit = 10) => {
+  const res = await Student.findAndCountAll({
+    offset: (page - 1) * limit,
+    limit,
+    include: [Class],
+  });
+  const data = {
+    total: res.count,
+    students: JSON.parse(JSON.stringify(res.rows)),
+  };
+  console.log(data);
+  return data;
+};
+```
+
+```bash
+
+{
+  total: 521,
+  students: [
+    {
+      id: 26,
+      name: 'Jack Pagac',
+      dob: '1991-09-05T11:37:33.000Z',
+      sex: false,
+      mobile: '024-3556976',
+      deletedAt: null,
+      ClassId: 4,
+      Class: [Object]
+    },
+    {
+      id: 27,
+      name: 'Sherry Predovic',
+      dob: '2007-05-14T07:53:27.000Z',
+      sex: true,
+      mobile: '024-8004229',
+      deletedAt: null,
+      ClassId: 14,
+      Class: [Object]
+    },
+    {
+      id: 28,
+      name: 'Toby Fritsch',
+      dob: '1993-06-04T04:13:15.000Z',
+      sex: true,
+      mobile: '025-0601624',
+      deletedAt: null,
+      ClassId: 20,
+      Class: [Object]
+    },
+    {
+      id: 29,
+      name: 'Alison Lueilwitz-Langworth',
+      dob: '1998-03-25T03:40:25.000Z',
+      sex: false,
+      mobile: '022-3399459',
+      deletedAt: null,
+      ClassId: 13,
+      Class: [Object]
+    },
+    {
+      id: 30,
+      name: 'Miss Vanessa Wunsch',
+      dob: '1996-02-21T10:02:19.000Z',
+      sex: true,
+      mobile: '028-3917624',
+      deletedAt: null,
+      ClassId: 5,
+      Class: [Object]
+    }
+  ]
+}
+```
+
 
 
 ## 4. Express.js

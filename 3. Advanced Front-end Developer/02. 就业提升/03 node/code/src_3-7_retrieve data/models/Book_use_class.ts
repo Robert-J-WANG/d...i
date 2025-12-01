@@ -6,25 +6,34 @@ import {
 } from "sequelize";
 import sequelize from "./db";
 
-export class Class extends Model<
-  InferAttributes<Class>,
-  InferCreationAttributes<Class>
+export class Book extends Model<
+  InferAttributes<Book>,
+  InferCreationAttributes<Book>
 > {
   declare id?: number;
   declare name: string;
-  declare openDate: Date | string;
+  declare imgUrl: string;
+  declare publishDate: string;
+  declare author: string;
   declare deletedAt?: Date | null;
 }
 
-Class.init(
+Book.init(
   {
     name: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-
-    openDate: {
-      type: DataTypes.DATE,
+    imgUrl: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    publishDate: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    author: {
+      type: DataTypes.STRING,
       allowNull: false,
     },
   },
@@ -39,4 +48,4 @@ Class.init(
   }
 );
 
-export default Class;
+export default Book;
