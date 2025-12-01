@@ -6373,6 +6373,181 @@ const getStudentsInclude = async (page = 1, limit = 10) => {
 
 
 
+### 3.8 MD5加密
+
+#### 1. 概述
+
+- MD5是一种hash加密算法
+- 将任意长度的数据转换成固定长度的字符串 - **128位（16字节）**的哈希值（即消息摘要）。
+- **不可逆性：** 单向，只能加密，不能解密。
+- 相同的源数据加密，得到固定的结果
+
+#### 2. 使用场景
+
+常用于对数据库里账户和密码等敏感数据的加密， 在用户注册时，系统不会直接存储用户密码，而是存储其MD5值。在用户登录时，系统会计算输入的密码的MD5值，并与数据库中存储的值进行比对，从而验证密码是否正确。
+
+- 基础使用
+
+    - 安装md5库
+
+        ```bash
+        npm i md5
+        ```
+
+    - 导入模块并使用
+
+        ```ts
+        import md5 from "md5";
+        
+        console.log(md5("123"));
+        console.log(md5("abc"));
+        ```
+
+        ```bash
+        202cb962ac59075b964b07152d234b70
+        900150983cd24fb0d6963f7d28e17f72
+        ```
+
+- 账户和密码加密
+
+    对我们之前的Admin模型的登录模块进行加密改造
+
+    - 添加admin时，使用md5加密
+
+        ```ts
+        import { Admin } from "../models/sync";
+        import md5 from "md5";
+        
+        const adminAdd = async (adminObj) => {
+          /* -------------- 加密改造 -------------- */
+          adminObj.loginPwd = md5(adminObj.loginPwd);
+          const inst = await Admin.create(adminObj);
+          console.log(inst.toJSON());
+          console.log("add data done");
+        };
+        ```
+
+        ```ts
+        import { sequelize } from "./models/sync";
+        import {adminAdd} from "./servers/admin";
+        
+        async function main() {
+          /* ---------- 2. 添加admin数据 ---------- */
+          await adminAdd({
+            loginID: "admin1",
+            loginPwd: "123456",
+            name: "admin1",
+          });
+        }
+        
+        main();
+        ```
+
+        ```bash
+        {
+          id: 34,
+          loginID: 'admin1',
+          loginPwd: 'e10adc3949ba59abbe56e057f20f883e', // "123456"加密后的字符
+          name: 'admin1'
+        }
+        ```
+
+    - 修改admin数据的改造
+
+        ```ts
+        const adminUpdate = async (adminID, adminObj) => {
+        
+          /* -------------- 加密改造 -------------- */
+          if (adminObj.loginPwd) {
+            adminObj.loginPwd = md5(adminObj.loginPwd);
+          }
+          const res = await Admin.update(adminObj, {
+            where: {
+              id: adminID,
+            },
+          });
+          console.log(res);
+          console.log("update done");
+        };
+        ```
+
+        ```ts
+        import { sequelize } from "./models/sync";
+        import {adminUpdate} from "./servers/admin";
+        
+        async function main() {
+            /* --------- 4. 修改admin实例数据 --------- */
+          await adminUpdate(35, { loginPwd: "000000" });
+        }
+        
+        main();
+        ```
+
+        ```bash
+        670b14728ad9902aecba32e22fa4f6bd // "000000"加密后的字符串
+        ```
+
+    - 查询admin数据的改造 - 登录
+
+        ```ts
+        import { log } from "console";
+        import { Admin } from "../models/sync";
+        import md5 from "md5";
+        
+        /* -------------- 加密改造 -------------- */
+        const login = async (loginID, loginPwd) => {
+          //加密处理
+          loginPwd = md5(loginPwd);
+          const res = await Admin.findOne({
+            where: {
+              loginID,
+              loginPwd,
+            },
+          });
+        
+          if (res) {
+            console.log(res.toJSON());
+            return res.toJSON();
+          }
+          return null;
+        };
+        
+        export { adminAdd, adminDelete, adminUpdate, login, getAdminByID };
+        
+        ```
+
+        ```ts
+        import { sequelize } from "./models/sync";
+        import {login} from "./servers/admin";
+        
+        async function main() {
+          /* ----- 5. 查询数据 findOne - 登录验证 ----- */
+          await login("admin2", "000000");
+        }
+        
+        main();
+        ```
+
+        ```bash
+        {
+          id: 35,
+          loginID: 'admin2',
+          loginPwd: '670b14728ad9902aecba32e22fa4f6bd',
+          name: 'admin2',
+          deletedAt: null
+        }
+        ```
+
+        
+
+### 3.9 日期处理 - moment库
+
+### 3.10 数据验证
+
+### 3.11 访问器和虚拟字段
+
+### 3.12 日志记录
+
 ## 4. Express.js
 
 ## 5. websocket
