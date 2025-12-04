@@ -20,17 +20,17 @@ async function main() {
   /* ---------------- . --------------- */
   /* ---------------- . --------------- */
   /* ---------- 2. 添加student数据 ---------- */
-  await studentAdd({
-    name: "good student",
-    dob: "2019-09-07",
-    sex: true,
-    mobile: "021-2302123",
-    ClassId: 3,
-  });
+  // await studentAdd({
+  //   name: "ahahas",
+  //   dob: "2020-11-11",
+  //   sex: true,
+  //   mobile: "02023021234",
+  //   ClassId: 3,
+  // });
   /* --------- 3. 删除student实例数据 --------- */
   // await studentDelete(541);
   /* --------- 4. 修改student实例数据 --------- */
-  // await studentUpdate(544, { mobile: "022-3456553" });
+  // await studentUpdate(542, { name: "heihei", mobile: "021-3456999" });
 
   /* ---------- 5. 查询学生 - 全部 ---------- */
   // await getStudentsAll();
@@ -51,7 +51,7 @@ async function main() {
   // await getStudentsAttr(2, 3, ["name", "dob", "sex"]);
 
   /* -------- 11. 查询学生 - 包含班级信息 ------- */
-  // await getStudentsInclude(2, 5);
+  await getStudentsInclude(2, 5);
 }
 
 main();

@@ -7035,6 +7035,628 @@ Day.js 是一个轻量级（约 2KB）的日期时间处理库，其 API 设计�
 
 ### 3-10 数据验证
 
+#### 1. 数据验证的位置
+
+数据验证必须在整个应用架构的多个层面实施，以确保**用户体验、安全性和数据完整性**。
+
+| 验证位置 (层)                         | 目标                        | **核心职责**                                                 | 缺少验证会导致的问题                   |
+| ------------------------------------- | --------------------------- | ------------------------------------------------------------ | -------------------------------------- |
+| **前端 (Client-Side)**                | 提升用户体验（UX）          | 在数据发送到服务器前快速反馈错误（如“手机号格式不对”、“密码太短”），减少用户等待时间 | 体验差，用户频繁发出错误请求           |
+| **路由层/控制器 (Controller/Router)** | 验证接口格式是否正常        | 请求初步校验。检查请求的基本结构、参数类型、格式（例如 JSON 结构、字段是否缺失）和权限验证（如认证/授权），确保请求是合法的、可被处理的 | 业务层要兼容各种垃圾请求，容易出错     |
+| **业务逻辑层 (Business Logic)**       | 保证业务规则的正确性/完整性 | 最核心的验证。例如，下单前检查库存是否足够、用户是否有权限修改这个资源、状态是否允许变更（如订单不能从“已取消”变成“已付款”） | 业务规则失效，如库存变负数、权限被绕过 |
+| **数据库层 (Database)**               | 保证数据存储                | 利用数据库的约束（如主键 `PRIMARY KEY`、外键 `FOREIGN KEY`、非空 `NOT NULL`、唯一性 `UNIQUE` 约束），防止脏数据或不一致数据写入 | 数据库出现重复、不一致、脏数据         |
+
+#### 2. 相关库
+
+- validator.js 
+
+    提供了大量的内置函数,  用于简单、独立的字符串格式检查，例如，`isEmail()`、`isUUID()`、`isCreditCard()` 等
+
+- zod
+
+    现代 $\text{JS}$ 开发中的**标准模式**，它能验证复杂的数据结构、提供类型推断，是解决**路由层**和**前端表单**验证的更优解
+
+#### 3. zod基础
+
+一个 **类型安全 + 验证同步** 的 TS 验证库。
+
+写一次 schema：自动提供验证（runtime）+  自动生成 TS 类型（type-level），不会出现类型与验证不一致的问题。
+
+$\text{Zod}$ 的 $\text{API}$ 设计非常直观，所有验证都是通过链式调用实现的。
+
+- 实现基础步骤：
+
+    - 安装并导入
+
+    - 创建 schema实例对象 - Schema是描述期望数据形状和规则的对象。所有验证都从定义一个Schema开始
+
+    - 数据验证 - 使用实例对象的parse方法验证数据 -
+
+        通过验证：返回一个封装的对象 ， 验证失败 - 返回ZodError，可使用try catch捕获
+
+        ```bash
+        npm i zod
+        ```
+
+        ```ts
+        import * as z from "zod";
+        
+        /* ------------- zod基础用法 ------------ */
+        /* ------------- 1. 基础流程 ------------ */
+        // 创建schema对象
+        const schema = z.string().min(5);
+        
+        // 验证数据 - 验证通过
+        // 验证数据 - 使用 parse
+        try {
+          const res = schema.parse("ddddd");
+          console.log(res);
+        } catch (err) {
+          throw err.issues;
+        }
+        
+        // 验证数据 - 验证失败 - 抛出错误
+        try {
+          const res = schema.parse("d");
+          console.log(res);
+        } catch (err) {
+          throw err.issues;
+        }
+        ```
+
+        ```bash
+        // 验证数据 - 验证通过
+        ddddd
+        
+        // 验证数据 - 验证失败
+        ZodError: [
+          {
+            "origin": "string",
+            "code": "too_small",
+            "minimum": 5,
+            "inclusive": true,
+            "path": [],
+            "message": "Too small: expected string to have >=5 characters"
+          }
+        ]
+        ```
+
+        要避免 ~~`try/catch`~~ 阻塞，可以使用 **==`.safeParse()` 方法==**返回包含成功解析数据或 `ZodError` 的纯文本结果对象
+
+        ```ts
+        // 验证数据 - 使用 safeParse
+        console.log(schema.safeParse("dddddd"));
+        console.log(schema.safeParse("d"));
+        ```
+
+        ```bash
+        { success: true, data: 'dddddd' }
+        {
+          success: false,
+          error: ZodError: [
+            {
+              "origin": "string",
+              "code": "too_small",
+              "minimum": 5,
+              "inclusive": true,
+              "path": [],
+              "message": "Too small: expected string to have >=5 characters"
+            }
+          ]
+        ...
+        }
+        ```
+
+    - 类型推断 infer 
+
+        对定义的schema，执行类型推断， 导出类型作为ts中的类型使用
+
+        ```ts
+        /* ------------- 3. 类型推断 ------------ */
+        type myType = z.infer<typeof schema>;
+        const name: myType = 123; 
+        ```
+
+        ```
+        Type 'number' is not assignable to type 'string'.ts(2322)
+        const name: string
+        ```
+
+        
+
+- 基本 $\text{Schema}$ 类型和验证规则
+
+    这是 $\text{Zod}$ 中最基本的 $\text{Schema}$ 定义，对应 $\text{JavaScript}$ 的原始数据类型：
+
+    | **Zod 定义**                | **描述**     | **TypeScript 类型** | **示例**                |
+    | --------------------------- | ------------ | ------------------- | ----------------------- |
+    | $\text{z.string()}$         | 字符串       | $\text{string}$     | `z.string().min(5)`     |
+    | $\text{z.number()}$         | 数字         | $\text{number}$     | `z.number().positive()` |
+    | $\text{z.boolean()}$        | 布尔值       | $\text{boolean}$    | `z.boolean()`           |
+    | $\text{z.date()}$           | 日期对象     | $\text{Date}$       | `z.date()`              |
+    | $\text{z.any()}$            | 任意类型     | $\text{any}$        | `z.any()`               |
+    | $\text{z.literal('yes')}$   | 精确到某个值 | `'yes'`             | `z.literal(100)`        |
+    | $\text{z.enum(['A', 'B'])}$ | 枚举值       | `'A'                | 'B'`                    |
+
+    常用核心验证规则如下：
+
+    - String
+
+        ```ts
+        z.string().max(5);
+        z.string().min(5);
+        z.string().length(5);
+        z.string().regex(/^[a-z]+$/);
+        z.string().startsWith("aaa");
+        z.string().endsWith("zzz");
+        z.string().includes("---");
+        z.string().uppercase();
+        z.string().lowercase();
+        ```
+
+        ```ts
+        /* ---------schema 基础类型和验证规则 --------- */
+        
+        /**
+         * 封装一个显示zod schema 验证结果的辅助函数
+         * @param schema zod schema
+         * @param data 需要验证的数据
+         */
+        const printResult = (schema, data) => {
+          const res = schema.safeParse(data);
+          if (res.success) {
+            console.log(res);
+          } else {
+            const result = res.error?.issues.map((i) => i.message);
+            console.log(result);
+          }
+        };
+        
+        /* ------------ 1. string ----------- */
+        printResult(z.string(), 123);
+        printResult(z.string().length(7), "123");
+        printResult(z.string().min(5).max(10).startsWith("a").uppercase(), "aabd");
+        ```
+
+        ```bash
+        [ 'Invalid input: expected string, received number' ]
+        [ 'Too small: expected string to have >=7 characters' ]
+        [
+          'Too small: expected string to have >=5 characters',
+          'Invalid uppercase'
+        ]
+        ```
+
+    - Common string - 对常见的字符规则，从string中进行了提升，方便直接使用
+
+        ```ts
+        z.email();
+        z.uuid();
+        z.url();
+        z.httpUrl();       // http or https URLs only
+        z.hostname();
+        z.emoji();         // validates a single emoji character
+        z.base64();
+        z.base64url();
+        z.hex();
+        z.jwt();
+        z.nanoid();
+        z.cuid();
+        z.cuid2();
+        z.ulid();
+        z.ipv4();
+        z.ipv6();
+        z.mac();
+        z.cidrv4();        // ipv4 CIDR block
+        z.cidrv6();        // ipv6 CIDR block
+        z.hash("sha256");  // or "sha1", "sha384", "sha512", "md5"
+        z.iso.date(); //"2019-09-07"
+        z.iso.time(); // "15:50:00"
+        z.iso.datetime(); // "2019-09-07T15:50:00Z"
+        z.iso.duration();
+        ```
+
+        ```ts
+        /* ------------- 2. 常用字符 ------------ */
+        
+        printResult(z.email(), "abc@gmail.com");
+        printResult(z.email(), "123");
+        
+        printResult(z.url(), "localhost://zod.dev/api");
+        printResult(z.httpUrl(), "localhost://zod.dev/api");
+        
+        printResult(z.iso.date(), "2019-09-07");
+        printResult(z.iso.time(), "15:50:00");
+        printResult(z.iso.datetime(), "2019-09-07T15:50:00Z");
+        printResult(z.iso.datetime(), "2019-09-07 15:50:00");
+        ```
+
+        ```bash
+        { success: true, data: 'abc@gmail.com' }
+        [ 'Invalid email address' ]
+        { success: true, data: 'localhost://zod.dev/api' }
+        [ 'Invalid URL' ]
+        { success: true, data: '2019-09-07' }
+        { success: true, data: '15:50:00' }
+        { success: true, data: '2019-09-07T15:50:00Z' }
+        [ 'Invalid ISO datetime' ]
+        ```
+
+    - Number
+
+        ```ts
+        z.number().parse(3.14);      // ✅ 只能通过有限数字
+        z.number().parse(NaN);       // ❌
+        z.number().parse(Infinity);  // ❌
+        
+        z.number().gt(5);						//大于
+        z.number().gte(5);                     // 大于等于
+        z.number().lt(5);						//小于
+        z.number().lte(5);                     // 小于等于
+        z.number().positive();       
+        z.number().nonnegative();    
+        z.number().negative(); 
+        z.number().nonpositive(); 
+        z.number().multipleOf(5);              // 倍数
+        ```
+
+        ```ts
+        /* -------------- 3. 数字 ------------- */
+        printResult(z.number(), 3.14);
+        printResult(z.number(), NaN);
+        printResult(z.number(), Infinity);
+        
+        printResult(z.number().gt(10), 1);
+        printResult(z.number().gte(10), 10);
+        printResult(z.number().lt(10), 1);
+        printResult(z.number().lte(10), 10);
+        
+        printResult(z.number().positive(), 0);
+        printResult(z.number().nonpositive(), 0);
+        printResult(z.number().negative(), 0);
+        printResult(z.number().nonnegative(), 0);
+        printResult(z.number().multipleOf(111), 222);
+        ```
+
+        ```bash
+        { success: true, data: 3.14 }
+        [ 'Invalid input: expected number, received NaN' ]
+        [ 'Invalid input: expected number, received number' ]
+        [ 'Too small: expected number to be >10' ]
+        { success: true, data: 10 }
+        { success: true, data: 1 }
+        { success: true, data: 10 }
+        [ 'Too small: expected number to be >0' ]
+        { success: true, data: 0 }
+        [ 'Too big: expected number to be <0' ]
+        { success: true, data: 0 }
+        { success: true, data: 222 }
+        ```
+
+    - 整数 int
+
+        ```
+        z.int();     // restricts to safe integer range
+        z.int32();   // restrict to int32 range
+        ```
+
+        ```ts
+        /* -------------- 4.整数 -------------- */
+        printResult(z.int(), 222);
+        printResult(z.int(), 222.2);
+        
+        printResult(z.int32(), 2222);
+        printResult(z.int32(), 22222222222);
+        ```
+
+        ```
+        { success: true, data: 222 }
+        [ 'Invalid input: expected int, received number' ]
+        
+        { success: true, data: 2222 }
+        [ 'Too big: expected number to be <2147483647' ]
+        ```
+
+    - 布尔
+
+        ```ts
+        z.boolean().parse(true); // => true
+        z.boolean().parse(false); // => false
+        ```
+
+    - 日期 - 和前面的string里的iso日期字符串不同
+
+        ```ts
+        /* -------------- 6.日期 -------------- */
+        printResult(z.date(), "2025-01-01");
+        printResult(z.date(), "2022-01-12T06:15:00.000Z");
+        printResult(z.date(), new Date());
+        ```
+
+        ```bash
+        [ 'Invalid input: expected date, received string' ]
+        [ 'Invalid input: expected date, received string' ]
+        { success: true, data: 2025-12-04T01:41:13.817Z }
+        ```
+
+        
+
+- **==核心 $\text{Schema}$ 结构 (组合类型)==**
+
+    当数据结构变得复杂时，需要组合这些基本类型：
+
+    - **对象**
+
+        ```ts
+        /* -------------- 1. 对象 ------------- */
+        
+        printResult(
+          z.object({
+            name: z.string().nonempty(),
+            age: z.int().min(18).max(100),
+            email: z.email(),
+            isMale: z.boolean(),
+            mobile: z.string().regex(/^02[0-8]\d{7,8}$/),
+          }),
+          {
+            name: "robert",
+            age: 20,
+            email: "rb@gmail.com",
+            isMale: false,
+            mobile: "0231234567",
+          }
+        );
+        
+        ```
+
+        ```bash
+        {
+          success: true,
+          data: {
+            name: 'robert',
+            age: 20,
+            email: 'rb@gmail.com',
+            isMale: false,
+            mobile: '0231234567'
+          }
+        }
+        ```
+
+        高级操作：
+
+        可选和必须 - optional / required
+
+        ```ts
+        printResult(
+          z
+            .object({
+              name: z.string().nonempty(),
+              age: z.int().min(18).max(100).optional(), //可选
+              email: z.email(),
+              isMale: z.boolean(),
+              mobile: z.string().regex(/^02[0-8]\d{7,8}$/),
+            })
+            .required({
+              //必须
+              name: true,
+              email: true,
+            }),
+          {
+            name: "robert",
+            // age: 20,
+            email: "rb@gmail.com",
+            isMale: false,
+            mobile: "0231234567",
+          }
+        );
+        ```
+
+        ```bash
+        {
+          success: true,
+          data: {
+            name: 'robert',
+            email: 'rb@gmail.com',
+            isMale: false,
+            mobile: '0231234567'
+          }
+        }
+        ```
+
+        指定属性验证 - pick
+
+        ```ts
+        printResult(
+          z
+            .object({
+              name: z.string().nonempty(),
+              age: z.int().min(18).max(100).optional(), //可选
+              email: z.email(),
+              isMale: z.boolean(),
+              mobile: z.string().regex(/^02[0-8]\d{7,8}$/),
+            })
+            .pick({ // 挑起某些数据验证
+              name: true,
+              mobile: true,
+            }),
+          {
+            name: "robert",
+            // age: 20,
+            email: "rb@gmail.com",
+            isMale: false,
+            mobile: "0231234567",
+          }
+        );
+        ```
+
+        ```bash
+         success: true, data: { name: 'robert', mobile: '0231234567' } }
+        ```
+
+        忽略某些属性验证  - omit 
+
+        ```ts
+        printResult(
+          z
+            .object({
+              name: z.string().nonempty(),
+              age: z.int().min(18).max(100).optional(), //可选
+              email: z.email(),
+              isMale: z.boolean(),
+              mobile: z.string().regex(/^02[0-8]\d{7,8}$/),
+            })
+            .omit({ // 忽略某些数据验证
+              name: true,
+              mobile: true,
+            }),
+          {
+            name: "robert",
+            age: 20,
+            email: "rb@gmail.com",
+            isMale: false,
+            mobile: "0231234567",
+          }
+        );
+        ```
+
+        ```bash
+        {
+          success: true,
+          data: { age: 20, email: 'rb@gmail.com', isMale: false }
+        }
+        ```
+
+        选择部分数据验证 - partial
+
+        ```ts
+        /* ------------- 选择部分数据 ------------- */
+        
+        printResult(
+          z
+            .object({
+              name: z.string().nonempty(),
+              age: z.int().min(18).max(100).optional(), //可选
+              email: z.email(),
+              isMale: z.boolean(),
+              mobile: z.string().regex(/^02[0-8]\d{7,8}$/),
+            })
+            .partial(),
+          {
+            name: "robert",
+            age: 20,
+          }
+        );
+        ```
+
+        ```bash
+        { success: true, data: { name: 'robert', age: 20 } }
+        ```
+
+        
+
+    - 数组
+
+        ```ts
+        /* -------------- 2.数组 -------------- */
+        printResult(z.array(z.string()), ["fasdf", "fsadf"]);
+        ```
+
+        ```bash
+        { success: true, data: [ 'fasdf', 'fsadf' ] }
+        ```
+
+#### 4. 完善sequelize模型
+
+结合zod的数据验证功能，完善我们之前的sequelize模型已经业务逻辑，以student 为例
+
+- 定义student模型的schema
+
+    ```ts
+    import { z } from "zod";
+    
+    const studentSchema = z.object({
+      name: z.string().min(1).max(20),
+      dob: z.iso.date().nonempty(),
+      sex: z.boolean(),
+      mobile: z.string().regex(/02[1-8]{1}-[0-9]{7}/),
+      ClassId: z.int(),
+    });
+    
+    export { studentSchema };
+    ```
+
+- 创建学生逻辑中使用
+
+    ```ts
+    import { Class, Student } from "../models/sync";
+    import { Op } from "sequelize";
+    
+    import { studentSchema } from "../schemas/schema";
+    
+    interface Istudent {
+      name: string;
+      dob: string | Date;
+      sex: boolean;
+      mobile: string;
+      ClassId?: number;
+    }
+    
+    /* -------------- 增加数据 -------------- */
+    const studentAdd = async (obj: Istudent) => {
+      const valResult = studentSchema.safeParse(obj); //数据验证
+      if (valResult.success) {
+        const inst = Student.create(obj);
+        const res = inst ? (await inst).toJSON() : null;
+        console.log("add done");
+        console.log(res);
+        return res;
+      } else {
+        console.log(valResult.error.issues.map((e) => e.message));
+      }
+    };
+    
+    export {studentAdd};
+    
+    ```
+
+- 修改学生逻辑中使用
+
+    ```ts
+    import { Class, Student } from "../models/sync";
+    import { Op } from "sequelize";
+    
+    import { studentSchema } from "../schemas/schema";
+    
+    interface Istudent {
+      name: string;
+      dob: string | Date;
+      sex: boolean;
+      mobile: string;
+      ClassId?: number;
+    }
+    
+    /* -------------- 修改数据 -------------- */
+    const studentUpdate = async (id, newObj) => {
+      const valResult = studentSchema.partial().safeParse(newObj); //数据验证
+      if (valResult.success) {
+        const res = await Student.update(newObj, {
+          where: {
+            id,
+          },
+        });
+        console.log(res);
+        console.log("update done");
+      } else {
+        console.log(valResult.error.issues.map((e) => e.message));
+      }
+    };
+    
+    export {  studentAdd,studentUpdate };
+    
+    ```
+
+    
+
 ### 3-11 访问器和虚拟字段
 
 ### 3-12 日志记录

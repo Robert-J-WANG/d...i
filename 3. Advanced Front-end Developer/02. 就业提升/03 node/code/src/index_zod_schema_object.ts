@@ -110,19 +110,23 @@ const printResult = (schema, data) => {
   }
 ); */
 
+/* ------------- 选择部分数据 ------------- */
+
 printResult(
-  z.object({
-    name: z.string().min(1).max(20),
-    dob: z.iso.date().nonempty(),
-    sex: z.boolean(),
-    mobile: z.string().regex(/02[1-8]{1}-[0-9]{7}/),
-    ClassId: z.int(),
-  }),
+  z
+    .object({
+      name: z.string().nonempty(),
+      age: z.int().min(18).max(100).optional(), //可选
+      email: z.email(),
+      isMale: z.boolean(),
+      mobile: z.string().regex(/^02[0-8]\d{7,8}$/),
+    })
+    .partial(),
   {
-    name: "good student",
-    dob: "2019-09-07",
-    sex: true,
-    mobile: "021-2302123",
-    ClassId: 3,
+    name: "robert",
+    age: 20,
   }
 );
+
+/* -------------- 2.数组 -------------- */
+printResult(z.array(z.string()), ["fasdf", "fsadf"]);

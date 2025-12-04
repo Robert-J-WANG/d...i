@@ -1,28 +1,21 @@
 import { Class, Student } from "../models/sync";
 import { Op } from "sequelize";
 
-import { studentSchema, Istudent } from "../schemas/schema";
-
-/* interface Istudent {
+interface Istudent {
   name: string;
-  dob: string | Date;
+  dob: string;
   sex: boolean;
   mobile: string;
   ClassId?: number;
-} */
+}
 
 /* -------------- 增加数据 -------------- */
 const studentAdd = async (obj: Istudent) => {
-  const valResult = studentSchema.safeParse(obj);
-  if (valResult.success) {
-    const inst = Student.create(obj);
-    const res = inst ? (await inst).toJSON() : null;
-    console.log("add done");
-    console.log(res);
-    return res;
-  } else {
-    console.log(valResult.error.issues.map((e) => e.message));
-  }
+  const inst = Student.create(obj);
+  const res = inst ? (await inst).toJSON() : null;
+  console.log("add done");
+  console.log(res);
+  return res;
 };
 
 /* -------------- 删除数据 -------------- */
@@ -38,18 +31,13 @@ const studentDelete = async (id) => {
 
 /* -------------- 修改数据 -------------- */
 const studentUpdate = async (id, newObj) => {
-  const valResult = studentSchema.partial().safeParse(newObj);
-  if (valResult.success) {
-    const res = await Student.update(newObj, {
-      where: {
-        id,
-      },
-    });
-    console.log(res);
-    console.log("update done");
-  } else {
-    console.log(valResult.error.issues.map((e) => e.message));
-  }
+  const res = await Student.update(newObj, {
+    where: {
+      id,
+    },
+  });
+  console.log(res);
+  console.log("update done");
 };
 
 /* ---------- 查询数据 -findAll --------- */
