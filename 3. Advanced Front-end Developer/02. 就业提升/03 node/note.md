@@ -7659,6 +7659,176 @@ $\text{Zod}$ 的 $\text{API}$ 设计非常直观，所有验证都是通过链�
 
 ### 3-11 访问器和虚拟字段
 
+#### 1. 访问器
+
+sequelize允许对模型的属性自定义访问器 - getter 和 setter
+
+- Getter ： 自定义的get( ) 方法， 和js中类的getter一样， 在读取字段值时自动调用。
+
+    场景：以student模型为例，我们定义的dob是标准的Date类型，这是数据库存取的标准类型。但是如果我们需要读取学生的数据，并把数据传递给页面显示时，Date类型不好处理，我们需要是一个时间戳。但是同时又不能影响Date类型用于数据库的操作。因此我们可以给dob字段自定义Getter，通过Getter获取dob的时间戳。
+
+    ```ts
+    import {
+      DataTypes,
+      InferAttributes,
+      InferCreationAttributes,
+      Model,
+    } from "sequelize";
+    import sequelize from "./db";
+    
+    export class Student extends Model<
+      InferAttributes<Student>,
+      InferCreationAttributes<Student>
+    > {
+      declare id?: number;
+      declare name: string;
+      declare dob: Date;
+      declare sex: boolean;
+      declare mobile: string;
+      declare deletedAt?: Date | string | null;
+      declare ClassId?: number;
+    }
+    
+    Student.init(
+      {
+       ...
+        dob: {
+          type: DataTypes.DATE,
+          allowNull: false,
+          //自定义getter - 获取dob的时间戳
+          get() {
+            return this.getDataValue("dob").getTime();
+          },
+        },
+       ...
+      },
+      // 可选配置
+      {
+       ...
+      }
+    );
+    ```
+
+    ```bash
+      /* --------- 6. 查询学生 - 按页查询 --------- */
+      await getStudents(2, 5);
+      
+      [
+      {
+        dob: 684070653000, //显示的是时间戳
+        id: 26,
+        name: 'Jack Pagac',
+        sex: false,
+        mobile: '024-3556976',
+        deletedAt: null,
+        ClassId: 4
+      },
+      ...
+      {
+        dob: 824896939000, //显示的是时间戳
+        id: 30,
+        name: 'Miss Vanessa Wunsch',
+        sex: true,
+        mobile: '028-3917624',
+        deletedAt: null,
+        ClassId: 5
+      }
+    ]
+    ```
+
+- ~~setter - 省略~~
+
+#### 2. 虚拟字段
+
+Sequelize还允许指定所谓的虚拟属性，这些属性存在于Sequelize模型中，但并不真正存在于底层SQL表中，而是由Sequelize自动填充。
+
+虚拟字段类型是：DataTypes.VIRTUAL, 结合getter可以定义（计算）其值
+
+比如：我们设置一个虚拟字段- 年龄age, 其并不存在于数据库中
+
+```ts
+import {
+  DataTypes,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
+} from "sequelize";
+import sequelize from "./db";
+import dayjs from "dayjs";
+
+export class Student extends Model<
+  InferAttributes<Student>,
+  InferCreationAttributes<Student>
+> {
+  declare id?: number;
+  declare name: string;
+  declare dob: Date;
+  declare age?: number;
+  declare sex: boolean;
+  declare mobile: string;
+  declare deletedAt?: Date | string | null;
+  declare ClassId?: number;
+}
+
+Student.init(
+  {
+   ...
+    dob: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      //自定义getter - 获取dob的时间戳
+      get() {
+        return this.getDataValue("dob").getTime();
+      },
+    },
+    //虚拟字段
+    age: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return dayjs().diff(this.getDataValue("dob"), "year");
+      },
+    },
+   ...
+  },
+  // 可选配置
+  {
+   ...
+  }
+);
+
+export default Student;
+
+```
+
+```bash
+[
+  {
+    dob: 684070653000,
+    age: 34,
+    id: 26,
+    name: 'Jack Pagac',
+    sex: false,
+    mobile: '024-3556976',
+    deletedAt: null,
+    ClassId: 4
+  },
+...
+  {
+    dob: 824896939000,
+    age: 29,
+    id: 30,
+    name: 'Miss Vanessa Wunsch',
+    sex: true,
+    mobile: '028-3917624',
+    deletedAt: null,
+    ClassId: 5
+  }
+]
+retrive done
+```
+
+
+
 ### 3-12 日志记录
 
 ## 4. Express.js
