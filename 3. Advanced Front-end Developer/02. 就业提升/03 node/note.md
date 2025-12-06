@@ -7831,6 +7831,299 @@ retrive done
 
 ### 3-12 日志记录
 
+#### 1. 概述
+
+开发中，需要对一些日志进行记录，方便维护和检查。比如记录执行的sql语句，以便对数据库交互的错误排除等等。
+
+通常使用第三方库
+
+#### 2. log4js
+
+Log4js 是一个用于 **Node.js** 环境下的**日志记录（logging）模块**，用于在应用程序中记录各种级别的日志信息，如调试信息、错误、警告等，通过配置，能够并将这些日志输出到不同的目标（如控制台、文件、数据库等）。
+
+如何记录日志？
+
+使用 Log4js 进行日志记录主要涉及以下几个核心步骤：**安装**、**配置**和**使用**。
+
+- 安装及导入
+
+    ```bash
+    # 使用 npm
+    npm install log4js
+    
+    # 或使用 yarn
+    yarn add log4js
+    ```
+
+    ```ts
+    import log4js from "log4js";
+    ```
+
+- 配置 (Configuration)
+
+    Log4js 的核心在于配置，它定义了**日志输出的结构**和**目标**。配置通常通过一个 JavaScript 对象或 JSON 文件完成。
+
+    主要包含以下概念：
+
+    - **Level（日志级别）**: 定义日志的**重要性**，只有大于或等于配置级别的日志才会被输出。常见的级别从高到低有：
+
+        - Off (不输出) - 默认级别
+
+        - **FATAL** (致命)
+        - **ERROR** (错误)
+        - **WARN** (警告)
+        - **INFO** (信息)
+        - **DEBUG** (调试)
+        - **TRACE** (追踪)
+        - All （输出全部）
+
+    - **Appenders（附加器/输出目标）**: 定义日志输出到哪里，例如：
+
+        - `stdout`: 输出到控制台。
+        - `file`: 输出到单个文件。
+        - `dateFile`: 按日期分割的文件。
+        - `logLevelFilter`: 根据日志级别进行过滤。
+
+    - **Categories（分类/记录器）**: 定义使用哪些 **Appenders** 和 **Log Level**。一个应用可以有多个 Category，例如一个用于应用逻辑，另一个用于数据库操作。
+
+    - **格外配置** 
+
+        - **shutdown** - 接受一个回调函数，该函数将在 log4js 关闭所有输出器并完成日志事件写入后被调用。当程序退出时使用此方法，可确保所有日志写入文件、套接字关闭等操作完成。
+
+        - 默认分类 - 配置中必须要有一个默认分类
+
+        ```ts
+        /* ------------- 1. 模块导入 ------------ */
+        import log4js from "log4js";
+        import path from "path";
+        
+        /* -------------- 2. 配置 ------------- */
+        log4js.configure({
+          // 配置出口
+          appenders: {
+            // sql类的配置
+            sql: {
+              type: "file",
+              filename: path.resolve(__dirname, "logs", "sql", "logging.log"),
+            },
+            default: {
+              type: "stdout", // 控制台输出
+            },
+          },
+          // 配置类别
+          categories: {
+            sql: {
+              appenders: ["sql"], // 使用sql的出口配置写入日志
+              level: "all", // log的级别
+            },
+            default: {
+              appenders: ["default"],
+              level: "all",
+            },
+          },
+        });
+        
+        process.on("exit", () => {
+          log4js.shutdown(); //当程序退出时，确保所有日志写入文件、套接字关闭等操作完成。
+        });
+        ```
+
+- 使用 (Usage)
+
+    使用时需要先**获取**一个 Logger 实例，然后调用其相应级别的方法来记录日志。
+
+    ```ts
+    /* -------------- 3.使用 -------------- */
+    
+    const sqlLogger = log4js.getLogger("sql");
+    // console.log(logger);
+    sqlLogger.info("abc");
+    ```
+
+    ```ts
+    // ./src/logs/sql/logging.log
+    
+    [2025-12-06T15:05:36.012] [INFO] sql - abc
+    [2025-12-06T15:06:02.953] [INFO] sql - abc
+    [2025-12-06T15:06:04.182] [INFO] sql - abc
+    [2025-12-06T15:06:05.503] [INFO] sql - abc
+    [2025-12-06T15:07:25.626] [INFO] sql - abc
+    [2025-12-06T15:08:29.999] [INFO] sql - abc
+    ```
+
+- 优化配置 - **Layout (布局)** 
+
+    通过配置 Layout，可以自定义日志的时间戳、级别、分类名以及消息本身的显示方式，从而使日志更具可读性和信息量。
+
+     Layout的类型有多种，比如Basic， Coloured，Tokens等等，最常用的是 **Pattern（自定义）类型**。
+
+    - 使用一个格式字符串 (`pattern`) 来定义日志的输出结构
+
+    - 可以结果token占位符
+
+        | **标记 (Token)** | **描述**                                                     | **示例输出**                |
+        | ---------------- | ------------------------------------------------------------ | --------------------------- |
+        | **`%d`**         | **日期和时间**。可以使用 `{}` 指定格式，如 `{yyyy-MM-dd hh:mm:ss.SSS}`。 | `[2025-12-06 15:12:16.789]` |
+        | **`%p`**         | **日志级别** (Priority)，如 `INFO`, `ERROR`。                | `[INFO]`                    |
+        | **`%c`**         | **Category (分类/记录器名称)**。                             | `[system.server]`           |
+        | **`%m`**         | **日志消息本身** (Message)。                                 | `服务器已启动`              |
+        | **`%n`**         | **换行符**。                                                 | `\n`                        |
+        | **`%h`**         | **主机名**。                                                 | `My-PC`                     |
+        | **`%z`**         | **进程 ID (PID)**。                                          | `12345`                     |
+        | **`%f`**         | **调用日志的源文件名** (如果可用)。                          | `server.js`                 |
+        | **`%l`**         | **调用日志的行号** (如果可用)。                              | `42`                        |
+        | **`%%`**         | **转义百分号** (`%`)。                                       | `%`                         |
+
+    - 优化后的配置示例
+
+        ```ts
+        /* -------------- 2. 配置 ------------- */
+        log4js.configure({
+          // 配置出口
+          appenders: {
+            // sql类的配置
+            sql: {
+              type: "file",
+              filename: path.resolve(__dirname, "logs", "sql", "logging.log"),
+                
+              // 优化配置 - **Layout (布局)** 
+              layout: {
+                type: "pattern",
+                pattern: "%c [%d{yyyy-MM-dd hh:mm:ss.SSS}] [%p]  - %m%n",
+              },
+            },
+            default: {
+        		...
+            },
+          },
+          // 配置类别
+        ...
+        });
+        
+        ...
+        
+        ```
+
+        ```ts
+        sql [2025-12-06 15:30:50.733] [INFO]  - abc
+        
+        sql [2025-12-06 15:32:41.600] [INFO]  - abc
+        
+        sql [2025-12-06 15:32:42.823] [INFO]  - abc
+        ```
+
+- 优化配置 -  log文件内容分割 **maxLogSize**
+
+    当文件内容过大时，可以配置**maxLogSize**来指定单个log文档的大小，超过后会自动记录在新的文件中
+
+    - 配置单个log文档的大小 -  `maxLogSize:1024`
+
+    - 自动添加日期到文件名称中 - `type: "dateFile"`
+
+    - 保留文件后缀名 - `keepFileExt: true`
+
+    - 保留log文件的个数 - `numBackups:1` - 默认是1个
+
+        ```ts
+        /* ------------- 1. 模块导入 ------------ */
+        import log4js from "log4js";
+        import path from "path";
+        
+        /* -------------- 2. 配置 ------------- */
+        log4js.configure({
+          // 配置出口
+          appenders: {
+            // sql类的配置
+            sql: {
+              type: "dateFile", //dateFile - 文件名中包含日期
+              filename: path.resolve(__dirname, "logs", "sql", "logging.log"),
+              layout: {
+                type: "pattern",
+                pattern: "%c [%d{yyyy-MM-dd hh:mm:ss.SSS}] [%p]  - %m%n",
+              },
+              maxLogSize: 1024, // 单个文件的大小
+              keepFileExt: true, // 是否保留后缀名
+              numBackups: 5, // 保留文件的个数， 默认是1
+            },
+            default: {
+              type: "stdout",
+              // filename: path.resolve(__dirname, "logs", "default", "logging.log"),
+            },
+          },
+          // 配置类别
+          categories: {
+            sql: {
+              appenders: ["sql"], // 使用sql的出口配置写入日志
+              level: "all", // log的级别
+            },
+            default: {
+              appenders: ["default"],
+              level: "all",
+            },
+          },
+        });
+        
+        process.on("exit", () => {
+          log4js.shutdown(); //当程序退出时，确保所有日志写入文件、套接字关闭等操作完成。
+        });
+        
+        /* -------------- 3.使用 -------------- */
+        
+        const sqlLogger = log4js.getLogger("sql");
+        const defaultLogger = log4js.getLogger("default");
+        
+        export { sqlLogger, defaultLogger };
+        
+        ```
+
+        
+
+- 应用场景 - 在模型数据库中连用
+
+    之前在sequelize中配置数据库的代码：
+
+    ```ts
+    import { Sequelize } from "sequelize";
+    
+    const sequelize = new Sequelize("schooldb", "root", "123456", {
+      host: "localhost",
+      dialect: "mysql",
+    
+      logging: false, // 不显示sql详情日志
+    });
+    
+    export default sequelize;
+    ```
+
+    现在配置数据库 logging
+
+    ```ts
+    import { Sequelize } from "sequelize";
+    import { sqlLogger } from "../logger";
+    
+    const sequelize = new Sequelize("schooldb", "root", "123456", {
+      host: "localhost",
+      dialect: "mysql",
+    
+      logging: (msg) => {
+        sqlLogger.debug(msg); // 使用自定义的sqlLogger记录日志
+      },
+    });
+    
+    export default sequelize;
+    
+    ```
+
+    查询学生，测试log的记录
+
+    ```sql
+    sql [2025-12-06 16:26:06.608] [DEBUG]  - Executing (default): SELECT `id`, `name`, `dob`, `sex`, `mobile`, `deletedAt`, `ClassId` FROM `Student` AS `Student` WHERE (`Student`.`deletedAt` IS NULL) LIMIT 5, 5;
+    
+    sql [2025-12-06 16:26:44.608] [DEBUG]  - Executing (default): SELECT `id`, `name`, `dob`, `sex`, `mobile`, `deletedAt`, `ClassId` FROM `Student` AS `Student` WHERE (`Student`.`deletedAt` IS NULL);
+    ```
+
+    
+
 ## 4. Express.js
 
 ## 5. websocket
