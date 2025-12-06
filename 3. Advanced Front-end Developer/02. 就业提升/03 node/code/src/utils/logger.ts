@@ -9,7 +9,7 @@ log4js.configure({
     // sql类的配置
     sql: {
       type: "dateFile", //dateFile - 文件名中包含日期
-      filename: path.resolve(__dirname, "logs", "sql", "logging.log"),
+      filename: path.resolve(__dirname, "../logs", "sql", "logging.log"),
       layout: {
         type: "pattern",
         pattern: "%c [%d{yyyy-MM-dd hh:mm:ss.SSS}] [%p]  - %m%n",

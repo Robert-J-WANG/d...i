@@ -8126,4 +8126,342 @@ Log4js 是一个用于 **Node.js** 环境下的**日志记录（logging）模块
 
 ## 4. Express.js
 
+### 4-1 express的基础使用
+
+在创建网络请求时，使用HTTP模式有一些问题：
+
+- `http.createServer((req,res)=>{})`要根据不同的请求方法，不同的路径，进行按条件分类实施（类型Switch case或者多层if else结构），不方便使用
+- `http.createServer((req,res)=>{})`里发送请求和接收消息都是按流的放在进行，如果消息内容不是很大量，使用流效率低下
+
+因此，通常会使用第三方库，使用封装后的方式创建网络请求
+
+#### 1. express概述
+
+针对 Node.js 的极简、灵活的 Web 应用程序框架， 它提供了一组强大的功能，用于快速方便地构建 Web 应用程序和 API。
+
+express提供 Web 开发所必需的核心功能，例如：
+
+- **路由（Routing）**：处理不同 URL 路径和 HTTP 请求方法的请求。
+- **中间件（Middleware）**：在请求处理管道的任何位置添加额外的处理逻辑，例如身份验证、日志记录、压缩等。
+- **视图渲染（View Rendering）**：支持各种模板引擎，以便通过将数据插入模板来生成动态响应。
+
+#### 2. 基础使用
+
+- 安装 Express
+
+    ```
+    npm install express
+    ```
+
+- 创建 Express 应用实例, 并监听端口
+
+    方式一： 结合http模块
+
+    ```ts
+    import express from "express";
+    import http from "http";
+    
+    /* ---------- 创建一个express应用 --------- */
+    const app = express(); // app实际是一个函数 - 处理请求的函数
+    
+    const server = http.createServer(app);
+    
+    /* -------------- 监听端口 -------------- */
+    const port = 5003;
+    server.listen(port, () => {
+      console.log(`server is listened on ${port}`);
+    });
+    
+    ```
+
+    **==方式二： 直接监听==**
+
+    ```ts
+    import express from "express";
+    
+    /* ---------- 创建一个express应用 --------- */
+    const app = express();
+    
+    /* -------------- 监听端口 -------------- */
+    const port = 5003;
+    app.listen(port, () => {
+      console.log(`server is listened on ${port}`);
+    });
+    ```
+
+    ```bash
+    server is listened on 5003
+    ```
+
+- 处理请求
+
+    app实际是一个函数，能够处理任何请求，会匹配不同的请求方法，请求路径，执行不同的请求，类似于一个map映射.
+
+    如何匹配映射关系： `app."请求方法("请求路径", "请求方法")`
+
+    ```ts
+    /* -------------- 3. 处理请求 -------------- */
+    app.get("/test", (req, res) => {
+      // req 和 res 是被封装过的对象，不需要使用流去操作
+    });
+    ```
+
+    获取请求体信息
+
+    ```ts
+    
+    app.get("/test", (req, res) => {
+       /* ------------- 获取请求信息 ------------- */
+      console.log("请求头:", req.headers);
+      console.log("请求路径:", req.path);
+      console.log("请求参数:", req.query);
+    });
+    ```
+
+    ```bash
+    请求头: {
+      'user-agent': 'PostmanRuntime/7.49.1',
+      accept: '*/*',
+      'postman-token': 'bf7a499f-f2a8-41d7-908a-4ba80bd2b225',
+      host: 'localhost:5003',
+      'accept-encoding': 'gzip, deflate, br',
+      connection: 'keep-alive'
+    }
+    请求路径: /test
+    请求参数: [Object: null prototype] { a: '1', b: '2', c: '3' }
+    ```
+
+    注意：
+
+    - 映射关系： `app."请求方法("请求路径", "请求方法")`中的请求路径**不能包含请求参数** `?a=1&b=2&c=3`, 只能在发送请求时，通过postman或者浏览器路径添加
+
+    - 动态路由： 请求路径可以包含动态路径，比如`/test:id`, 当发送请求时，会动态赋值给id。 获取时，使用req.params属性
+
+        ```ts
+        /* -------------- 3. 处理请求 -------------- */
+        app.get("/test/:id", (req, res) => {
+         
+          /* ------------- 获取请求信息 ------------- */ 
+          console.log("动态路径:", req.params);
+        });
+        ```
+
+        ```bash
+        localhost:5003/test/456?a=1&b=2&c=3
+        
+        动态路径: [Object: null prototype] { id: '456' }
+        ```
+
+    - 请求路径错误时，会自动返回404页面
+
+        ```html
+        <!DOCTYPE html>
+        <html lang="en">
+        
+        <head>
+        	<meta charset="utf-8">
+        	<title>Error</title>
+        </head>
+        
+        <body>
+        	<pre>Cannot GET /test1</pre>
+        </body>
+        
+        </html>
+        ```
+
+- 如何响应？
+
+    - 发送消息体， 使用send方法。消息体内容接收多种形式：字符，null, html标签等等。 不需要使用end方法结束响应，内部已经封装
+
+        ```TS
+        import express from "express";
+        
+        /* ---------- 1. 创建一个express应用 --------- */
+        const app = express(); // app实际是一个函数 - 处理请求的函数
+        
+        /* -------------- 3. 处理请求 -------------- */
+        app.get("/test/:id", (req, res) => {
+        
+          /* ------------- 获取请求信息 ------------- */
+          ...
+        
+         /* -------------- 处理相应 -------------- */
+          /* -------------- 发送消息体 ------------- */
+          // 1. 字符串
+          // res.send("<h1>hello express</h1>");
+          // 2. 数组
+          // res.send([1, 2, 3]);
+          // 3. 对象
+          res.send({
+            name: "Gorge",
+            age: 18,
+            sex: "male",
+          });
+        });
+        
+        /* -------------- 2. 监听端口 -------------- */
+        ...
+        
+        ```
+
+    - 自定义响应头
+
+        可以自定义响应头，使用`setHeader()`方法. 必须在发送消息体之前自定义响应头
+
+        ```ts
+        
+          /* -------------- 处理相应 -------------- */
+        
+          /* ------------- 自定义响应头 ------------- */
+          res.setHeader("a", "1");
+        
+          /* -------------- 发送消息体 ------------- */
+          res.send({
+            name: "Gorge",
+            age: 18,
+            sex: "male",
+          });
+        });
+        ```
+
+    - 重定向 
+
+        可以利用自定义响应头来实现重定向
+
+        ```ts
+        /* -------------- 3. 处理请求 -------------- */
+        app.get("/test/:id", (req, res) => {
+         ...
+        
+          // 4. 重定向
+          // res.status(302).setHeader("location", "https://expressjs.com/").end();
+        
+          // 5. 重定向 - 简洁
+           res.redirect(302, "https://expressjs.com/");
+        });
+        ```
+
+- 请求方法
+
+    app.请求方法符合restful风格
+
+    - RESTful API 中的 HTTP 方法
+
+        REST 的思想是：**“用 URL 表示资源，用 HTTP 方法表示动作”**， 比如：资源（users）不需要写动词，如 `/getUsers` 是反模式，应该写 `/users`。
+
+    - RESTful API 与 Express 路由**一一对应关系**
+
+        | REST 风格动作                | HTTP 方法 | Express 方法    | 示例路由      | 作用                       |
+        | ---------------------------- | --------- | --------------- | ------------- | -------------------------- |
+        | **查列表**                   | GET       | `app.get()`     | `/users`      | 获取所有用户               |
+        | **查单个**                   | GET       | `app.get()`     | `/users/:id`  | 获取某个用户               |
+        | **新增资源**                 | POST      | `app.post()`    | `/users`      | 添加用户                   |
+        | **整体更新（全量更新）**     | PUT       | `app.put()`     | `/users/:id`  | 传入所有字段，替换整个用户 |
+        | **部分更新（修改部分字段）** | PATCH     | `app.patch()`   | `/users/:id`  | 传入部分字段进行更新       |
+        | **删除资源**                 | DELETE    | `app.delete()`  | `/users/:id`  | 删除某个用户               |
+        | **CORS 预检**                | OPTIONS   | `app.options()` | `*`、`/users` | 浏览器跨域检查             |
+        | **只要头不要 body**          | HEAD      | `app.head()`    | `/users`      | API 健康检查               |
+        | **所有方法兜底**             | 任意方法  | `app.all()`     | `*`           | 匹配所有请求方法           |
+
+        ```ts
+        import express from "express";
+        
+        /* ---------- 1. 创建一个express应用 --------- */
+        const app = express(); // app实际是一个函数 - 处理请求的函数
+        
+        /* --- Express 的 RESTful API 示例代码 --- */
+        // 获取用户列表
+        app.get("/users", (req, res) => {
+          res.send("获取所有用户");
+        });
+        
+        // 获取某个用户
+        app.get("/users/:id", (req, res) => {
+          res.send(`获取用户：${req.params.id}`);
+        });
+        
+        // 创建用户
+        app.post("/users", (req, res) => {
+          res.send("创建用户");
+        });
+        
+        // 全量更新用户
+        app.put("/users/:id", (req, res) => {
+          res.send(`全量更新用户：${req.params.id}`);
+        });
+        
+        // 部分更新用户
+        app.patch("/users/:id", (req, res) => {
+          res.send(`部分更新用户：${req.params.id}`);
+        });
+        
+        // 删除用户
+        app.delete("/users/:id", (req, res) => {
+          res.send(`删除用户：${req.params.id}`);
+        });
+        
+        /* -------------- 2. 监听端口 -------------- */
+        const port = 5003;
+        app.listen(port, () => {
+          console.log(`server is listened on ${port}`);
+        });
+        ```
+
+        
+
+### 4-2 nodemon
+
+### 4-3 express中间件
+
+### 4-4 常用中间件
+
+### 4-5 express路由
+
+### 4-6 cookie的基本概念
+
+### 4-7 实现登录和认证
+
+### 4-8 断点调试
+
+### 4-9 跨域 - JSONP
+
+### 4-10 跨域 - CORS
+
+### 4-11 CORS中间件
+
+### 4-12 session
+
+### 4-13 jwt
+
+### 4-14 登录和认证 - 服务器开发
+
+### 4-15 登录和认证 - 客户端开发
+
+### 4-16 场景 - 日志记录
+
+### 4-17 场景 - 文件上传
+
+### 4-18 场景 - 文件下载
+
+### 4-19 场景 - 图片水印
+
+### 4-20 场景 - 图片防盗链
+
+### 4-21 重要场景 - 代理
+
+### 4-22 扩展场景 - 模版引擎
+
+### 4-23 场景 - 生成二维码
+
+### 4-24 场景 - 客户端缓存
+
+### 4-25 场景 - 富文本框
+
+
+
+
+
+
+
 ## 5. websocket
