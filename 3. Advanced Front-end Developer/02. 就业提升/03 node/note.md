@@ -8410,11 +8410,292 @@ express提供 Web 开发所必需的核心功能，例如：
 
         
 
-### 4-2 nodemon
+### ~~4-2 nodemon - 见ts基础中的配置~~
 
-### 4-3 express中间件
+### 4-3 express中间件 - Middleware
 
-### 4-4 常用中间件
+**中间件**是 Express.js 框架中用来处理 **HTTP 请求**的函数。它们位于客户端的 **请求 (Request)** 到服务器的 **响应 (Response)** 之间，就像一条**处理请求的流水线或管道**。
+
+#### 1. 定义与签名
+
+从本质上讲，中间件是一个普通的 **JavaScript 函数**，但它必须遵循一个特殊的签名（参数），根据参数数量，可分为：
+
+- 常规中间件 ：$$\text{Middleware}(\text{req}, \text{res}, \text{next})$$
+
+    - **`req` (Request)**：HTTP 请求对象
+
+    - **`res` (Response)**：HTTP 响应对象
+
+    - **`next` (Function)**：一个回调函数，控制权转移函数,  **这是中间件机制的关键**。
+
+        当它完成任务后，必须调用 **`next()`**（**不带参数**）将控制权传递给链中的下一个中间件或路由处理器。
+
+        ```ts
+        import express from "express";
+        
+        /* ---------- 1. 创建一个express应用 --------- */
+        const app = express(); // app实际是一个函数 - 处理请求的函数
+        
+        app.get(
+          "/",
+          (req, res, next) => {
+            console.log("中间件 1");
+            next();
+          },
+          (req, res, next) => {
+            console.log("中间件 2");
+            next();
+          },
+          (req, res, next) => {
+            console.log("中间件 3");
+            next();
+          },
+          (req, res) => {
+            res.send("响应结束");
+          }
+        );
+        
+        /* -------------- 2. 监听端口 -------------- */
+        const port = 5003;
+        app.listen(port, () => {
+          console.log(`server is listened on ${port}`);
+        });
+        
+        ```
+
+- 错误处理中间件： $$\text{Middleware}(\text{err},\text{req}, \text{res}, \text{next})$$
+
+    - `err`: Error（错误对象）
+    - `req`: Request（请求对象）
+    - `res`: Response（响应对象）
+    - `next`: 控制权转移函数（通常用于继续传递错误）
+
+    **作用:**
+
+    - **集中捕获**和处理应用程序中发生的错误。
+    - 它可以根据错误类型发送不同的 HTTP 响应（如 500 Internal Server Error 或 400 Bad Request）。
+
+    **触发方式:**
+
+    - **唯一**的触发方式是上游的常规中间件或路由调用了 **`next(error)`**（**带参数**）。
+
+    - Express 在捕获到错误后，会**跳过**所有常规中间件，直到找到第一个四参数的错误处理函数。
+
+        ```ts
+        app.get(
+          "/",
+          (req, res, next) => {
+            console.log("中间件 1");
+            next();
+          },
+          (req, res, next) => {
+            console.log("中间件 2 - 抛出错误");
+            // 重点: 调用 next(err) 来跳过常规中间件并跳转到错误处理中间件
+            next(new Error("这是一个测试错误"));
+          },
+          (req, res, next) => {
+            // 这个中间件将被跳过
+            console.log("中间件 3");
+            next();
+          },
+          /* ----------- 错误处理中间件 ----------- */
+          (err, req, res, next) => {
+            console.log("error middleware");
+            // 可以在这里发送错误响应，或继续调用 next(err) 传递给下一个错误处理程序
+            const errObj = {
+              code: 500,
+              msg: err instanceof Error ? err.message : err,
+            };
+            if (err) {
+              res.status(500).send(errObj);
+            } else {
+              next();
+            }
+          },
+          (req, res) => {
+            res.send("响应结束");
+          }
+        );
+        
+        /* -------------- 监听端口 -------------- */
+        const port = 5003;
+        app.listen(port, () => {
+          console.log(`server is listened on ${port}`);
+        });
+        
+        ```
+
+        ```bash
+        //控制台
+        server is listened on 5003
+        中间件 1
+        中间件 2 - 抛出错误
+        error middleware
+        ```
+
+        ```bash
+        // 响应内容
+        
+        {
+            "code": 500,
+            "msg": "这是一个测试错误"
+        }
+        ```
+
+- 中间件优化：通常，将错误处理中间件封装成模块导入使用，并且单独使用，不在常规中间件链条中混用
+
+    - 封装
+
+        ```ts
+        export const errorMiddleWare = (err, req, res, next) => {
+          console.log("error middleware");
+          // 可以在这里发送错误响应，或继续调用 next(err) 传递给下一个错误处理程序
+          const errObj = {
+            code: 500,
+            msg: err instanceof Error ? err.message : err,
+          };
+          if (err) {
+            res.status(500).send(errObj);
+          } else {
+            next();
+          }
+        };
+        
+        ```
+
+    - 使用 - **中间件通常使用use方法**
+
+        ```ts
+        import express from "express";
+        import { errorMiddleWare } from "./errorMiddleWare";
+        
+        const app = express();
+        
+        app.get(
+          "/",
+          (req, res, next) => {
+            console.log("中间件 1");
+            next();
+          },
+          (req, res, next) => {
+            console.log("中间件 2 - 抛出错误");
+            // 重点: 调用 next(err) 来跳过常规中间件并跳转到错误处理中间件
+            next(new Error("这是一个测试错误"));
+          },
+          (req, res, next) => {
+            // 这个中间件将被跳过
+            console.log("中间件 3");
+            next();
+          },
+          (req, res) => {
+            res.send("响应结束");
+          }
+        );
+        /* ----------- 2. 使用错误处理中间件 ----------- */
+        app.use("/", (err, req, res, next) => {
+          errorMiddleWare(err, req, res, next);
+        });
+        
+        ```
+
+        **Use vs get/post:** 
+
+        - use能匹配的范围更广，比如 `app.use("/news",(req,res)=>{})`, 只要基路径是 `"/news"`的路由都能匹配（`"/news/a"`, `"/news/a/b/c:id"`等等）， 而get方法，只能精确匹配。因此中间件通常使用use，来匹配更多路由。
+        - 直接使用 `app.use((req,res)=>{})` - 没有路由路径时，表示**全局匹配**。适用于整个app应用
+
+#### 2. 工作原理
+
+一个请求可能会按顺序通过**多个中间件**，形成一个**中间件栈 (Middleware Stack)**。每个中间件都具有以下三个核心职责之一：
+
+- 执行任务并修改对象
+
+    中间件可以执行任何代码，最常见的用途是：
+
+    - **记录日志**：记录请求时间、IP 地址等。
+    - **数据解析**：使用 `express.json()` 等解析请求体（Body）。
+    - **修改请求/响应对象**：例如，在 `req` 上添加用户信息 (`req.user`)，或修改响应头。
+
+- 控制流程：`next()` 的作用
+
+    在中间件完成自己的任务后，它通过调用 `next()` 函数，将**控制权**交给**堆栈中的下一个中间件或路由处理程序**。
+
+    - **调用 `next()`**：请求继续沿着流水线前进。
+    - **未调用 `next()`**：请求流停止。如果此时也没有发送响应，客户端将一直等待，直到超时（请求**挂起**）。
+
+- 结束请求-响应循环
+
+    如果一个中间件直接向客户端发送了响应（例如，`res.send('Error')` 或 `res.json(data)`），那么：
+
+    - 它**不应该**调用 `next()`。
+    - **请求-响应循环终止**。后续链中的任何中间件或路由处理程序将**不会**再执行。
+
+#### 3. 常见应用类型
+
+中间件的灵活应用是 Express 强大的基础。 根据功能，常见应用类型可以归类为:
+
+| **类别**         | **函数签名**                                  | **作用范围**   | **引入方式示例**    | **特点**                                                     |
+| ---------------- | --------------------------------------------- | -------------- | ------------------- | ------------------------------------------------------------ |
+| **应用级中间件** | `(req, res, next)` 或 `(err, req, res, next)` | 整个应用       | `app.use(...)`      | 在所有路由和请求处理之前/之后运行，**最通用**。              |
+| **路由级中间件** | `(req, res, next)` 或 `(err, req, res, next)` | 特定路由/路径  | `app.get('/', ...)` | 仅对匹配特定 **HTTP 方法** 和 **路径** 的请求有效。          |
+| **内置中间件**   | 依功能而定                                    | 整个应用或局部 | `express.json()`    | Express 内置提供，用于处理静态文件、解析请求体等**核心功能**。 |
+| **第三方中间件** | 依功能而定                                    | 整个应用或局部 | `app.use(helmet())` | 从 npm 导入，用于实现更高级的功能，如安全、日志、会话管理等。 |
+
+- 应用级中间件 (Application-level Middleware)
+
+    - 最常见的中间件类型，使用 `app.use()` 绑定到应用实例。
+
+    - 它们会在**任何请求**到达**路由处理器**之前被执行。通常用于设置应用级别的功能，如日志记录、请求体解析、CORS 配置等。
+
+        ```ts
+        // 自定义日志中间件
+        app.use((req, res, next) => {
+          console.log(`${req.method} ${req.url}`);
+          next();
+        });
+        ```
+
+- 路由级中间件 (Router-level Middleware)
+
+    - 绑定到特定的路由实例 (`app.get()`, `app.post()`, `router.use()`, 等) 或中间件链条中的。
+
+    - **只对**匹配特定 HTTP 方法和路径的请求有效
+
+        ```ts
+        // 只有访问 /admin 的 GET 请求才会执行 checkAuth
+        app.get('/admin', checkAuth, (req, res) => {
+          res.send('Admin Page');
+        });
+        ```
+
+- 内置中间件 (Built-in Middleware)
+
+    - Express 框架自身提供的一些功能，通过 `express` 对象上的方法暴露
+
+    - 不依赖于第三方模块，开箱即用，主要用于处理请求的**基础解析**和**静态文件服务**。
+
+        ```ts
+        // 在所有路由之前解析 JSON 请求体
+        app.use(express.json()); 
+        
+        app.get('/news', (req, res) => {
+          console.log(`${req.method} ${req.url}`);
+          res.send('解析完成');
+        });
+        ```
+
+- 第三方中间件 (Third-party Middleware)
+
+    - 实现 Express 中不具备的功能，我们需要从 npm 安装和导入的模块
+    - 功能强大且多样，覆盖了从安全到会话管理等各种需求
+    - 比如： 
+        - **`helmet`**: 用于设置各种 HTTP 头部，增强应用安全
+        - **`morgan`**: 用于生成详细的请求日志
+        - **`cookie-parser`**: 用于解析请求中的 Cookie
+        - **`express-session`**: 用于会话管理
+
+
+
+### 4-4 内置中间件
 
 ### 4-5 express路由
 
