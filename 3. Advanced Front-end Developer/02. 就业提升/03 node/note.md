@@ -8697,6 +8697,118 @@ express提供 Web 开发所必需的核心功能，例如：
 
 ### 4-4 内置中间件
 
+#### 1. express.static(root, [options])
+
+- **用途：** 用于托管（提供）**静态资源**（Static Assets），例如 HTML 文件、CSS 文件、JavaScript 文件、图片等。
+
+- **工作原理：** 它根据请求的 URL 路径，在指定的文件系统目录 (`root`) 中查找匹配的文件，
+
+    - 如果找到该文件，会将内容发送给客户端，而不再将请求移交给后续的中间件。
+
+    - 如果找不到该文件， 则直接移交给后续中间件处理
+
+    - 默认情况下：如果默认的结果是一个目录，则会自动使用该目录下的index.html文件
+
+    - 可以再配置对象中进行配置
+
+        ```ts
+        express.static(root, {
+        	index: index.html // 默认情况
+        })
+        ```
+
+- **典型用法：** 当您需要让浏览器能够访问项目中的公共文件夹（如 `public` 文件夹）时使用。
+
+    ```ts
+    import express from "express";
+    
+    /* ---------- 创建一个express应用 --------- */
+    const app = express();
+    
+    /* -------------- 内置中间件 ------------- */
+    /* -------- express.static1. -------- */
+    const staticRoot = path.resolve(__dirname, "../public");
+    // console.log(staticRoot);
+    app.use("/", express.static(staticRoot));
+    
+    app.get("/", (req, res) => {
+      res.send("aaaaa"); // 这个中间件不运行
+    });
+    
+    /* -------------- 监听端口 -------------- */
+    const port = 5003;
+    app.listen(port, () => {
+      console.log(`server is listened on ${port}`);
+    });
+    
+    ```
+
+    
+
+#### 2. express.json()
+
+- 问题： req请求的读写都是以流的形式执行的，因此我们在流完全执行前，无法获取请求体的内容，只能等到流读取完成， 原生流的形式不方便使用
+
+    ```ts
+    
+    /* ----------- 原生流的形式获取请求体 ---------- */
+    app.post("/api/student", (req, res) => {
+      let str = "";
+      req.on("data", (chunck) => {
+        str += chunck;
+      });
+      req.on("end", () => {
+        req.body = str;
+        console.log(req.body); // { name: 'Allex', age: 18 }
+      });
+    });
+    ```
+
+    
+
+- **用途：** 用于解析 **JSON 格式**的请求体（Request Body）
+
+- **工作原理：** 当客户端通过 **POST** 或 **PUT** 请求发送 JSON 数据时（通常设置 `Content-Type: application/json`），此中间件会拦截请求，解析请求体中的 JSON 字符串，并将解析后的数据填充到 `req.body` 属性上。
+
+    ```ts
+    /* -------------- 内置中间件 ------------- */
+    /* -------- express.json -------- */
+    app.use(express.json()); // 解析 application/json 类型的请求体
+    
+    app.post("/api/student", (req, res) => {
+      console.log(req.body); //{ name: 'Allex', age: 18 }
+    });
+    ```
+
+#### 3. express.urlencoded()
+
+- **用途：** 用于解析 **URL-encoded 格式**的请求体。
+
+- **工作原理：** 当客户端以 `application/x-www-form-urlencoded` 格式（这是 **HTML 表单**提交的默认格式）发送数据时，此中间件会解析请求体，并将解析后的数据填充到 `req.body` 属性上。它支持解析嵌套对象和数组。
+
+- **关键参数 `extended`：**
+
+    - `extended: false`：使用经典的编码方式解析，不支持嵌套对象。
+    - `extended: true` (推荐)：使用 `qs` 库解析，支持解析 URL-encoded 格式的**嵌套对象和数组**。
+
+- 示例代码：
+
+    ```ts
+    /* -------------- 内置中间件 ------------- */
+    /* -------- express.urlencoded() -------- */
+    app.use(
+      express.urlencoded({
+        extend: true, // 解析 application/x-www-form-urlencoded 类型的请求体，支持嵌套对象
+      })
+    );
+    
+    app.post("/api/student", (req, res) => {
+      console.log(req.body); //{ name: 'Allex', age: 18 }
+    });
+    ```
+
+    
+
 ### 4-5 express路由
 
 ### 4-6 cookie的基本概念
