@@ -8811,6 +8811,243 @@ express提供 Web 开发所必需的核心功能，例如：
 
 ### 4-5 express路由
 
+#### 1. 路由（Routing）的基本概念
+
+**路由**就是确定应用程序如何对特定**端点（URI/路径）和特定的 HTTP 请求方法**（如 GET、POST、PUT、DELETE 等）做出响应的过程。
+
+- **端点/路径 (URI/Path)：** 用户请求的 URL 路径部分，例如 `/users`、`/products/123`。
+- **HTTP 请求方法 (Verb)：** 客户端发起的请求类型，表明了请求的目的（如获取数据、提交数据）。
+- **处理程序/函数 (Handler)：** 当请求匹配到特定的路径和方法时，Express 调用的函数，它负责处理请求、操作数据并返回响应。
+
+一个基本的路由定义结构是：
+
+```ts
+app.METHOD(PATH, HANDLER)
+```
+
+#### 2. express.Router()
+
+当应用程序变得越来越复杂时，将所有的路由都放在一个文件中（例如 `app.js` 或 `server.js`）会变得难以维护。express提供了Router模块，用来模块化代码。
+
+- **创建路由实例：**通过`express.Router()` 创建一个**独立的、可挂载的路由实例**， 想象成一个“**迷你 Express 应用**”，它只包含自己的路由和中间件定义
+
+    ```ts
+    // users.js
+    const express = require('express')
+    const router = express.Router()
+    ```
+
+- **定义路由表：** 在这个实例上定义该模块特有的路由。
+
+    ```ts
+    // users.js
+    router.get('/', (req, res) => {
+      // 处理 GET /users 的请求
+      res.send('User list')
+    })
+    
+    router.get('/:id', (req, res) => {
+      // 处理 GET /users/:id 的请求
+      res.send(`User: ${req.params.id}`)
+    })
+    
+    module.exports = router
+    ```
+
+- **挂载 Router：** 在主应用文件（如 `app.js`）中，使用 `app.use()` 方法将该路由实例挂载到特定的**基础路径**上。
+
+    ```ts
+    // app.js
+    const express = require('express')
+    const app = express()
+    const usersRouter = require('./users') // 导入路由模块
+    
+    // 将 usersRouter 挂载到 /users 路径下
+    app.use('/users', usersRouter) 
+    
+    // 此时，usersRouter 中定义的 / 就会变成 /users，/users/:id 变成 /users/:id
+    ```
+
+- 可以为应用程序的不同部分（例如 `/users`、`/admin`、`/api/v1`）创建**单独的路由模块文件**。
+
+#### 3. Router 与 中间件
+
+- **路由函数就是一种特殊的中间件**：
+
+    在 Express 中，处理请求的函数（无论是路由处理函数还是普通的 `app.use()` 函数）本质上都是**中间件**。它们要么处理请求并发送响应结束请求，要么调用 `next()` 将控制权交给下一个中间件或路由。
+
+- **Router 实例可以有自己的中间件**：
+
+    可以在 `router` 实例上定义只对该模块路由生效的中间件，例如身份验证或日志记录。
+
+    ```ts
+    // users.js
+    router.use((req, res, next) => {
+      console.log('Time: ', Date.now())
+      next() // 这个中间件只对 /users 及其子路由生效
+    })
+    ```
+
+#### 4. 完善学生模块的路由
+
+express5能够自动捕获异步请求里的错误，并传递给错误处理中间件，因此不需要使用第三方库或者自定义一个捕获异步错误的工具函数。仅需在异步请求里抛出错误即可。
+
+- 完善student service - 抛出错误
+
+    ```ts
+    /* -------------- 增加数据 -------------- */
+    const studentAdd = async (obj: Istudent) => {
+      const valResult = studentSchema.safeParse(obj);
+    
+      if (!valResult.success) {
+        throw new Error(valResult.error.issues.map((e) => e.message).join("; "));
+      }
+    
+      const inst = Student.create(obj);
+      const res = inst ? (await inst).toJSON() : null;
+      return res;
+    };
+    
+    /* -------------- 删除数据 -------------- */
+    const studentDelete = async (id) => {
+      const res = await Student.destroy({
+        where: {
+          id,
+        },
+      });
+      if (res === 0) {
+        throw new Error("学生不存在，删除失败");
+      }
+      return res;
+    };
+    
+    /* -------------- 修改数据 -------------- */
+    const studentUpdate = async (id, newObj) => {
+      const valResult = studentSchema.partial().safeParse(newObj);
+    
+      // 打印并且抛出错误
+      if (!valResult.success) {
+         throw new Error(valResult.error.issues.map((e) => e.message).join("; "));
+      }
+      // 影响的结果：0 - 没影响：1 - 有影响
+      const [affected] = await Student.update(newObj, {
+        where: {
+          id,
+        },
+      });
+      if (affected === 0) {
+        throw new Error("学生不存在或内容不变，更新失败");
+      }
+      return affected;
+    };
+    ```
+
+- 编写学生路由并导出使用
+
+    ```ts
+    import express from "express";
+    import {
+      studentAdd,
+      studentDelete,
+      studentUpdate,
+      getStudentsAll,
+      getStudents,
+      getStudentsBySex,
+      getStudentsByPage,
+      getStudetsLike,
+      getStudentsAttr,
+      getStudentsInclude,
+    } from "../servers/student";
+    
+    /* ------------- 创建路由实例 ------------- */
+    const router = express.Router();
+    
+    /* -------------- 定义路由表 ------------- */
+    /**
+     * 分页查询学生
+     */
+    router.get("/", async (req, res) => {
+      console.log("分页查询");
+      const page = req.query?.page || 1;
+      const limit = req.query?.limit || 10;
+      const data = await getStudentsByPage(+page, +limit);
+      res.send({
+        code: 0,
+        data,
+      });
+    });
+    // 添加学生
+    router.post("/", async (req, res) => {
+      // console.log(req.body);
+    
+      const stdObj = req.body;
+      stdObj.dob = new Date(stdObj.dob);
+      const data = await studentAdd(stdObj);
+      res.send(data);
+    });
+    
+    // 修改学生
+    router.put("/:id", async (req, res) => {
+      const id = req.params.id;
+    
+      const stdObj = req.body;
+      if (stdObj.dob) {
+        stdObj.dob = new Date(stdObj.dob);
+      }
+      const result = await studentUpdate(id, stdObj);
+      res.send(result);
+    });
+    
+    // 删除学生
+    router.delete("/:id", async (req, res) => {
+      const id = req.params.id;
+      const result = await studentDelete(id);
+      res.send(result);
+    });
+    
+    // 测试error中间件
+    router.get("/__test_error", async (req, res) => {
+      throw new Error("EXPRESS 5 ASYNC TEST");
+    });
+    
+    export { router as studentRouter };
+    ```
+
+    ```ts
+    import express from "express";
+    import { studentRouter } from "./studentRouter";
+    import { errorMiddleWare } from "./errorMiddleWare";
+    
+    /* ---------- 创建一个express应用 --------- */
+    const app = express();
+    
+    /* ------ 内置中间件 - urlencoded() ------ */
+    app.use(
+      express.urlencoded({
+        extended: true, // 解析 application/x-www-form-urlencoded 类型的请求体，支持嵌套对象
+      })
+    );
+    
+    /* ---------- 内置中间件 - json ---------- */
+    app.use(express.json()); // 解析 application/json 类型的请求体
+    
+    /* -------- 路由实例 - studentRouter ------- */
+    app.use("/student", studentRouter);
+    
+    /* -------------- 错误中间件 ------------- */
+    /* ----------- 必须放在所以中间之后 ----------- */
+    app.use(errorMiddleWare);
+    
+    /* -------------- 监听端口 -------------- */
+    const port = 5003;
+    app.listen(port, () => {
+      console.log(`server is listened on ${port}`);
+    });
+    
+    ```
+
+    
+
 ### 4-6 cookie的基本概念
 
 ### 4-7 实现登录和认证
