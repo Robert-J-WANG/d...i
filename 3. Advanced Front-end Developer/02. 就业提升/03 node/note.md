@@ -8890,11 +8890,13 @@ app.METHOD(PATH, HANDLER)
 
 #### 4. 完善学生模块的路由
 
-express5能够自动捕获异步请求里的错误，并传递给错误处理中间件，因此不需要使用第三方库或者自定义一个捕获异步错误的工具函数。仅需在异步请求里抛出错误即可。
+- 错误处理中间件捕获错误
 
-- 完善student service - 抛出错误
+    express5能够自动捕获异步请求里的错误，并传递给错误处理中间件，因此不需要使用第三方库或者自定义一个捕获异步错误的工具函数。仅需在异步请求里抛出错误即可。
 
-    ```ts
+    完善student service - 抛出错误
+
+    ```js
     /* -------------- 增加数据 -------------- */
     const studentAdd = async (obj: Istudent) => {
       const valResult = studentSchema.safeParse(obj);
@@ -8909,7 +8911,140 @@ express5能够自动捕获异步请求里的错误，并传递给错误处理中
     };
     
     /* -------------- 删除数据 -------------- */
+    ...
+    
+    /* -------------- 修改数据 -------------- */
+    ...
+    ```
+
+- 数据验证 + UTC日期
+
+    - HTTP 请求进来的所有数据，在进入 Zod 之前，都是 `string | unknown`
+    - 必须有一个“输入归一化层”，把它们统一转换成 JS 的真实类型：
+         `number / boolean / Date / string`
+    - 然后再交给 Zod 做“最终类型验证”
+    - UTC日期， HTTP 请求进来的日期都转换成UTC时间，存入数据库。读取时间时，再转换成本地时间给响应结果
+
+    ​	
+
+    封装一个输入归一化层的schema，用于转换成js类型
+
+    ```ts
+    // primitives.ts
+    
+    import { z } from "zod";
+    import dayjs from "dayjs";
+    import utc from "dayjs/plugin/utc";
+    
+    dayjs.extend(utc);
+    
+    /* ---------- number ---------- */
+    
+    export const numberSchema = z.coerce.number();
+    
+    /* ---------- int ---------- */
+    
+    export const intSchema = z.coerce.number().int();
+    
+    /* ---------- string ---------- */
+    
+    export const stringSchema = () =>
+      z.preprocess((v) => (typeof v === "string" ? v.trim() : v), z.string());
+    
+    /* ---------- boolean ---------- */
+    
+    export const booleanSchema = z.preprocess((v) => {
+      if (v === true || v === false) return v;
+      if (v === "true" || v === "1") return true;
+      if (v === "false" || v === "0") return false;
+      return v;
+    }, z.boolean());
+    
+    /* ---------- date (UTC) ---------- */
+    
+    export const utcDateSchema = z.preprocess((v) => {
+      if (v instanceof Date) {
+        return dayjs(v).utc().toDate();
+      }
+      if (typeof v === "string" || typeof v === "number") {
+        const d = dayjs(v);
+        if (!d.isValid()) return v;
+        return d.utc().toDate();
+      }
+    }, z.date());
+    
+    /* =========================
+       统一导出
+       ========================= */
+    
+    export const s = {
+      numberSchema,
+      intSchema,
+      booleanSchema,
+      utcDateSchema,
+      stringSchema,
+    };
+    
+    ```
+
+    studentSchema中验证数据
+
+    ```ts
+    import { z } from "zod";
+    import { s } from "./primitives";
+    
+    const studentSchema = z.object({
+      name: z.string().trim().min(1).max(20),
+      dob: s.utcDateSchema,
+      sex: s.booleanSchema,
+      mobile: z
+        .string()
+        .trim()
+        .regex(/02[1-8]{1}-[0-9]{7}/),
+      ClassId: s.intSchema.positive(),
+    });
+    
+    type Istudent = z.infer<typeof studentSchema>;
+    
+    export { studentSchema, Istudent };
+    ```
+
+- 完善student service 
+
+    ```ts
+    import { Class, Student } from "../models/sync";
+    import { Op } from "sequelize";
+    
+    import { studentSchema, Istudent } from "../schemas/schema";
+    
+    /* interface Istudent {
+      name: string;
+      dob: string | Date;
+      sex: boolean;
+      mobile: string;
+      ClassId?: number;
+    } */
+    
+    /* -------------- 增加数据 -------------- */
+    const studentAdd = async (obj: unknown) => {
+      const valResult = studentSchema.safeParse(obj);
+      // console.log(valResult);
+    
+      if (!valResult.success) {
+        // console.log(valResult.error.issues.map((e) => e.message));
+        throw new Error(valResult.error.issues.map((e) => e.message).join("; "));
+      }
+    
+      const inst = await Student.create(valResult.data);
+      return inst.toJSON();
+    };
+    
+    /* -------------- 删除数据 -------------- */
     const studentDelete = async (id) => {
+      const parsedId = Number(id);
+      if (!Number.isInteger(parsedId) || parsedId <= 0) {
+        throw new Error("Incorrect ID");
+      }
       const res = await Student.destroy({
         where: {
           id,
@@ -8918,6 +9053,8 @@ express5能够自动捕获异步请求里的错误，并传递给错误处理中
       if (res === 0) {
         throw new Error("学生不存在，删除失败");
       }
+      // console.log("delete done");
+      // console.log(res);
       return res;
     };
     
@@ -8927,19 +9064,158 @@ express5能够自动捕获异步请求里的错误，并传递给错误处理中
     
       // 打印并且抛出错误
       if (!valResult.success) {
-         throw new Error(valResult.error.issues.map((e) => e.message).join("; "));
+        // console.log(valResult.error.issues.map((e) => e.message));
+        throw new Error(valResult.error.issues.map((e) => e.message).join("; "));
       }
       // 影响的结果：0 - 没影响：1 - 有影响
-      const [affected] = await Student.update(newObj, {
+      const [affected] = await Student.update(valResult.data, {
         where: {
           id,
         },
       });
       if (affected === 0) {
+        // console.log("学生不存在或内容不变，更新失败");
         throw new Error("学生不存在或内容不变，更新失败");
       }
+      // console.log(affected);
+      // console.log("update done");
       return affected;
     };
+    
+    /* ---------- 查询数据 -findAll --------- */
+    /* ------------- 1. 查询全部 ------------ */
+    const getStudentsAll = async () => {
+      const res = await Student.findAll();
+      const students = res.map((s) => s.toJSON());
+    
+      // console.log(students);
+      // console.log("retrive done");
+      return students;
+    };
+    /* --------- 2. 查询部分 - 分页数据 --------- */
+    const getStudents = async (page = 1, limit = 10) => {
+      const res = await Student.findAll({
+        offset: (page - 1) * limit, // 跳过多少条数据
+        limit, // 每页显示多少条数据
+      });
+      const students = res.map((s) => s.toJSON());
+      // console.log(students);
+      // console.log("retrive done");
+      return students;
+    };
+    
+    /* --------- 3. 按条件查询 - 女同学 --------- */
+    const getStudentsBySex = async (page = 1, limit = 10, sex: boolean = false) => {
+      const res = await Student.findAll({
+        offset: (page - 1) * limit, // 跳过多少条数据
+        limit, // 每页显示多少条数据
+        where: {
+          sex, // 按性别查询
+        },
+      });
+    
+      const students = res.map((s) => s.toJSON());
+    
+      // 获取总数
+      const total = await Student.count({
+        where: { sex },
+      });
+      const data = {
+        total,
+        page,
+        students,
+      };
+      console.log(data);
+      console.log("retrive done");
+      return data;
+    };
+    
+    /* ------------- 4. 分页查询+总数 ------------ */
+    
+    const getStudentsByPage = async (page = 1, limit = 10) => {
+      const res = await Student.findAndCountAll({
+        offset: (page - 1) * limit,
+        limit,
+      });
+    
+      const data = {
+        total: res.count,
+        students: JSON.parse(JSON.stringify(res.rows)),
+      };
+      console.log(data);
+      return data;
+    };
+    
+    /* ------------- 5. 模糊查询 ------------ */
+    
+    const getStudetsLike = async (page = 1, limit = 10, keyword) => {
+      const res = await Student.findAndCountAll({
+        offset: (page - 1) * limit,
+        limit,
+        where: {
+          name: {
+            [Op.like]: `%${keyword}%`,
+          },
+        },
+      });
+      const data = {
+        total: res.count,
+        students: JSON.parse(JSON.stringify(res.rows)),
+      };
+      console.log(data);
+      return data;
+    };
+    
+    /* ------ 6. 查询特定属性  - attributes ------ */
+    /**
+     *
+     * @param page 当前页数
+     * @param limit 每页显示的数量
+     * @param atrrs 需要查询的特点属性的数组
+     * @returns
+     */
+    const getStudentsAttr = async (page = 1, limit = 10, atrrs) => {
+      const res = await Student.findAndCountAll({
+        attributes: atrrs,
+        offset: (page - 1) * limit,
+        limit,
+      });
+      const data = {
+        total: res.count,
+        students: JSON.parse(JSON.stringify(res.rows)),
+      };
+      console.log(data);
+      return data;
+    };
+    
+    /* -------- 7. 包含关系 - include ------- */
+    const getStudentsInclude = async (page = 1, limit = 10) => {
+      const res = await Student.findAndCountAll({
+        offset: (page - 1) * limit,
+        limit,
+        include: [Class],
+      });
+      const data = {
+        total: res.count,
+        students: JSON.parse(JSON.stringify(res.rows)),
+      };
+      console.log(data);
+      return data;
+    };
+    
+    export {
+      studentAdd,
+      studentDelete,
+      studentUpdate,
+      getStudentsAll,
+      getStudents,
+      getStudentsBySex,
+      getStudentsByPage,
+      getStudetsLike,
+      getStudentsAttr,
+      getStudentsInclude,
+    };
+    
     ```
 
 - 编写学生路由并导出使用
@@ -8978,23 +9254,14 @@ express5能够自动捕获异步请求里的错误，并传递给错误处理中
     });
     // 添加学生
     router.post("/", async (req, res) => {
-      // console.log(req.body);
-    
-      const stdObj = req.body;
-      stdObj.dob = new Date(stdObj.dob);
-      const data = await studentAdd(stdObj);
+      const data = await studentAdd(req.body);
       res.send(data);
     });
     
     // 修改学生
     router.put("/:id", async (req, res) => {
       const id = req.params.id;
-    
-      const stdObj = req.body;
-      if (stdObj.dob) {
-        stdObj.dob = new Date(stdObj.dob);
-      }
-      const result = await studentUpdate(id, stdObj);
+      const result = await studentUpdate(id, req.body);
       res.send(result);
     });
     
