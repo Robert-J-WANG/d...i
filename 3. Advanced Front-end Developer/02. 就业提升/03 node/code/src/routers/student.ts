@@ -32,20 +32,14 @@ router.get("/", async (req, res) => {
 });
 // 添加学生
 router.post("/", async (req, res) => {
-  const stdObj = req.body;
-  const data = await studentAdd(stdObj);
+  const data = await studentAdd(req.body);
   res.send(data);
 });
 
 // 修改学生
 router.put("/:id", async (req, res) => {
   const id = req.params.id;
-
-  const stdObj = req.body;
-  if (stdObj.dob) {
-    stdObj.dob = new Date(stdObj.dob);
-  }
-  const result = await studentUpdate(id, stdObj);
+  const result = await studentUpdate(id, req.body);
   res.send(result);
 });
 

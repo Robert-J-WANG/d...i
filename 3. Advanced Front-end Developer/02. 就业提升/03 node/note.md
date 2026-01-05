@@ -5318,15 +5318,14 @@ mysql2 提供了 promise 的功能，避免回调函数的使用，方便我们�
   ```ts
   // .src/servers/admin.ts
   import { Admin } from "../models/sync";
-  
+
   const adminAdd = async (adminObj) => {
-      
     /* ------ 方式1- 先构建一个模型实例，再保存实例 ---------------- */
     const inst = Admin.build(adminObj);
     await inst.save();
     console.log(inst.toJSON());
-    console.log("add data done"); 
-  
+    console.log("add data done");
+
     /* ---------------------- 方式2- 使用模型一键生成 --------------------- */
     const inst = await Admin.create(adminObj);
     console.log(inst.toJSON());
@@ -5334,7 +5333,7 @@ mysql2 提供了 promise 的功能，避免回调函数的使用，方便我们�
   };
   ```
 
-  构建的实例对象inst, 本身包含大量的属性和方法，可使用**toJSON**()得到纯数据的平面对象
+  构建的实例对象 inst, 本身包含大量的属性和方法，可使用**toJSON**()得到纯数据的平面对象
 
   ```
   console.log(inst.toJSON());
@@ -5344,11 +5343,11 @@ mysql2 提供了 promise 的功能，避免回调函数的使用，方便我们�
   { id: 12, loginID: 'fasfd111', loginPwd: '123456', name: 'asdas' }
   ```
 
-  使用adminAdd
+  使用 adminAdd
 
   ```ts
   import { adminAdd } from "./servers/admin";
-  
+
   async function main() {
     await adminAdd({
       loginID: "fasfd111",
@@ -5356,200 +5355,188 @@ mysql2 提供了 promise 的功能，避免回调函数的使用，方便我们�
       name: "asdas",
     });
   }
-  
+
   main();
   ```
 
 - 删除数据
 
-    ```ts
-    const adminDelete = async (adminID) => {
-      /* ---------- 方式1 - 通过实例删除 ---------- */
-      // 1. 找到实例
-      const inst = await Admin.findByPk(adminID);
-      // 2. 删除实例
-      if (inst) {
-        const result = await inst.destroy();
-        console.log(result); // 返回的结果是被删除的实例对象
-        console.log("delete done");
-      }
-    
-      /* ---------- 方式2 - 直接通过模型删除 ---------- */
-        const result = await Admin.destroy({
-        where: {
-          id: adminID,
-        },
-      });
-      console.log(result); // 返回的结果是影响的行数
-    };
-    ```
+  ```ts
+  const adminDelete = async (adminID) => {
+    /* ---------- 方式1 - 通过实例删除 ---------- */
+    // 1. 找到实例
+    const inst = await Admin.findByPk(adminID);
+    // 2. 删除实例
+    if (inst) {
+      const result = await inst.destroy();
+      console.log(result); // 返回的结果是被删除的实例对象
+      console.log("delete done");
+    }
 
-    
+    /* ---------- 方式2 - 直接通过模型删除 ---------- */
+    const result = await Admin.destroy({
+      where: {
+        id: adminID,
+      },
+    });
+    console.log(result); // 返回的结果是影响的行数
+  };
+  ```
 
 - 修改数据
 
-    ```ts
-    const adminUpdate = async (adminID, adminObj) => {
-      /* ------------ 方式1- 通过实例 ----------- */
-      // 1. 找到实例
-      const inst = await Admin.findByPk(adminID);
-      // console.log(inst);
-      if (inst) {
-        inst.name = adminObj.name;
-        const result = await inst.save();
-        console.log(result);
-        console.log("update done");
-      } 
-        
-      /* ------------ 2.通过模型修改 ------------ */
-      await Admin.update(adminObj, {
-        where: {
-          id: adminID,
-        },
-      });
+  ```ts
+  const adminUpdate = async (adminID, adminObj) => {
+    /* ------------ 方式1- 通过实例 ----------- */
+    // 1. 找到实例
+    const inst = await Admin.findByPk(adminID);
+    // console.log(inst);
+    if (inst) {
+      inst.name = adminObj.name;
+      const result = await inst.save();
+      console.log(result);
       console.log("update done");
-    };
-    
-    export { adminAdd, adminDelete, adminUpdate };
-    
-    ```
+    }
 
-- 完成Class, Student, Book模型的增删改业务
+    /* ------------ 2.通过模型修改 ------------ */
+    await Admin.update(adminObj, {
+      where: {
+        id: adminID,
+      },
+    });
+    console.log("update done");
+  };
 
-### 3-5 mock数据
+  export { adminAdd, adminDelete, adminUpdate };
+  ```
 
-在进行数据查询之前，先mock一些模拟数据，使用facker.js库。 facker.js提供了大量模块和API
+- 完成 Class, Student, Book 模型的增删改业务
+
+### 3-5 mock 数据
+
+在进行数据查询之前，先 mock 一些模拟数据，使用 facker.js 库。 facker.js 提供了大量模块和 API
 
 #### 1. 基础模块
 
 - **字符串 / ID / 编码类**
 
-    ```ts
-    faker.string.uuid(); //UUID
-    
-    faker.string.alpha();     // 随机字母
-    faker.string.numeric();   // 随机数字
-    faker.string.alphanumeric(); // 字母+数字
-    
-    // 固定长度
-    faker.string.alpha(10);
-    faker.string.numeric(6);
-    ```
+  ```ts
+  faker.string.uuid(); //UUID
+
+  faker.string.alpha(); // 随机字母
+  faker.string.numeric(); // 随机数字
+  faker.string.alphanumeric(); // 字母+数字
+
+  // 固定长度
+  faker.string.alpha(10);
+  faker.string.numeric(6);
+  ```
 
 - 数字（number）
 
-    ```js
-    faker.number.int(100); // 0~100
-    faker.number.int({ min: 50, max: 60 });
-    faker.number.float({ min: 1, max: 100, precision: 0.01 });
-    
-    ```
+  ```js
+  faker.number.int(100); // 0~100
+  faker.number.int({ min: 50, max: 60 });
+  faker.number.float({ min: 1, max: 100, precision: 0.01 });
+  ```
 
 - 日期（date）
 
-    ```js
-    faker.date.past();
-    faker.date.future();
-    faker.date.recent();
-    faker.date.birthdate();
-    faker.date.between({ from: "2020-01-01", to: "2024-01-01" });
-    
-    ```
+  ```js
+  faker.date.past();
+  faker.date.future();
+  faker.date.recent();
+  faker.date.birthdate();
+  faker.date.between({ from: "2020-01-01", to: "2024-01-01" });
+  ```
 
 - 名字 / 个人信息（person）
 
-    ```ts
-    faker.person.firstName();
-    faker.person.lastName();
-    faker.person.fullName();
-    faker.person.gender();
-    faker.person.jobTitle();
-    ```
+  ```ts
+  faker.person.firstName();
+  faker.person.lastName();
+  faker.person.fullName();
+  faker.person.gender();
+  faker.person.jobTitle();
+  ```
 
 - 互联网（internet）
 
-    ```ts
-    faker.internet.username();
-    faker.internet.email();
-    faker.internet.password();
-    faker.internet.url();
-    faker.internet.ip();
-    faker.internet.color();
-    
-    ```
+  ```ts
+  faker.internet.username();
+  faker.internet.email();
+  faker.internet.password();
+  faker.internet.url();
+  faker.internet.ip();
+  faker.internet.color();
+  ```
 
 - 地点（location）
 
-    ```ts
-    faker.location.city();
-    faker.location.country();
-    faker.location.streetAddress();
-    faker.location.zipCode();
-    ```
+  ```ts
+  faker.location.city();
+  faker.location.country();
+  faker.location.streetAddress();
+  faker.location.zipCode();
+  ```
 
 - 电话（phone）
 
-    ```ts
-    faker.phone.number();
-    faker.phone.imei();
-    ```
+  ```ts
+  faker.phone.number();
+  faker.phone.imei();
+  ```
 
 - 图像（image）
 
-    ```ts
-    faker.image.url();   // 随机图片
-    faker.image.urlLoremFlickr({ category: "city" });
-    ```
+  ```ts
+  faker.image.url(); // 随机图片
+  faker.image.urlLoremFlickr({ category: "city" });
+  ```
 
 - 文本（lorem）
 
-    ```ts
-    faker.lorem.word();
-    faker.lorem.sentence();
-    faker.lorem.paragraph();
-    faker.lorem.text(); // 随机段落
-    
-    ```
+  ```ts
+  faker.lorem.word();
+  faker.lorem.sentence();
+  faker.lorem.paragraph();
+  faker.lorem.text(); // 随机段落
+  ```
 
 #### 2. 高级模块 helper
 
-- 正则表达式：fromRegExp() 
+- 正则表达式：fromRegExp()
 
-    ```ts
-    faker.helpers.fromRegExp('#{5}') // '#####'
-    faker.helpers.fromRegExp('#{2,9}') // '#######'
-    faker.helpers.fromRegExp('[1-7]') // '5'
-    faker.helpers.fromRegExp('#{3}test[1-5]') // '###test3'
-    faker.helpers.fromRegExp('[0-9a-dmno]') // '5'
-    faker.helpers.fromRegExp('[^a-zA-Z0-8]') // '9'
-    faker.helpers.fromRegExp('[a-d0-6]{2,8}') // 'a0dc45b0'
-    faker.helpers.fromRegExp('[-a-z]{5}') // 'a-zab'
-    faker.helpers.fromRegExp(/[A-Z0-9]{4}-[A-Z0-9]{4}/) // 'BS4G-485H'
-    faker.helpers.fromRegExp(/[A-Z]{5}/i) // 'pDKfh'
-    faker.helpers.fromRegExp(/.{5}/) // '14(#B'
-    faker.helpers.fromRegExp(/Joh?n/) // 'Jon'
-    faker.helpers.fromRegExp(/ABC*DE/) // 'ABDE'
-    faker.helpers.fromRegExp(/bee+p/) // 'beeeeeeeep'
-    ```
-
-    
+  ```ts
+  faker.helpers.fromRegExp("#{5}"); // '#####'
+  faker.helpers.fromRegExp("#{2,9}"); // '#######'
+  faker.helpers.fromRegExp("[1-7]"); // '5'
+  faker.helpers.fromRegExp("#{3}test[1-5]"); // '###test3'
+  faker.helpers.fromRegExp("[0-9a-dmno]"); // '5'
+  faker.helpers.fromRegExp("[^a-zA-Z0-8]"); // '9'
+  faker.helpers.fromRegExp("[a-d0-6]{2,8}"); // 'a0dc45b0'
+  faker.helpers.fromRegExp("[-a-z]{5}"); // 'a-zab'
+  faker.helpers.fromRegExp(/[A-Z0-9]{4}-[A-Z0-9]{4}/); // 'BS4G-485H'
+  faker.helpers.fromRegExp(/[A-Z]{5}/i); // 'pDKfh'
+  faker.helpers.fromRegExp(/.{5}/); // '14(#B'
+  faker.helpers.fromRegExp(/Joh?n/); // 'Jon'
+  faker.helpers.fromRegExp(/ABC*DE/); // 'ABDE'
+  faker.helpers.fromRegExp(/bee+p/); // 'beeeeeeeep'
+  ```
 
 - 生成数组：multiple()
 
-    ```js
-    faker.helpers.multiple(() => faker.person.fullName(), {
-      count: 10,
-    });
-    
-    ```
+  ```js
+  faker.helpers.multiple(() => faker.person.fullName(), {
+    count: 10,
+  });
+  ```
 
 - 从数组中随机取值：arrayElement()
 
-    ```ts
-    faker.helpers.arrayElement(["一班", "二班", "三班"]);
-    ```
-
-    
+  ```ts
+  faker.helpers.arrayElement(["一班", "二班", "三班"]);
+  ```
 
 #### 3. 示例 - 快速生成 Mock 对象数据
 
@@ -5625,112 +5612,107 @@ console.log(users);
 ]
 ```
 
-
-
 #### 4. 生成模型数据
 
-使用facker.js库生成模拟数据，使用sequelize内置的**bulkCreate()** 方法快速批量添加数据
+使用 facker.js 库生成模拟数据，使用 sequelize 内置的**bulkCreate()** 方法快速批量添加数据
 
-- 添加5个随机的admin
+- 添加 5 个随机的 admin
 
-    ```ts
-    // ESM
-    import { faker } from "@faker-js/faker";
-    import { Admin } from "../models/sync";
-    
-    export const admins = faker.helpers.multiple(
-      () => {
-        return {
-          loginID: faker.string.uuid(),
-          loginPwd: faker.internet.password(),
-          name: faker.internet.username(),
-        };
-      },
-      {
-        count: 5,
-      }
-    );
-    
-    Admin.bulkCreate(admins); // 批量添加数据
-    ```
+  ```ts
+  // ESM
+  import { faker } from "@faker-js/faker";
+  import { Admin } from "../models/sync";
+
+  export const admins = faker.helpers.multiple(
+    () => {
+      return {
+        loginID: faker.string.uuid(),
+        loginPwd: faker.internet.password(),
+        name: faker.internet.username(),
+      };
+    },
+    {
+      count: 5,
+    }
+  );
+
+  Admin.bulkCreate(admins); // 批量添加数据
+  ```
 
 - 添加班级数据
 
-    ```ts
-    // ESM
-    import { faker } from "@faker-js/faker";
-    import { Class } from "../models/sync";
-    
-    function randomClassName() {
-      const subjects = ["前端", "Java", "UI", "产品", "测试", "大数据", "AI"];
-      const num = faker.number.int({ min: 1, max: 20 });
-      return `${faker.helpers.arrayElement(subjects)} 第${num}期`;
+  ```ts
+  // ESM
+  import { faker } from "@faker-js/faker";
+  import { Class } from "../models/sync";
+
+  function randomClassName() {
+    const subjects = ["前端", "Java", "UI", "产品", "测试", "大数据", "AI"];
+    const num = faker.number.int({ min: 1, max: 20 });
+    return `${faker.helpers.arrayElement(subjects)} 第${num}期`;
+  }
+
+  export const classes = faker.helpers.multiple(
+    () => {
+      return {
+        name: randomClassName(),
+        openDate: faker.date.between({
+          from: "2023-11-11",
+          to: "2025-12-12",
+        }),
+      };
+    },
+    {
+      count: 20,
     }
-    
-    export const classes = faker.helpers.multiple(
-      () => {
-        return {
-          name: randomClassName(),
-          openDate: faker.date.between({
-            from: "2023-11-11",
-            to: "2025-12-12",
-          }),
-        };
-      },
-      {
-        count: 20,
-      }
-    );
-    console.log(classes);
-    
-    Class.bulkCreate(classes);
-    
-    ```
+  );
+  console.log(classes);
+
+  Class.bulkCreate(classes);
+  ```
 
 - 添加学生数据
 
-    ```ts
-    import { faker } from "@faker-js/faker";
-    import { Student } from "../models/sync";
-    
-    export const students = faker.helpers.multiple(
-      () => {
-        return {
-          name: faker.person.fullName(),
-          dob: faker.date.birthdate({ mode: "age", min: 18, max: 35 }),
-          sex: faker.datatype.boolean(),
-          mobile: faker.helpers.fromRegExp(/02[1-8]{1}-[0-9]{7}/),
-          ClassId: faker.number.int({
-            min: 1,
-            max: 40,
-          }),
-        };
-      },
-      {
-        count: 20,
-      }
-    );
-    console.log(students);
-    
-    Student.bulkCreate(students);
-    ```
-
-
+  ```ts
+  import { faker } from "@faker-js/faker";
+  import { Student } from "../models/sync";
+  
+  export const students = faker.helpers.multiple(
+    () => {
+      return {
+        name: faker.person.fullName(),
+        dob: faker.date.birthdate({ mode: "age", min: 18, max: 35 }),
+        sex: faker.datatype.boolean(),
+        mobile: faker.helpers.fromRegExp(/02[1-8]{1}-[0-9]{7}/),
+        ClassId: faker.number.int({
+          min: 1,
+          max: 40,
+        }),
+      };
+    },
+    {
+      count: 20,
+    }
+  );
+  console.log(students);
+  
+  Student.bulkCreate(students);
+  ```
 
 ### 3-6 抓取网页数据
 
 #### 1. 使用的库
 
-练习简单的抓取网页数据，使用axios和cheerio库
+练习简单的抓取网页数据，使用 axios 和 cheerio 库
 
 - axios - 发送网络请求，获取请求数据
-- cheerio - 解析请求数据，生成一个jquery对象"$", 操作dom节点获取需要的数据
+- cheerio - 解析请求数据，生成一个 jquery 对象"$", 操作 dom 节点获取需要的数据
 
 #### 2. 练习
 
 获取https://bookhero.co.nz/collections/new-zealand-published页面中加载的静态数据，分析并解析所需要的数据
 
-添加Book数据
+添加 Book 数据
 
 ```ts
 // /* ----- 使用axios和cheerio库抓取网页数据 ----- */
@@ -5790,14 +5772,13 @@ const bookMock = async () => {
   Book.bulkCreate(books);
 };
 bookMock();
-
 ```
 
 ### 3-7 查询数据
 
 #### 1. 查询单个数据
 
-findOne - 用户登录功能 (adim登录为例)
+findOne - 用户登录功能 (adim 登录为例)
 
 ```TS
 const login = async (loginID, loginPwd) => {
@@ -5840,7 +5821,7 @@ Admin {
 }
 ```
 
-**注意：SQL里不区分大小写，如果要严格匹配大小写，可以使用ts代码处理**
+**注意：SQL 里不区分大小写，如果要严格匹配大小写，可以使用 ts 代码处理**
 
 ```ts
 const login = async (loginID, loginPwd) => {
@@ -5905,190 +5886,190 @@ findAll - 查询全部或者多条数据
 
 - 查询全部 - 适合管理员管理数据
 
-    ```ts
-    /* ------------- 1. 查询全部 ------------ */
-    const getStudentsAll = async () => {
-      const res = await Student.findAll();
-      const students = res ? JSON.parse(JSON.stringify(res)) : null;  // 先将数组转成字符串，再转成json对象
-      console.log(students);
-      console.log("retrive done");
-    };
-    ```
+  ```ts
+  /* ------------- 1. 查询全部 ------------ */
+  const getStudentsAll = async () => {
+    const res = await Student.findAll();
+    const students = res ? JSON.parse(JSON.stringify(res)) : null; // 先将数组转成字符串，再转成json对象
+    console.log(students);
+    console.log("retrive done");
+  };
+  ```
 
-    ```json
-    [
-      ...   
-      {
-        id: 120,
-        name: 'Miss Edith Pouros',
-        dob: '1997-08-30T20:29:26.000Z',
-        sex: false,
-        mobile: '021-6321212',
-        deletedAt: null,
-        ClassId: 14
-      },
-      ... 421 more items
-    ]
-    ```
-
-    
+  ```json
+  [
+    ...
+    {
+      id: 120,
+      name: 'Miss Edith Pouros',
+      dob: '1997-08-30T20:29:26.000Z',
+      sex: false,
+      mobile: '021-6321212',
+      deletedAt: null,
+      ClassId: 14
+    },
+    ... 421 more items
+  ]
+  ```
 
 - 查询多条数据 - 页面数据的分页显示
 
-    ```ts
-    /* --------- 2. 查询部分 - 分页数据 --------- */
-    const getStudents = async (page = 1, limit = 10) => {
-      const res = await Student.findAll({
-        offset: (page - 1) * limit, // 跳过多少条数据
-        limit, // 每页显示多少条数据
-      });
-      const students = res ? JSON.parse(JSON.stringify(res)) : null;  // 先将数组转成字符串，再转成json对象
-      console.log(students);
-      console.log("retrive done");
-    };
-    ```
+  ```ts
+  /* --------- 2. 查询部分 - 分页数据 --------- */
+  const getStudents = async (page = 1, limit = 10) => {
+    const res = await Student.findAll({
+      offset: (page - 1) * limit, // 跳过多少条数据
+      limit, // 每页显示多少条数据
+    });
+    const students = res ? JSON.parse(JSON.stringify(res)) : null; // 先将数组转成字符串，再转成json对象
+    console.log(students);
+    console.log("retrive done");
+  };
+  ```
 
-    ```bash
-    [
-      {
-        id: 26,
-        name: 'Jack Pagac',
-        dob: '1991-09-05T11:37:33.000Z',
-        sex: false,
-        mobile: '024-3556976',
-        deletedAt: null,
-        ClassId: 4
-      },
-      {
-        id: 27,
-        name: 'Sherry Predovic',
-        dob: '2007-05-14T07:53:27.000Z',
-        sex: true,
-        mobile: '024-8004229',
-        deletedAt: null,
-        ClassId: 14
-      },
-      {
-        id: 28,
-        name: 'Toby Fritsch',
-        dob: '1993-06-04T04:13:15.000Z',
-        sex: true,
-        mobile: '025-0601624',
-        deletedAt: null,
-        ClassId: 20
-      },
-      {
-        id: 29,
-        name: 'Alison Lueilwitz-Langworth',
-        dob: '1998-03-25T03:40:25.000Z',
-        sex: false,
-        mobile: '022-3399459',
-        deletedAt: null,
-        ClassId: 13
-      },
-      {
-        id: 30,
-        name: 'Miss Vanessa Wunsch',
-        dob: '1996-02-21T10:02:19.000Z',
-        sex: true,
-        mobile: '028-3917624',
-        deletedAt: null,
-        ClassId: 5
-      }
-    ]
-    ```
+  ```bash
+  [
+    {
+      id: 26,
+      name: 'Jack Pagac',
+      dob: '1991-09-05T11:37:33.000Z',
+      sex: false,
+      mobile: '024-3556976',
+      deletedAt: null,
+      ClassId: 4
+    },
+    {
+      id: 27,
+      name: 'Sherry Predovic',
+      dob: '2007-05-14T07:53:27.000Z',
+      sex: true,
+      mobile: '024-8004229',
+      deletedAt: null,
+      ClassId: 14
+    },
+    {
+      id: 28,
+      name: 'Toby Fritsch',
+      dob: '1993-06-04T04:13:15.000Z',
+      sex: true,
+      mobile: '025-0601624',
+      deletedAt: null,
+      ClassId: 20
+    },
+    {
+      id: 29,
+      name: 'Alison Lueilwitz-Langworth',
+      dob: '1998-03-25T03:40:25.000Z',
+      sex: false,
+      mobile: '022-3399459',
+      deletedAt: null,
+      ClassId: 13
+    },
+    {
+      id: 30,
+      name: 'Miss Vanessa Wunsch',
+      dob: '1996-02-21T10:02:19.000Z',
+      sex: true,
+      mobile: '028-3917624',
+      deletedAt: null,
+      ClassId: 5
+    }
+  ]
+  ```
 
 - 按条件查询 - 比如只查询女同学
 
-    ```ts
-    /* --------- 3. 按条件查询 - 女同学 --------- */
-    const getStudentsBySex = async (page = 1, limit = 10, sex: boolean = false) => {
-      const res = await Student.findAll({
-        offset: (page - 1) * limit, // 跳过多少条数据
-        limit, // 每页显示多少条数据
-        where: {
-          sex, // 按性别查询
-        },
-      });
-    
-      const students = res ? JSON.parse(JSON.stringify(res)) : null;  // 先将数组转成字符串，再转成json对象
-    
-      // 获取总数
-      const total = await Student.count({
-        where: { sex },
-      });
-        
-      // 包装数据 并返回
-      const data = {
-        total,
-        page,
-        students,
-      };
-      console.log(data);
-      console.log("retrive done");
-      return data;
+  ```ts
+  /* --------- 3. 按条件查询 - 女同学 --------- */
+  const getStudentsBySex = async (
+    page = 1,
+    limit = 10,
+    sex: boolean = false
+  ) => {
+    const res = await Student.findAll({
+      offset: (page - 1) * limit, // 跳过多少条数据
+      limit, // 每页显示多少条数据
+      where: {
+        sex, // 按性别查询
+      },
+    });
+  
+    const students = res ? JSON.parse(JSON.stringify(res)) : null; // 先将数组转成字符串，再转成json对象
+  
+    // 获取总数
+    const total = await Student.count({
+      where: { sex },
+    });
+  
+    // 包装数据 并返回
+    const data = {
+      total,
+      page,
+      students,
     };
-    ```
+    console.log(data);
+    console.log("retrive done");
+    return data;
+  };
+  ```
 
-    ```bash
-    {
-      total: 260,
-      page: 5,
-      students: [
-        {
-          id: 64,
-          name: 'Janet Lebsack II',
-          dob: '2003-03-03T07:33:16.000Z',
-          sex: false,
-          mobile: '023-5558736',
-          deletedAt: null,
-          ClassId: 23
-        },
-        {
-          id: 65,
-          name: 'Ernest Moen',
-          dob: '2003-08-15T02:58:45.000Z',
-          sex: false,
-          mobile: '021-2603397',
-          deletedAt: null,
-          ClassId: 8
-        },
-        {
-          id: 66,
-          name: 'Michael Smitham',
-          dob: '1994-12-01T07:21:36.000Z',
-          sex: false,
-          mobile: '023-8225533',
-          deletedAt: null,
-          ClassId: 32
-        },
-        {
-          id: 67,
-          name: 'Belinda Anderson',
-          dob: '2002-09-07T10:53:27.000Z',
-          sex: false,
-          mobile: '028-7939822',
-          deletedAt: null,
-          ClassId: 22
-        },
-        {
-          id: 70,
-          name: 'Miss Lillie Fadel',
-          dob: '1998-01-29T19:33:37.000Z',
-          sex: false,
-          mobile: '022-2453863',
-          deletedAt: null,
-          ClassId: 20
-        }
-      ]
-    }
-    ```
-
-    
+  ```bash
+  {
+    total: 260,
+    page: 5,
+    students: [
+      {
+        id: 64,
+        name: 'Janet Lebsack II',
+        dob: '2003-03-03T07:33:16.000Z',
+        sex: false,
+        mobile: '023-5558736',
+        deletedAt: null,
+        ClassId: 23
+      },
+      {
+        id: 65,
+        name: 'Ernest Moen',
+        dob: '2003-08-15T02:58:45.000Z',
+        sex: false,
+        mobile: '021-2603397',
+        deletedAt: null,
+        ClassId: 8
+      },
+      {
+        id: 66,
+        name: 'Michael Smitham',
+        dob: '1994-12-01T07:21:36.000Z',
+        sex: false,
+        mobile: '023-8225533',
+        deletedAt: null,
+        ClassId: 32
+      },
+      {
+        id: 67,
+        name: 'Belinda Anderson',
+        dob: '2002-09-07T10:53:27.000Z',
+        sex: false,
+        mobile: '028-7939822',
+        deletedAt: null,
+        ClassId: 22
+      },
+      {
+        id: 70,
+        name: 'Miss Lillie Fadel',
+        dob: '1998-01-29T19:33:37.000Z',
+        sex: false,
+        mobile: '022-2453863',
+        deletedAt: null,
+        ClassId: 20
+      }
+    ]
+  }
+  ```
 
 #### 4. 查询数量
 
-findAndCountAll - 已经封装的查询总数和分页数据的方法, 结合了上面方法中使用到的findAll 和 count方法
+findAndCountAll - 已经封装的查询总数和分页数据的方法, 结合了上面方法中使用到的 findAll 和 count 方法
 
 ```ts
 const getStudentsByPage = async (page = 1, limit = 10) => {
@@ -6161,7 +6142,7 @@ const getStudentsByPage = async (page = 1, limit = 10) => {
 
 #### 5. 模糊查询 - [Op.like]
 
-查询数据时，根据关键字查询。 sequelize内置了操作符{ Op }模块，使用 `[Op.like]: '%hat` 
+查询数据时，根据关键字查询。 sequelize 内置了操作符{ Op }模块，使用 `[Op.like]: '%hat`
 
 比如，查询名字类似于 arr 的同学
 
@@ -6240,9 +6221,9 @@ await getStudetsLike(1, 5, "arr");
 }
 ```
 
-#### 6. 查询特定属性  - attributes
+#### 6. 查询特定属性 - attributes
 
-不需要显示数据的全部属性，而仅需要查询部分特定的属性值，可以使用attributes参数配置
+不需要显示数据的全部属性，而仅需要查询部分特定的属性值，可以使用 attributes 参数配置
 
 ```ts
 /* ------ 6. 查询特定属性  - attributes ------ */
@@ -6271,8 +6252,8 @@ const getStudentsAttr = async (page = 1, limit = 10, atrrs) => {
 ```bash
 /* ----------- 10. 查询特定属性 ----------- */
   await getStudentsAttr(2, 3, ["name", "dob", "sex"]);
-  
-  
+
+
 {
   total: 521,
   students: [
@@ -6293,7 +6274,7 @@ const getStudentsAttr = async (page = 1, limit = 10, atrrs) => {
 
 #### 7. 包含关系 - include
 
-查询关联表的信息，使用include配置属性
+查询关联表的信息，使用 include 配置属性
 
 ```ts
 /* -------- 7. 包含关系 - include ------- */
@@ -6371,195 +6352,189 @@ const getStudentsInclude = async (page = 1, limit = 10) => {
 }
 ```
 
-
-
-### 3-8 MD5加密
+### 3-8 MD5 加密
 
 #### 1. 概述
 
-- MD5是一种hash加密算法
-- 将任意长度的数据转换成固定长度的字符串 - **128位（16字节）**的哈希值（即消息摘要）。
+- MD5 是一种 hash 加密算法
+- 将任意长度的数据转换成固定长度的字符串 - **128 位（16 字节）**的哈希值（即消息摘要）。
 - **不可逆性：** 单向，只能加密，不能解密。
 - 相同的源数据加密，得到固定的结果
 
 #### 2. 使用场景
 
-常用于对数据库里账户和密码等敏感数据的加密， 在用户注册时，系统不会直接存储用户密码，而是存储其MD5值。在用户登录时，系统会计算输入的密码的MD5值，并与数据库中存储的值进行比对，从而验证密码是否正确。
+常用于对数据库里账户和密码等敏感数据的加密， 在用户注册时，系统不会直接存储用户密码，而是存储其 MD5 值。在用户登录时，系统会计算输入的密码的 MD5 值，并与数据库中存储的值进行比对，从而验证密码是否正确。
 
 - 基础使用
 
-    - 安装md5库
+  - 安装 md5 库
 
-        ```bash
-        npm i md5
-        ```
+    ```bash
+    npm i md5
+    ```
 
-    - 导入模块并使用
+  - 导入模块并使用
 
-        ```ts
-        import md5 from "md5";
-        
-        console.log(md5("123"));
-        console.log(md5("abc"));
-        ```
+    ```ts
+    import md5 from "md5";
+  
+    console.log(md5("123"));
+    console.log(md5("abc"));
+    ```
 
-        ```bash
-        202cb962ac59075b964b07152d234b70
-        900150983cd24fb0d6963f7d28e17f72
-        ```
+    ```bash
+    202cb962ac59075b964b07152d234b70
+    900150983cd24fb0d6963f7d28e17f72
+    ```
 
 - 账户和密码加密
 
-    对我们之前的Admin模型的登录模块进行加密改造
+  对我们之前的 Admin 模型的登录模块进行加密改造
 
-    - 添加admin时，使用md5加密
+  - 添加 admin 时，使用 md5 加密
 
-        ```ts
-        import { Admin } from "../models/sync";
-        import md5 from "md5";
-        
-        const adminAdd = async (adminObj) => {
-          /* -------------- 加密改造 -------------- */
-          adminObj.loginPwd = md5(adminObj.loginPwd);
-          const inst = await Admin.create(adminObj);
-          console.log(inst.toJSON());
-          console.log("add data done");
-        };
-        ```
+    ```ts
+    import { Admin } from "../models/sync";
+    import md5 from "md5";
 
-        ```ts
-        import { sequelize } from "./models/sync";
-        import {adminAdd} from "./servers/admin";
-        
-        async function main() {
-          /* ---------- 2. 添加admin数据 ---------- */
-          await adminAdd({
-            loginID: "admin1",
-            loginPwd: "123456",
-            name: "admin1",
-          });
-        }
-        
-        main();
-        ```
+    const adminAdd = async (adminObj) => {
+      /* -------------- 加密改造 -------------- */
+      adminObj.loginPwd = md5(adminObj.loginPwd);
+      const inst = await Admin.create(adminObj);
+      console.log(inst.toJSON());
+      console.log("add data done");
+    };
+    ```
 
-        ```bash
-        {
-          id: 34,
-          loginID: 'admin1',
-          loginPwd: 'e10adc3949ba59abbe56e057f20f883e', // "123456"加密后的字符
-          name: 'admin1'
-        }
-        ```
+    ```ts
+    import { sequelize } from "./models/sync";
+    import { adminAdd } from "./servers/admin";
 
-    - 修改admin数据的改造
+    async function main() {
+      /* ---------- 2. 添加admin数据 ---------- */
+      await adminAdd({
+        loginID: "admin1",
+        loginPwd: "123456",
+        name: "admin1",
+      });
+    }
 
-        ```ts
-        const adminUpdate = async (adminID, adminObj) => {
-        
-          /* -------------- 加密改造 -------------- */
-          if (adminObj.loginPwd) {
-            adminObj.loginPwd = md5(adminObj.loginPwd);
-          }
-          const res = await Admin.update(adminObj, {
-            where: {
-              id: adminID,
-            },
-          });
-          console.log(res);
-          console.log("update done");
-        };
-        ```
+    main();
+    ```
 
-        ```ts
-        import { sequelize } from "./models/sync";
-        import {adminUpdate} from "./servers/admin";
-        
-        async function main() {
-            /* --------- 4. 修改admin实例数据 --------- */
-          await adminUpdate(35, { loginPwd: "000000" });
-        }
-        
-        main();
-        ```
+    ```bash
+    {
+      id: 34,
+      loginID: 'admin1',
+      loginPwd: 'e10adc3949ba59abbe56e057f20f883e', // "123456"加密后的字符
+      name: 'admin1'
+    }
+    ```
 
-        ```bash
-        670b14728ad9902aecba32e22fa4f6bd // "000000"加密后的字符串
-        ```
+  - 修改 admin 数据的改造
 
-    - 查询admin数据的改造 - 登录
+    ```ts
+    const adminUpdate = async (adminID, adminObj) => {
+      /* -------------- 加密改造 -------------- */
+      if (adminObj.loginPwd) {
+        adminObj.loginPwd = md5(adminObj.loginPwd);
+      }
+      const res = await Admin.update(adminObj, {
+        where: {
+          id: adminID,
+        },
+      });
+      console.log(res);
+      console.log("update done");
+    };
+    ```
 
-        ```ts
-        import { log } from "console";
-        import { Admin } from "../models/sync";
-        import md5 from "md5";
-        
-        /* -------------- 加密改造 -------------- */
-        const login = async (loginID, loginPwd) => {
-          //加密处理
-          loginPwd = md5(loginPwd);
-          const res = await Admin.findOne({
-            where: {
-              loginID,
-              loginPwd,
-            },
-          });
-        
-          if (res) {
-            console.log(res.toJSON());
-            return res.toJSON();
-          }
-          return null;
-        };
-        
-        export { adminAdd, adminDelete, adminUpdate, login, getAdminByID };
-        
-        ```
+    ```ts
+    import { sequelize } from "./models/sync";
+    import { adminUpdate } from "./servers/admin";
 
-        ```ts
-        import { sequelize } from "./models/sync";
-        import {login} from "./servers/admin";
-        
-        async function main() {
-          /* ----- 5. 查询数据 findOne - 登录验证 ----- */
-          await login("admin2", "000000");
-        }
-        
-        main();
-        ```
+    async function main() {
+      /* --------- 4. 修改admin实例数据 --------- */
+      await adminUpdate(35, { loginPwd: "000000" });
+    }
 
-        ```bash
-        {
-          id: 35,
-          loginID: 'admin2',
-          loginPwd: '670b14728ad9902aecba32e22fa4f6bd',
-          name: 'admin2',
-          deletedAt: null
-        }
-        ```
+    main();
+    ```
 
-        
+    ```bash
+    670b14728ad9902aecba32e22fa4f6bd // "000000"加密后的字符串
+    ```
+
+  - 查询 admin 数据的改造 - 登录
+
+    ```ts
+    import { log } from "console";
+    import { Admin } from "../models/sync";
+    import md5 from "md5";
+    
+    /* -------------- 加密改造 -------------- */
+    const login = async (loginID, loginPwd) => {
+      //加密处理
+      loginPwd = md5(loginPwd);
+      const res = await Admin.findOne({
+        where: {
+          loginID,
+          loginPwd,
+        },
+      });
+    
+      if (res) {
+        console.log(res.toJSON());
+        return res.toJSON();
+      }
+      return null;
+    };
+    
+    export { adminAdd, adminDelete, adminUpdate, login, getAdminByID };
+    ```
+
+    ```ts
+    import { sequelize } from "./models/sync";
+    import { login } from "./servers/admin";
+    
+    async function main() {
+      /* ----- 5. 查询数据 findOne - 登录验证 ----- */
+      await login("admin2", "000000");
+    }
+    
+    main();
+    ```
+
+    ```bash
+    {
+      id: 35,
+      loginID: 'admin2',
+      loginPwd: '670b14728ad9902aecba32e22fa4f6bd',
+      name: 'admin2',
+      deletedAt: null
+    }
+    ```
 
 ### 3-9 日期处理
 
 #### 1. 概念
 
-- utc和本地时间
-    - Universal *Time* Coordinated，协调世界时。在国际无线电通信中，为统一而普遍使用一个标准时间。
-    - GMT时间， 格林威治时间。 可以为格林威治时间就是时间协调时间（[GMT](https://so.csdn.net/so/search?q=GMT&spm=1001.2101.3001.7020)=UTC），用秒数来计算的。
-    - 本地时间， UTC + 时区差 ＝ 本地时间
+- utc 和本地时间
+  - Universal _Time_ Coordinated，协调世界时。在国际无线电通信中，为统一而普遍使用一个标准时间。
+  - GMT 时间， 格林威治时间。 可以为格林威治时间就是时间协调时间（[GMT](https://so.csdn.net/so/search?q=GMT&spm=1001.2101.3001.7020)=UTC），用秒数来计算的。
+  - 本地时间， UTC + 时区差 ＝ 本地时间
 - 时间戳
-    - 又称计算机系统时间戳 **Unix时间戳**
-    - **Unix时间戳**是从 **1970年01月01日 0:00:00 UTC**（即**Unix纪元**）开始到某一具体时间所经过的**总秒数**。
-    - 比如1970年01月01日 1:00:00 的时间戳是 7200,  1980年01月01日 0:00:00的时间戳是 315532800
+  - 又称计算机系统时间戳 **Unix 时间戳**
+  - **Unix 时间戳**是从 **1970 年 01 月 01 日 0:00:00 UTC**（即**Unix 纪元**）开始到某一具体时间所经过的**总秒数**。
+  - 比如 1970 年 01 月 01 日 1:00:00 的时间戳是 7200, 1980 年 01 月 01 日 0:00:00 的时间戳是 315532800
 - 对服务端的影响
-    - 服务器可能会部署到世界的任何位置
-    - 服务器内容应该统一使用utc时间或者时间戳，包括数据库中的时间
+  - 服务器可能会部署到世界的任何位置
+  - 服务器内容应该统一使用 utc 时间或者时间戳，包括数据库中的时间
 - 对客户端的影响
-    - 客户端要给不同地区的客户友好显示时间
-    - 客户端应该把时间戳或者utc时间转换成本地时间显示
+  - 客户端要给不同地区的客户友好显示时间
+  - 客户端应该把时间戳或者 utc 时间转换成本地时间显示
 
-#### ~~2. moment库 - 了解，已停止维护~~
+#### ~~2. moment 库 - 了解，已停止维护~~
 
 - 处理、解析、操作和格式化**日期和时间**的库
 
@@ -6569,469 +6544,458 @@ Day.js 是一个轻量级（约 2KB）的日期时间处理库，其 API 设计�
 
 - 核心安装与创建
 
-    - 安装
+  - 安装
 
-        ```bash
-        npm install dayjs
-        ```
+    ```bash
+    npm install dayjs
+    ```
 
-    - 导入
+  - 导入
 
-        ```ts
-        // Node.js 环境
-        const dayjs = require('dayjs'); 
-        
-        // ES Modules 环境
-        import dayjs from 'dayjs';
-        ```
+    ```ts
+    // Node.js 环境
+    const dayjs = require("dayjs");
 
-    - 创建Day.js 实例对象 
+    // ES Modules 环境
+    import dayjs from "dayjs";
+    ```
 
-        使用 dayjs() 方法会创建一个 dayjs实例对象，**封装**了 原生js的`Date` 对象
+  - 创建 Day.js 实例对象
 
-        **注意：实例对象里默认的时间时间是UTC/GMT时间，==不是本地时间==**
+    使用 dayjs() 方法会创建一个 dayjs 实例对象，**封装**了 原生 js 的`Date` 对象
 
-        | **方式**          | **描述**                             | **示例**                   |
-        | ----------------- | ------------------------------------ | -------------------------- |
-        | **当前时间**      | 不传参数，获取当前日期和时间。       | `dayjs()`                  |
-        | **字符串**        | 解析 ISO 8601 或其他常见格式字符串。 | `dayjs('2025-12-02')`      |
-        | **JS Date 对象**  | 封装原生的 `Date` 对象。             | `dayjs(new Date())`        |
-        | **时间戳 (毫秒)** | 传入 Unix 毫秒时间戳 (最安全)。      | `dayjs(1764722437000)`     |
-        | **时间戳 (秒)**   | 传入 Unix 秒时间戳，需要第二个参数。 | `dayjs(1764722437 * 1000)` |
+    **注意：实例对象里默认的时间时间是 UTC/GMT 时间，==不是本地时间==**
 
-    - 代码实例
+    | **方式**          | **描述**                             | **示例**                   |
+    | ----------------- | ------------------------------------ | -------------------------- |
+    | **当前时间**      | 不传参数，获取当前日期和时间。       | `dayjs()`                  |
+    | **字符串**        | 解析 ISO 8601 或其他常见格式字符串。 | `dayjs('2025-12-02')`      |
+    | **JS Date 对象**  | 封装原生的 `Date` 对象。             | `dayjs(new Date())`        |
+    | **时间戳 (毫秒)** | 传入 Unix 毫秒时间戳 (最安全)。      | `dayjs(1764722437000)`     |
+    | **时间戳 (秒)**   | 传入 Unix 秒时间戳，需要第二个参数。 | `dayjs(1764722437 * 1000)` |
 
-        ```ts
-        import dayjs from "dayjs";
-        
-        /* ------------- 创建实例对象 ------------- */
-        
-        // 1. 不传参数 - 获取当前日期和时间
-        console.log(dayjs());
-        
-        /* ------- 2. 字符串 - 解析常见格式字符串 ------- */
-        console.log(dayjs("2025-1-1"));
-        
-        /* ---------- 3. JS Date 对象 --------- */
-        console.log(dayjs(new Date()));
-        
-        /* --------- 4. 时间戳 (毫秒) -------- */
-        console.log(dayjs(1000000000000));
-        
-        /* ------------ 5.时间戳 (秒) ----------- */
-        console.log(dayjs(1000000000 * 1000));
-        
-        ```
-
-        ```bash
-        M {
-          '$L': 'en',
-          '$d': 2025-12-01T21:24:46.155Z,
-          '$y': 2025,
-          '$M': 11,
-          '$D': 2,
-          '$W': 2,
-          '$H': 10,
-          '$m': 24,
-          '$s': 46,
-          '$ms': 155,
-          '$x': {},
-          '$isDayjsObject': true
-        }
-        ...
-        M {
-          '$L': 'en',
-          '$d': 2001-09-09T01:46:40.000Z,
-          '$y': 2001,
-          '$M': 8,
-          '$D': 9,
-          '$W': 0,
-          '$H': 13,
-          '$m': 46,
-          '$s': 40,
-          '$ms': 0,
-          '$x': {},
-          '$isDayjsObject': true
-        }
-        ```
-
-- 获取与格式化 (Get & Format)
-
-    - 格式化输出 (`.format()`)
-
-        将 Day.js 对象转换为指定格式的字符串 
-
-        **注意：格式化后的时间是==本地时间==**
-
-        | **占位符** | **含义**           | **示例值 (Dec 2, 2025 09:40:37)** |
-        | ---------- | ------------------ | --------------------------------- |
-        | `YYYY`     | 四位数年份         | `2025`                            |
-        | `MM`       | 两位数月份 (01-12) | `12`                              |
-        | `DD`       | 两位数日期 (01-31) | `02`                              |
-        | `HH`       | 24小时制 (00-23)   | `09`                              |
-        | `mm`       | 分钟 (00-59)       | `40`                              |
-        | `ss`       | 秒钟 (00-59)       | `37`                              |
-        | `A`        | 上午/下午          | `AM`                              |
-
-        ```TS
-        import dayjs from "dayjs";
-        
-        /* ------ 获取与格式化 (Get & Format) ----- */
-        
-        /* ------ 1. 格式化输出 (.format()) ------ */
-        const now = dayjs();
-        
-        console.log(now.format());
-        console.log(now.format("MM/DD/YYYY"));
-        console.log(now.format("MM/DD/YYYY hh:mm:ss"));
-        console.log(now.format("MM/DD/YYYY dd hh:mm:ss"));
-        console.log(now.format("MM/DD/YYYY hh:mm:ss A"));
-        
-        console.log(now.format("YYYY-MM-DD"));
-        console.log(now.format("YYYY年MM月DD日 星期dd HH:mm:ss A"));
-        ```
-
-        ```BASH
-        2025-12-02T10:47:10+13:00
-        12/02/2025
-        12/02/2025 10:47:10
-        12/02/2025 Tu 10:47:10
-        12/02/2025 10:47:10 AM
-        2025-12-02
-        2025年12月02日 星期Tu 10:47:10 AM
-        ```
-
-    - 获取时间戳和原生对象 - **==UTC/GMT时间==**
-
-        常用于服务端和数据库交互
-
-        | **方法**         | **描述**                                      | **示例值**                   |
-        | ---------------- | --------------------------------------------- | ---------------------------- |
-        | `.unix()`        | 获取 Unix **秒级**时间戳 (Number)。           | `1764722437`                 |
-        | `.valueOf()`     | 获取 Unix **毫秒级**时间戳 (Number)。         | `1764722437000`              |
-        | `.toDate()`      | 转换为原生的 **JavaScript `Date` 对象**。     | `[object Date]`              |
-        | `.toISOString()` | 转换为 **UTC ISO 8601 字符串** (用于数据库)。 | `"2025-12-01T20:40:37.000Z"` |
-
-        ```ts
-        /* ---------- 2.获取时间戳和原生对象 ---------- */
-        console.log(now.unix()); //获取 Unix 秒级时间戳
-        console.log(now.valueOf()); //获取 Unix 毫秒级时间戳
-        console.log(now.toDate()); //转换为原生的 JavaScript Date 对象
-        console.log(now.toString()); //转换为普通字符串
-        console.log(now.toISOString()); //转换为 UTC ISO 8601 字符串 (用于数据库)
-        ```
-
-        ```bash
-        1764626179
-        1764626179823
-        2025-12-01T21:56:19.823Z
-        Mon, 01 Dec 2025 21:56:19 GMT
-        2025-12-01T21:56:19.823Z
-        ```
-
-- 日期操作 (Manipulation)
-
-    所有的操作方法都会返回一个新的 Day.js 实例（**不可变性**）
-
-    - 增减时间 (`.add()`, `.subtract()`)
-
-        | **方法**              | **描述**           | **示例**                                |
-        | --------------------- | ------------------ | --------------------------------------- |
-        | `.add(值, 单位)`      | 增加指定的时间量。 | `dayjs().add(1, 'month')` (增加一个月)  |
-        | `.subtract(值, 单位)` | 减少指定的时间量。 | `dayjs().subtract(7, 'day')` (减少七天) |
-
-        **可用单位 (Unit)：** `year`, `month`, `week`, `day`, `hour`, `minute`, `second`, `millisecond`
-
-        ```ts
-        import dayjs from "dayjs";
-        
-        /* ------- 日期操作 (Manipulation) ------ */
-        
-        /* ------------- 1. 增减时间 ------------ */
-        const now = dayjs();
-        const formatRule = "YYYY-MM-DD hh:mm:ss A";
-        console.log(now.format(formatRule));
-        console.log(now.add(10, "day").format(formatRule));
-        console.log(now.subtract(6, "month").format(formatRule));
-        ```
-
-        ```bash
-        2025-12-02 11:07:38 PM
-        2025-12-12 11:07:38 PM
-        2025-06-02 11:07:38 PM
-        ```
-
-    - 设为开始/结束 (`.startOf()`, `.endOf()`)
-
-        将日期设置为某一时间单位的起点或终点。
-
-        dfasdf
-
-        ```ts
-        /* ----------- 2. 设为开始/结束 ----------- */
-        console.log(now.startOf("year").format(formatRule));
-        console.log(now.startOf("month").format(formatRule));
-        
-        console.log(now.endOf("year").format(formatRule));
-        console.log(now.endOf("day").format(formatRule));
-        
-        ```
-
-        ```bash
-        2025-01-01 12:00:00 AM
-        2025-12-01 12:00:00 AM
-        2025-12-31 11:59:59 PM
-        2025-12-02 11:59:59 PM
-        ```
-
-        
-
-- 比较与查询 (Query)
-
-    用于判断两个 Day.js 实例的关系或获取日期部分信息。
-
-    - 比较 (`.isSame()`, `.isBefore()`, `.isAfter()`)
-
-        | **方法**                 | **描述**                       | **示例**                                |
-        | ------------------------ | ------------------------------ | --------------------------------------- |
-        | `.isSame(other, unit)`   | 两个日期在指定单位下是否相同。 | `d1.isSame(d2, 'day')` (只比较日期部分) |
-        | `.isBefore(other, unit)` | 当前日期是否在另一个日期之前。 | `d1.isBefore(d2, 'year')`               |
-        | `.isAfter(other, unit)`  | 当前日期是否在另一个日期之后。 | `d1.isAfter(d2)`                        |
-
-        ```ts
-        import dayjs from "dayjs";
-        
-        /* ---------- 比较与查询 (Query) --------- */
-        
-        /* ------------- 1. 比较 ------------ */
-        const now = dayjs();
-        const someDay = dayjs("2011-01-01 11:11:11");
-        
-        console.log(now.isSame(someDay, "day"));
-        console.log(now.isBefore(someDay, "day"));
-        console.log(now.isAfter(someDay, "day"));
-        ```
-
-        ```bash
-        false
-        false
-        true
-        ```
-
-    - 计算时间差 (`.diff()`)
-
-        计算两个日期之间的时间差。
-
-        ```ts
-        /* ----------- 2. 计算时间差 (`.diff()`)----------- */
-        console.log(now.diff(someDay, "day"));
-        console.log(now.diff(someDay, "month"));
-        console.log(now.diff(someDay, "week"));
-        ```
-
-        ```bash
-        5449
-        179
-        778
-        ```
-
-- 获取日期部分 (`.get()` / `.set()`)
-
-    可以直接获取或设置日期时间的特定部分。
-
-    | **方法**            | **描述**                             | **示例**                                   |
-    | ------------------- | ------------------------------------ | ------------------------------------------ |
-    | `.year()`           | 获取年份。                           | `dayjs().year()` (e.g., 2025)              |
-    | `.month()`          | 获取月份（**0-11，需注意**）。       | `dayjs().month()` (e.g., 11 代表 December) |
-    | `.date()`           | 获取月份中的日期 (1-31)。            | `dayjs().date()` (e.g., 2)                 |
-    | `.day()`            | 获取星期几（0代表周日，6代表周六）。 | `dayjs().day()` (e.g., 2 代表 Tuesday)     |
-    | `.set(unit, value)` | 设置特定单位的值（返回新对象）。     | `dayjs().set('year', 2026)`                |
+  - 代码实例
 
     ```ts
     import dayjs from "dayjs";
-    
-    /* ---------- 获取日期部分 (.get() / .set()) --------- */
-    
+  
+    /* ------------- 创建实例对象 ------------- */
+  
+    // 1. 不传参数 - 获取当前日期和时间
+    console.log(dayjs());
+  
+    /* ------- 2. 字符串 - 解析常见格式字符串 ------- */
+    console.log(dayjs("2025-1-1"));
+  
+    /* ---------- 3. JS Date 对象 --------- */
+    console.log(dayjs(new Date()));
+  
+    /* --------- 4. 时间戳 (毫秒) -------- */
+    console.log(dayjs(1000000000000));
+  
+    /* ------------ 5.时间戳 (秒) ----------- */
+    console.log(dayjs(1000000000 * 1000));
+    ```
+
+    ```bash
+    M {
+      '$L': 'en',
+      '$d': 2025-12-01T21:24:46.155Z,
+      '$y': 2025,
+      '$M': 11,
+      '$D': 2,
+      '$W': 2,
+      '$H': 10,
+      '$m': 24,
+      '$s': 46,
+      '$ms': 155,
+      '$x': {},
+      '$isDayjsObject': true
+    }
+    ...
+    M {
+      '$L': 'en',
+      '$d': 2001-09-09T01:46:40.000Z,
+      '$y': 2001,
+      '$M': 8,
+      '$D': 9,
+      '$W': 0,
+      '$H': 13,
+      '$m': 46,
+      '$s': 40,
+      '$ms': 0,
+      '$x': {},
+      '$isDayjsObject': true
+    }
+    ```
+
+- 获取与格式化 (Get & Format)
+
+  - 格式化输出 (`.format()`)
+
+    将 Day.js 对象转换为指定格式的字符串
+
+    **注意：格式化后的时间是==本地时间==**
+
+    | **占位符** | **含义**           | **示例值 (Dec 2, 2025 09:40:37)** |
+    | ---------- | ------------------ | --------------------------------- |
+    | `YYYY`     | 四位数年份         | `2025`                            |
+    | `MM`       | 两位数月份 (01-12) | `12`                              |
+    | `DD`       | 两位数日期 (01-31) | `02`                              |
+    | `HH`       | 24 小时制 (00-23)  | `09`                              |
+    | `mm`       | 分钟 (00-59)       | `40`                              |
+    | `ss`       | 秒钟 (00-59)       | `37`                              |
+    | `A`        | 上午/下午          | `AM`                              |
+
+    ```TS
+    import dayjs from "dayjs";
+
+    /* ------ 获取与格式化 (Get & Format) ----- */
+
+    /* ------ 1. 格式化输出 (.format()) ------ */
     const now = dayjs();
+
+    console.log(now.format());
+    console.log(now.format("MM/DD/YYYY"));
+    console.log(now.format("MM/DD/YYYY hh:mm:ss"));
+    console.log(now.format("MM/DD/YYYY dd hh:mm:ss"));
+    console.log(now.format("MM/DD/YYYY hh:mm:ss A"));
+
+    console.log(now.format("YYYY-MM-DD"));
+    console.log(now.format("YYYY年MM月DD日 星期dd HH:mm:ss A"));
+    ```
+
+    ```BASH
+    2025-12-02T10:47:10+13:00
+    12/02/2025
+    12/02/2025 10:47:10
+    12/02/2025 Tu 10:47:10
+    12/02/2025 10:47:10 AM
+    2025-12-02
+    2025年12月02日 星期Tu 10:47:10 AM
+    ```
+
+  - 获取时间戳和原生对象 - **==UTC/GMT 时间==**
+
+    常用于服务端和数据库交互
+
+    | **方法**         | **描述**                                      | **示例值**                   |
+    | ---------------- | --------------------------------------------- | ---------------------------- |
+    | `.unix()`        | 获取 Unix **秒级**时间戳 (Number)。           | `1764722437`                 |
+    | `.valueOf()`     | 获取 Unix **毫秒级**时间戳 (Number)。         | `1764722437000`              |
+    | `.toDate()`      | 转换为原生的 **JavaScript `Date` 对象**。     | `[object Date]`              |
+    | `.toISOString()` | 转换为 **UTC ISO 8601 字符串** (用于数据库)。 | `"2025-12-01T20:40:37.000Z"` |
+
+    ```ts
+    /* ---------- 2.获取时间戳和原生对象 ---------- */
+    console.log(now.unix()); //获取 Unix 秒级时间戳
+    console.log(now.valueOf()); //获取 Unix 毫秒级时间戳
+    console.log(now.toDate()); //转换为原生的 JavaScript Date 对象
+    console.log(now.toString()); //转换为普通字符串
+    console.log(now.toISOString()); //转换为 UTC ISO 8601 字符串 (用于数据库)
+    ```
+
+    ```bash
+    1764626179
+    1764626179823
+    2025-12-01T21:56:19.823Z
+    Mon, 01 Dec 2025 21:56:19 GMT
+    2025-12-01T21:56:19.823Z
+    ```
+
+- 日期操作 (Manipulation)
+
+  所有的操作方法都会返回一个新的 Day.js 实例（**不可变性**）
+
+  - 增减时间 (`.add()`, `.subtract()`)
+
+    | **方法**              | **描述**           | **示例**                                |
+    | --------------------- | ------------------ | --------------------------------------- |
+    | `.add(值, 单位)`      | 增加指定的时间量。 | `dayjs().add(1, 'month')` (增加一个月)  |
+    | `.subtract(值, 单位)` | 减少指定的时间量。 | `dayjs().subtract(7, 'day')` (减少七天) |
+
+    **可用单位 (Unit)：** `year`, `month`, `week`, `day`, `hour`, `minute`, `second`, `millisecond`
+
+    ```ts
+    import dayjs from "dayjs";
+
+    /* ------- 日期操作 (Manipulation) ------ */
+
+    /* ------------- 1. 增减时间 ------------ */
+    const now = dayjs();
+    const formatRule = "YYYY-MM-DD hh:mm:ss A";
+    console.log(now.format(formatRule));
+    console.log(now.add(10, "day").format(formatRule));
+    console.log(now.subtract(6, "month").format(formatRule));
+    ```
+
+    ```bash
+    2025-12-02 11:07:38 PM
+    2025-12-12 11:07:38 PM
+    2025-06-02 11:07:38 PM
+    ```
+
+  - 设为开始/结束 (`.startOf()`, `.endOf()`)
+
+    将日期设置为某一时间单位的起点或终点。
+
+    dfasdf
+
+    ```ts
+    /* ----------- 2. 设为开始/结束 ----------- */
+    console.log(now.startOf("year").format(formatRule));
+    console.log(now.startOf("month").format(formatRule));
+  
+    console.log(now.endOf("year").format(formatRule));
+    console.log(now.endOf("day").format(formatRule));
+    ```
+
+    ```bash
+    2025-01-01 12:00:00 AM
+    2025-12-01 12:00:00 AM
+    2025-12-31 11:59:59 PM
+    2025-12-02 11:59:59 PM
+    ```
+
+- 比较与查询 (Query)
+
+  用于判断两个 Day.js 实例的关系或获取日期部分信息。
+
+  - 比较 (`.isSame()`, `.isBefore()`, `.isAfter()`)
+
+    | **方法**                 | **描述**                       | **示例**                                |
+    | ------------------------ | ------------------------------ | --------------------------------------- |
+    | `.isSame(other, unit)`   | 两个日期在指定单位下是否相同。 | `d1.isSame(d2, 'day')` (只比较日期部分) |
+    | `.isBefore(other, unit)` | 当前日期是否在另一个日期之前。 | `d1.isBefore(d2, 'year')`               |
+    | `.isAfter(other, unit)`  | 当前日期是否在另一个日期之后。 | `d1.isAfter(d2)`                        |
+
+    ```ts
+    import dayjs from "dayjs";
+
+    /* ---------- 比较与查询 (Query) --------- */
+
+    /* ------------- 1. 比较 ------------ */
+    const now = dayjs();
+    const someDay = dayjs("2011-01-01 11:11:11");
+
+    console.log(now.isSame(someDay, "day"));
+    console.log(now.isBefore(someDay, "day"));
+    console.log(now.isAfter(someDay, "day"));
+    ```
+
+    ```bash
+    false
+    false
+    true
+    ```
+
+  - 计算时间差 (`.diff()`)
+
+    计算两个日期之间的时间差。
+
+    ```ts
+    /* ----------- 2. 计算时间差 (`.diff()`)----------- */
+    console.log(now.diff(someDay, "day"));
+    console.log(now.diff(someDay, "month"));
+    console.log(now.diff(someDay, "week"));
+    ```
+
+    ```bash
+    5449
+    179
+    778
+    ```
+
+- 获取日期部分 (`.get()` / `.set()`)
+
+  可以直接获取或设置日期时间的特定部分。
+
+  | **方法**            | **描述**                               | **示例**                                   |
+  | ------------------- | -------------------------------------- | ------------------------------------------ |
+  | `.year()`           | 获取年份。                             | `dayjs().year()` (e.g., 2025)              |
+  | `.month()`          | 获取月份（**0-11，需注意**）。         | `dayjs().month()` (e.g., 11 代表 December) |
+  | `.date()`           | 获取月份中的日期 (1-31)。              | `dayjs().date()` (e.g., 2)                 |
+  | `.day()`            | 获取星期几（0 代表周日，6 代表周六）。 | `dayjs().day()` (e.g., 2 代表 Tuesday)     |
+  | `.set(unit, value)` | 设置特定单位的值（返回新对象）。       | `dayjs().set('year', 2026)`                |
+
+  ```ts
+  import dayjs from "dayjs";
+
+  /* ---------- 获取日期部分 (.get() / .set()) --------- */
+
+  const now = dayjs();
+
+  console.log(now.year());
+  console.log(now.month()); //月 - 0-11
+  console.log(now.date()); // 日
+  console.log(now.hour());
+  console.log(now.minute());
+  console.log(now.second());
+  console.log(now.millisecond());
+  console.log(now.day()); // 星期 - 0代表周日，6代表周六
+  console.log(now.unix()); // 时间戳
+
+  //自定义日期，比如2026年
+  console.log(now.set("year", 2026).format());
+  ```
+
+  ```bash
+  2025
+  11
+  2
+  23
+  29
+  53
+  716
+  2
+  1764671393
+  2026-12-02T23:29:53+13:00
+  ```
+
+- 时区、UTC 与本地时间
+
+  - 时区与 UTC 插件
+
+    处理时区和 UTC 需要引入两个 Day.js 插件：
+
+    - **`utc` 插件:** 用于处理协调世界时 (Coordinated Universal Time, UTC)。
+    - **`timezone` 插件:** 用于处理特定命名时区 (如 `'Asia/Shanghai'`)，它依赖于 `utc` 插件。
+
+    ```ts
+    import dayjs from "dayjs";
+
+    /* ---------- 时区、UTC 与本地时间 ---------- */
+
+    /* ---------- 1. 时区与 UTC 插件 --------- */
+    import utc from "dayjs/plugin/utc";
+    import timezone from "dayjs/plugin/timezone";
+
+    dayjs.extend(utc); // 使用utc插件
+    dayjs.extend(timezone); // 使用时区插件
+    ```
+
+  - UTC 时间处理
+
+    UTC 是全球标准时间，通常用于服务端存储和数据交换。
+
+    | **方法**             | **描述**                                                            | **示例**                                               |
+    | -------------------- | ------------------------------------------------------------------- | ------------------------------------------------------ |
+    | **`dayjs.utc()`**    | 创建一个以 UTC 时间为基础的 Day.js 实例（推荐用于存储）。           | `dayjs.utc();`                                         |
+    | **`.utc()`**         | 将现有实例转换为 UTC 时间，但**不改变**其时间点，只改变其时区表示。 | `dayjs().utc();`                                       |
+    | **`.local()`**       | 将 UTC 实例转换回运行环境的本地时区表示。                           | `dayjs.utc().local();`                                 |
+    | **`.isUTC()`**       | 检查当前 Day.js 实例是否以 UTC 模式表示。                           | `dayjs.utc().isUTC();` // true                         |
+    | **`.toISOString()`** | **重要！** 输出 UTC 格式的 ISO 字符串，是数据库存储的黄金标准。     | `dayjs().toISOString();` // "YYYY-MM-DDTHH:mm:ss.sssZ" |
+
+    ```ts
+    import dayjs from "dayjs";
+
+    /* ---------- 时区、UTC 与本地时间 ---------- */
+
+    /* ---------- 1. 时区与 UTC 插件 --------- */
+    import utc from "dayjs/plugin/utc";
+    import timezone from "dayjs/plugin/timezone";
+
+    dayjs.extend(utc); // 使用utc插件
+    dayjs.extend(timezone); // 使用时区插件
+
+    /* ----------- 2. UTC 时间处理 ---------- */
+    const formatRule = "YYYY-MM-DD hh:mm:ss A";
+    /* ----------- 创建一个utc时间对象 ---------- */
+    const now_utc = dayjs.utc();
+    console.log(now_utc.format());
+
+    /* --------- 将现有实例转换为 UTC 时间 -------- */
+    const now = dayjs();
+    console.log(now.format());
+    console.log(now.utc().format());
+
+    /* --------- 将 UTC 实例转换本地时间 --------- */
+    console.log(now_utc.local().format());
+
+    /* --------- 检查实例是否是 UTC 时间 --------- */
+    console.log(now.isUTC());
+    console.log(now_utc.isUTC());
+
+    /* ------- 输出 UTC 格式的 ISO 字符串 ------- */
+    /* ---------- 数据库存储的通用标准。 ---------- */
+    console.log(now.toISOString());
+    console.log(dayjs("2025-11-11").toISOString());
+    ```
+
+    ```bash
+    2025-12-02T10:53:20Z
+
+    2025-12-02T23:53:20+13:00
+    2025-12-02T10:53:20Z
+
+    2025-12-02T23:53:20+13:00
+
+    false
+    true
+
+    2025-12-02T10:53:20.977Z
+    2025-11-10T11:00:00.000Z
+    ```
+
+  - 时区转换 (`timezone` 插件)
+
+    用于将 UTC 时间转换为用户所在时区或进行跨时区计算。
+
+    | **方法**                        | **描述**                                         | **示例**                                               |
+    | ------------------------------- | ------------------------------------------------ | ------------------------------------------------------ |
+    | **`.tz(zone)`**                 | **最常用！** 将当前时间转换为指定的时区。        | `dayjs().tz('Asia/Shanghai');` (转为北京时间)          |
+    | **`.tz(zone, true)`**           | 在解析时间字符串时，将其视为**给定时区的时间**。 | `dayjs('2025-12-02 10:00').tz('Europe/London', true);` |
+    | **`dayjs.tz.setDefault(zone)`** | 设置全局默认时区，影响所有未显式指定时区的操作。 | `dayjs.tz.setDefault('America/Los_Angeles');`          |
+
+    ```ts
+    /* ----- 3. 时区转换 (`timezone` 插件) ---- */
+
+    /* --------- 将当前时间转换为指定的时区 --------- */
+    console.log(now.tz("Asia/Shanghai").format(formatRule));
+    console.log(now.tz("Pacific/Auckland").format(formatRule));
+
+    /* --- 在解析时间字符串时，将其视为**给定时区的时间 --- */
+    const someDate = dayjs("2025-11-11 11:11:11 AM").tz("Asia/Shanghai", true);
+    console.log(someDate.format(formatRule));
+    console.log(someDate.tz("Pacific/Auckland").format(formatRule));
+    ```
+
+    ```bash
+    2025-12-02 07:07:00 PM
+    2025-12-03 12:07:00 AM
+
+    2025-11-11 11:11:11 AM
+    2025-11-11 04:11:11 PM
+    ```
+
+  - 本地时间与偏移量
+
+    | **方法**                            | **描述**                                                                        | **示例**                                       |
+    | ----------------------------------- | ------------------------------------------------------------------------------- | ---------------------------------------------- |
+    | **`.get('hour')` / `.set('hour')`** | 这些基本的 Getter/Setter 方法默认操作的是**当前 Day.js 实例所表示的本地时间**。 | `dayjs().hour()`                               |
+    | **`.utcOffset()`**                  | 获取或设置实例与 UTC 之间的分钟偏移量。在检查夏令时切换时非常有用。             | `dayjs().utcOffset();` (e.g., 780 for NZDT)    |
+    | dayjs.tz.**guess**()                | 获取当前实例的时区名称。                                                        | `dayjs.tz.guess();` (e.g., "Pacific/Auckland") |
+
+    ```ts
+    /* ----------- 4.本地时间与偏移量 ----------- */
     
-    console.log(now.year());
-    console.log(now.month()); //月 - 0-11
-    console.log(now.date()); // 日
-    console.log(now.hour());
-    console.log(now.minute());
-    console.log(now.second());
-    console.log(now.millisecond());
-    console.log(now.day()); // 星期 - 0代表周日，6代表周六
-    console.log(now.unix()); // 时间戳
+    /* ---- Getter/Setter 方法默认操作的本地时间 --- */
+    console.log(now.get("year"));
+    console.log(now.get("hour"));
     
-    //自定义日期，比如2026年
-    console.log(now.set("year", 2026).format());
+    /* -------- 实例与 UTC 之间的分钟偏移量 -------- */
+    console.log(now.utcOffset());
+    
+    /* ----------- 获取当前实例的时区名称 ---------- */
+    console.log(dayjs.tz.guess());
     ```
 
     ```bash
     2025
-    11
-    2
-    23
-    29
-    53
-    716
-    2
-    1764671393
-    2026-12-02T23:29:53+13:00
+    0
+    780
+    Pacific/Auckland
     ```
-
-- 时区、UTC 与本地时间
-
-    - 时区与 UTC 插件
-
-        处理时区和 UTC 需要引入两个 Day.js 插件：
-
-        - **`utc` 插件:** 用于处理协调世界时 (Coordinated Universal Time, UTC)。
-        - **`timezone` 插件:** 用于处理特定命名时区 (如 `'Asia/Shanghai'`)，它依赖于 `utc` 插件。
-
-        ```ts
-        import dayjs from "dayjs";
-        
-        /* ---------- 时区、UTC 与本地时间 ---------- */
-        
-        /* ---------- 1. 时区与 UTC 插件 --------- */
-        import utc from 'dayjs/plugin/utc';
-        import timezone from 'dayjs/plugin/timezone';
-        
-        dayjs.extend(utc); // 使用utc插件
-        dayjs.extend(timezone); // 使用时区插件
-        ```
-
-        
-
-    - UTC 时间处理
-
-        UTC 是全球标准时间，通常用于服务端存储和数据交换。
-
-        | **方法**             | **描述**                                                     | **示例**                                               |
-        | -------------------- | ------------------------------------------------------------ | ------------------------------------------------------ |
-        | **`dayjs.utc()`**    | 创建一个以 UTC 时间为基础的 Day.js 实例（推荐用于存储）。    | `dayjs.utc();`                                         |
-        | **`.utc()`**         | 将现有实例转换为 UTC 时间，但**不改变**其时间点，只改变其时区表示。 | `dayjs().utc();`                                       |
-        | **`.local()`**       | 将 UTC 实例转换回运行环境的本地时区表示。                    | `dayjs.utc().local();`                                 |
-        | **`.isUTC()`**       | 检查当前 Day.js 实例是否以 UTC 模式表示。                    | `dayjs.utc().isUTC();` // true                         |
-        | **`.toISOString()`** | **重要！** 输出 UTC 格式的 ISO 字符串，是数据库存储的黄金标准。 | `dayjs().toISOString();` // "YYYY-MM-DDTHH:mm:ss.sssZ" |
-
-        ```ts
-        import dayjs from "dayjs";
-        
-        /* ---------- 时区、UTC 与本地时间 ---------- */
-        
-        /* ---------- 1. 时区与 UTC 插件 --------- */
-        import utc from "dayjs/plugin/utc";
-        import timezone from "dayjs/plugin/timezone";
-        
-        dayjs.extend(utc); // 使用utc插件
-        dayjs.extend(timezone); // 使用时区插件
-        
-        /* ----------- 2. UTC 时间处理 ---------- */
-        const formatRule = "YYYY-MM-DD hh:mm:ss A";
-        /* ----------- 创建一个utc时间对象 ---------- */
-        const now_utc = dayjs.utc();
-        console.log(now_utc.format());
-        
-        /* --------- 将现有实例转换为 UTC 时间 -------- */
-        const now = dayjs();
-        console.log(now.format());
-        console.log(now.utc().format());
-        
-        /* --------- 将 UTC 实例转换本地时间 --------- */
-        console.log(now_utc.local().format());
-        
-        /* --------- 检查实例是否是 UTC 时间 --------- */
-        console.log(now.isUTC());
-        console.log(now_utc.isUTC());
-        
-        /* ------- 输出 UTC 格式的 ISO 字符串 ------- */
-        /* ---------- 数据库存储的通用标准。 ---------- */
-        console.log(now.toISOString());
-        console.log(dayjs("2025-11-11").toISOString());
-        ```
-
-        ```bash
-        2025-12-02T10:53:20Z
-        
-        2025-12-02T23:53:20+13:00
-        2025-12-02T10:53:20Z
-        
-        2025-12-02T23:53:20+13:00
-        
-        false
-        true
-        
-        2025-12-02T10:53:20.977Z
-        2025-11-10T11:00:00.000Z
-        ```
-
-        
-
-    - 时区转换 (`timezone` 插件)
-
-        用于将 UTC 时间转换为用户所在时区或进行跨时区计算。
-
-        | **方法**                        | **描述**                                         | **示例**                                               |
-        | ------------------------------- | ------------------------------------------------ | ------------------------------------------------------ |
-        | **`.tz(zone)`**                 | **最常用！** 将当前时间转换为指定的时区。        | `dayjs().tz('Asia/Shanghai');` (转为北京时间)          |
-        | **`.tz(zone, true)`**           | 在解析时间字符串时，将其视为**给定时区的时间**。 | `dayjs('2025-12-02 10:00').tz('Europe/London', true);` |
-        | **`dayjs.tz.setDefault(zone)`** | 设置全局默认时区，影响所有未显式指定时区的操作。 | `dayjs.tz.setDefault('America/Los_Angeles');`          |
-
-        ```ts
-        /* ----- 3. 时区转换 (`timezone` 插件) ---- */
-        
-        /* --------- 将当前时间转换为指定的时区 --------- */
-        console.log(now.tz("Asia/Shanghai").format(formatRule));
-        console.log(now.tz("Pacific/Auckland").format(formatRule));
-        
-        /* --- 在解析时间字符串时，将其视为**给定时区的时间 --- */
-        const someDate = dayjs("2025-11-11 11:11:11 AM").tz("Asia/Shanghai", true);
-        console.log(someDate.format(formatRule));
-        console.log(someDate.tz("Pacific/Auckland").format(formatRule));
-        
-        ```
-
-        ```bash
-        2025-12-02 07:07:00 PM
-        2025-12-03 12:07:00 AM
-        
-        2025-11-11 11:11:11 AM
-        2025-11-11 04:11:11 PM
-        ```
-
-    - 本地时间与偏移量
-
-        | **方法**                            | **描述**                                                     | **示例**                                       |
-        | ----------------------------------- | ------------------------------------------------------------ | ---------------------------------------------- |
-        | **`.get('hour')` / `.set('hour')`** | 这些基本的 Getter/Setter 方法默认操作的是**当前 Day.js 实例所表示的本地时间**。 | `dayjs().hour()`                               |
-        | **`.utcOffset()`**                  | 获取或设置实例与 UTC 之间的分钟偏移量。在检查夏令时切换时非常有用。 | `dayjs().utcOffset();` (e.g., 780 for NZDT)    |
-        | dayjs.tz.**guess**()                | 获取当前实例的时区名称。                                     | `dayjs.tz.guess();` (e.g., "Pacific/Auckland") |
-
-        ```ts
-        /* ----------- 4.本地时间与偏移量 ----------- */
-        
-        /* ---- Getter/Setter 方法默认操作的本地时间 --- */
-        console.log(now.get("year"));
-        console.log(now.get("hour"));
-        
-        /* -------- 实例与 UTC 之间的分钟偏移量 -------- */
-        console.log(now.utcOffset());
-        
-        /* ----------- 获取当前实例的时区名称 ---------- */
-        console.log(dayjs.tz.guess());
-        ```
-
-        ```bash
-        2025
-        0
-        780
-        Pacific/Auckland
-        ```
-
-        
 
 ### 3-10 数据验证
 
@@ -7039,712 +7003,703 @@ Day.js 是一个轻量级（约 2KB）的日期时间处理库，其 API 设计�
 
 数据验证必须在整个应用架构的多个层面实施，以确保**用户体验、安全性和数据完整性**。
 
-| 验证位置 (层)                         | 目标                        | **核心职责**                                                 | 缺少验证会导致的问题                   |
-| ------------------------------------- | --------------------------- | ------------------------------------------------------------ | -------------------------------------- |
-| **前端 (Client-Side)**                | 提升用户体验（UX）          | 在数据发送到服务器前快速反馈错误（如“手机号格式不对”、“密码太短”），减少用户等待时间 | 体验差，用户频繁发出错误请求           |
+| 验证位置 (层)                         | 目标                        | **核心职责**                                                                                                                            | 缺少验证会导致的问题                   |
+| ------------------------------------- | --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
+| **前端 (Client-Side)**                | 提升用户体验（UX）          | 在数据发送到服务器前快速反馈错误（如“手机号格式不对”、“密码太短”），减少用户等待时间                                                    | 体验差，用户频繁发出错误请求           |
 | **路由层/控制器 (Controller/Router)** | 验证接口格式是否正常        | 请求初步校验。检查请求的基本结构、参数类型、格式（例如 JSON 结构、字段是否缺失）和权限验证（如认证/授权），确保请求是合法的、可被处理的 | 业务层要兼容各种垃圾请求，容易出错     |
-| **业务逻辑层 (Business Logic)**       | 保证业务规则的正确性/完整性 | 最核心的验证。例如，下单前检查库存是否足够、用户是否有权限修改这个资源、状态是否允许变更（如订单不能从“已取消”变成“已付款”） | 业务规则失效，如库存变负数、权限被绕过 |
-| **数据库层 (Database)**               | 保证数据存储                | 利用数据库的约束（如主键 `PRIMARY KEY`、外键 `FOREIGN KEY`、非空 `NOT NULL`、唯一性 `UNIQUE` 约束），防止脏数据或不一致数据写入 | 数据库出现重复、不一致、脏数据         |
+| **业务逻辑层 (Business Logic)**       | 保证业务规则的正确性/完整性 | 最核心的验证。例如，下单前检查库存是否足够、用户是否有权限修改这个资源、状态是否允许变更（如订单不能从“已取消”变成“已付款”）            | 业务规则失效，如库存变负数、权限被绕过 |
+| **数据库层 (Database)**               | 保证数据存储                | 利用数据库的约束（如主键 `PRIMARY KEY`、外键 `FOREIGN KEY`、非空 `NOT NULL`、唯一性 `UNIQUE` 约束），防止脏数据或不一致数据写入         | 数据库出现重复、不一致、脏数据         |
 
 #### 2. 相关库
 
-- validator.js 
+- validator.js
 
-    提供了大量的内置函数,  用于简单、独立的字符串格式检查，例如，`isEmail()`、`isUUID()`、`isCreditCard()` 等
+  提供了大量的内置函数, 用于简单、独立的字符串格式检查，例如，`isEmail()`、`isUUID()`、`isCreditCard()` 等
 
 - zod
 
-    现代 $\text{JS}$ 开发中的**标准模式**，它能验证复杂的数据结构、提供类型推断，是解决**路由层**和**前端表单**验证的更优解
+  现代 $\text{JS}$ 开发中的**标准模式**，它能验证复杂的数据结构、提供类型推断，是解决**路由层**和**前端表单**验证的更优解
 
-#### 3. zod基础
+#### 3. zod 基础
 
 一个 **类型安全 + 验证同步** 的 TS 验证库。
 
-写一次 schema：自动提供验证（runtime）+  自动生成 TS 类型（type-level），不会出现类型与验证不一致的问题。
+写一次 schema：自动提供验证（runtime）+ 自动生成 TS 类型（type-level），不会出现类型与验证不一致的问题。
 
 $\text{Zod}$ 的 $\text{API}$ 设计非常直观，所有验证都是通过链式调用实现的。
 
 - 实现基础步骤：
 
-    - 安装并导入
+  - 安装并导入
 
-    - 创建 schema实例对象 - Schema是描述期望数据形状和规则的对象。所有验证都从定义一个Schema开始
+  - 创建 schema 实例对象 - Schema 是描述期望数据形状和规则的对象。所有验证都从定义一个 Schema 开始
 
-    - 数据验证 - 使用实例对象的parse方法验证数据 -
+  - 数据验证 - 使用实例对象的 parse 方法验证数据 -
 
-        通过验证：返回一个封装的对象 ， 验证失败 - 返回ZodError，可使用try catch捕获
+    通过验证：返回一个封装的对象 ， 验证失败 - 返回 ZodError，可使用 try catch 捕获
 
-        ```bash
-        npm i zod
-        ```
+    ```bash
+    npm i zod
+    ```
 
-        ```ts
-        import * as z from "zod";
-        
-        /* ------------- zod基础用法 ------------ */
-        /* ------------- 1. 基础流程 ------------ */
-        // 创建schema对象
-        const schema = z.string().min(5);
-        
-        // 验证数据 - 验证通过
-        // 验证数据 - 使用 parse
-        try {
-          const res = schema.parse("ddddd");
-          console.log(res);
-        } catch (err) {
-          throw err.issues;
-        }
-        
-        // 验证数据 - 验证失败 - 抛出错误
-        try {
-          const res = schema.parse("d");
-          console.log(res);
-        } catch (err) {
-          throw err.issues;
-        }
-        ```
+    ```ts
+    import * as z from "zod";
 
-        ```bash
-        // 验证数据 - 验证通过
-        ddddd
-        
-        // 验证数据 - 验证失败
-        ZodError: [
-          {
-            "origin": "string",
-            "code": "too_small",
-            "minimum": 5,
-            "inclusive": true,
-            "path": [],
-            "message": "Too small: expected string to have >=5 characters"
-          }
-        ]
-        ```
+    /* ------------- zod基础用法 ------------ */
+    /* ------------- 1. 基础流程 ------------ */
+    // 创建schema对象
+    const schema = z.string().min(5);
 
-        要避免 ~~`try/catch`~~ 阻塞，可以使用 **==`.safeParse()` 方法==**返回包含成功解析数据或 `ZodError` 的纯文本结果对象
+    // 验证数据 - 验证通过
+    // 验证数据 - 使用 parse
+    try {
+      const res = schema.parse("ddddd");
+      console.log(res);
+    } catch (err) {
+      throw err.issues;
+    }
 
-        ```ts
-        // 验证数据 - 使用 safeParse
-        console.log(schema.safeParse("dddddd"));
-        console.log(schema.safeParse("d"));
-        ```
+    // 验证数据 - 验证失败 - 抛出错误
+    try {
+      const res = schema.parse("d");
+      console.log(res);
+    } catch (err) {
+      throw err.issues;
+    }
+    ```
 
-        ```bash
-        { success: true, data: 'dddddd' }
+    ```bash
+    // 验证数据 - 验证通过
+    ddddd
+
+    // 验证数据 - 验证失败
+    ZodError: [
+      {
+        "origin": "string",
+        "code": "too_small",
+        "minimum": 5,
+        "inclusive": true,
+        "path": [],
+        "message": "Too small: expected string to have >=5 characters"
+      }
+    ]
+    ```
+
+    要避免 ~~`try/catch`~~ 阻塞，可以使用 **==`.safeParse()` 方法==**返回包含成功解析数据或 `ZodError` 的纯文本结果对象
+
+    ```ts
+    // 验证数据 - 使用 safeParse
+    console.log(schema.safeParse("dddddd"));
+    console.log(schema.safeParse("d"));
+    ```
+
+    ```bash
+    { success: true, data: 'dddddd' }
+    {
+      success: false,
+      error: ZodError: [
         {
-          success: false,
-          error: ZodError: [
-            {
-              "origin": "string",
-              "code": "too_small",
-              "minimum": 5,
-              "inclusive": true,
-              "path": [],
-              "message": "Too small: expected string to have >=5 characters"
-            }
-          ]
-        ...
+          "origin": "string",
+          "code": "too_small",
+          "minimum": 5,
+          "inclusive": true,
+          "path": [],
+          "message": "Too small: expected string to have >=5 characters"
         }
-        ```
+      ]
+    ...
+    }
+    ```
 
-    - 类型推断 infer 
+  - 类型推断 infer
 
-        对定义的schema，执行类型推断， 导出类型作为ts中的类型使用
+    对定义的 schema，执行类型推断， 导出类型作为 ts 中的类型使用
 
-        ```ts
-        /* ------------- 3. 类型推断 ------------ */
-        type myType = z.infer<typeof schema>;
-        const name: myType = 123; 
-        ```
+    ```ts
+    /* ------------- 3. 类型推断 ------------ */
+    type myType = z.infer<typeof schema>;
+    const name: myType = 123;
+    ```
 
-        ```
-        Type 'number' is not assignable to type 'string'.ts(2322)
-        const name: string
-        ```
-
-        
+    ```
+    Type 'number' is not assignable to type 'string'.ts(2322)
+    const name: string
+    ```
 
 - 基本 $\text{Schema}$ 类型和验证规则
 
-    这是 $\text{Zod}$ 中最基本的 $\text{Schema}$ 定义，对应 $\text{JavaScript}$ 的原始数据类型：
+  这是 $\text{Zod}$ 中最基本的 $\text{Schema}$ 定义，对应 $\text{JavaScript}$ 的原始数据类型：
 
-    | **Zod 定义**                | **描述**     | **TypeScript 类型** | **示例**                |
-    | --------------------------- | ------------ | ------------------- | ----------------------- |
-    | $\text{z.string()}$         | 字符串       | $\text{string}$     | `z.string().min(5)`     |
-    | $\text{z.number()}$         | 数字         | $\text{number}$     | `z.number().positive()` |
-    | $\text{z.boolean()}$        | 布尔值       | $\text{boolean}$    | `z.boolean()`           |
-    | $\text{z.date()}$           | 日期对象     | $\text{Date}$       | `z.date()`              |
-    | $\text{z.any()}$            | 任意类型     | $\text{any}$        | `z.any()`               |
-    | $\text{z.literal('yes')}$   | 精确到某个值 | `'yes'`             | `z.literal(100)`        |
-    | $\text{z.enum(['A', 'B'])}$ | 枚举值       | `'A'                | 'B'`                    |
+  | **Zod 定义**                | **描述**     | **TypeScript 类型** | **示例**                |
+  | --------------------------- | ------------ | ------------------- | ----------------------- |
+  | $\text{z.string()}$         | 字符串       | $\text{string}$     | `z.string().min(5)`     |
+  | $\text{z.number()}$         | 数字         | $\text{number}$     | `z.number().positive()` |
+  | $\text{z.boolean()}$        | 布尔值       | $\text{boolean}$    | `z.boolean()`           |
+  | $\text{z.date()}$           | 日期对象     | $\text{Date}$       | `z.date()`              |
+  | $\text{z.any()}$            | 任意类型     | $\text{any}$        | `z.any()`               |
+  | $\text{z.literal('yes')}$   | 精确到某个值 | `'yes'`             | `z.literal(100)`        |
+  | $\text{z.enum(['A', 'B'])}$ | 枚举值       | `'A'                | 'B'`                    |
 
-    常用核心验证规则如下：
+  常用核心验证规则如下：
 
-    - String
+  - String
 
-        ```ts
-        z.string().max(5);
-        z.string().min(5);
-        z.string().length(5);
-        z.string().regex(/^[a-z]+$/);
-        z.string().startsWith("aaa");
-        z.string().endsWith("zzz");
-        z.string().includes("---");
-        z.string().uppercase();
-        z.string().lowercase();
-        ```
+    ```ts
+    z.string().max(5);
+    z.string().min(5);
+    z.string().length(5);
+    z.string().regex(/^[a-z]+$/);
+    z.string().startsWith("aaa");
+    z.string().endsWith("zzz");
+    z.string().includes("---");
+    z.string().uppercase();
+    z.string().lowercase();
+    ```
 
-        ```ts
-        /* ---------schema 基础类型和验证规则 --------- */
-        
-        /**
-         * 封装一个显示zod schema 验证结果的辅助函数
-         * @param schema zod schema
-         * @param data 需要验证的数据
-         */
-        const printResult = (schema, data) => {
-          const res = schema.safeParse(data);
-          if (res.success) {
-            console.log(res);
-          } else {
-            const result = res.error?.issues.map((i) => i.message);
-            console.log(result);
-          }
-        };
-        
-        /* ------------ 1. string ----------- */
-        printResult(z.string(), 123);
-        printResult(z.string().length(7), "123");
-        printResult(z.string().min(5).max(10).startsWith("a").uppercase(), "aabd");
-        ```
+    ```ts
+    /* ---------schema 基础类型和验证规则 --------- */
 
-        ```bash
-        [ 'Invalid input: expected string, received number' ]
-        [ 'Too small: expected string to have >=7 characters' ]
-        [
-          'Too small: expected string to have >=5 characters',
-          'Invalid uppercase'
-        ]
-        ```
+    /**
+     * 封装一个显示zod schema 验证结果的辅助函数
+     * @param schema zod schema
+     * @param data 需要验证的数据
+     */
+    const printResult = (schema, data) => {
+      const res = schema.safeParse(data);
+      if (res.success) {
+        console.log(res);
+      } else {
+        const result = res.error?.issues.map((i) => i.message);
+        console.log(result);
+      }
+    };
 
-    - Common string - 对常见的字符规则，从string中进行了提升，方便直接使用
+    /* ------------ 1. string ----------- */
+    printResult(z.string(), 123);
+    printResult(z.string().length(7), "123");
+    printResult(z.string().min(5).max(10).startsWith("a").uppercase(), "aabd");
+    ```
 
-        ```ts
-        z.email();
-        z.uuid();
-        z.url();
-        z.httpUrl();       // http or https URLs only
-        z.hostname();
-        z.emoji();         // validates a single emoji character
-        z.base64();
-        z.base64url();
-        z.hex();
-        z.jwt();
-        z.nanoid();
-        z.cuid();
-        z.cuid2();
-        z.ulid();
-        z.ipv4();
-        z.ipv6();
-        z.mac();
-        z.cidrv4();        // ipv4 CIDR block
-        z.cidrv6();        // ipv6 CIDR block
-        z.hash("sha256");  // or "sha1", "sha384", "sha512", "md5"
-        z.iso.date(); //"2019-09-07"
-        z.iso.time(); // "15:50:00"
-        z.iso.datetime(); // "2019-09-07T15:50:00Z"
-        z.iso.duration();
-        ```
+    ```bash
+    [ 'Invalid input: expected string, received number' ]
+    [ 'Too small: expected string to have >=7 characters' ]
+    [
+      'Too small: expected string to have >=5 characters',
+      'Invalid uppercase'
+    ]
+    ```
 
-        ```ts
-        /* ------------- 2. 常用字符 ------------ */
-        
-        printResult(z.email(), "abc@gmail.com");
-        printResult(z.email(), "123");
-        
-        printResult(z.url(), "localhost://zod.dev/api");
-        printResult(z.httpUrl(), "localhost://zod.dev/api");
-        
-        printResult(z.iso.date(), "2019-09-07");
-        printResult(z.iso.time(), "15:50:00");
-        printResult(z.iso.datetime(), "2019-09-07T15:50:00Z");
-        printResult(z.iso.datetime(), "2019-09-07 15:50:00");
-        ```
+  - Common string - 对常见的字符规则，从 string 中进行了提升，方便直接使用
 
-        ```bash
-        { success: true, data: 'abc@gmail.com' }
-        [ 'Invalid email address' ]
-        { success: true, data: 'localhost://zod.dev/api' }
-        [ 'Invalid URL' ]
-        { success: true, data: '2019-09-07' }
-        { success: true, data: '15:50:00' }
-        { success: true, data: '2019-09-07T15:50:00Z' }
-        [ 'Invalid ISO datetime' ]
-        ```
+    ```ts
+    z.email();
+    z.uuid();
+    z.url();
+    z.httpUrl(); // http or https URLs only
+    z.hostname();
+    z.emoji(); // validates a single emoji character
+    z.base64();
+    z.base64url();
+    z.hex();
+    z.jwt();
+    z.nanoid();
+    z.cuid();
+    z.cuid2();
+    z.ulid();
+    z.ipv4();
+    z.ipv6();
+    z.mac();
+    z.cidrv4(); // ipv4 CIDR block
+    z.cidrv6(); // ipv6 CIDR block
+    z.hash("sha256"); // or "sha1", "sha384", "sha512", "md5"
+    z.iso.date(); //"2019-09-07"
+    z.iso.time(); // "15:50:00"
+    z.iso.datetime(); // "2019-09-07T15:50:00Z"
+    z.iso.duration();
+    ```
 
-    - Number
+    ```ts
+    /* ------------- 2. 常用字符 ------------ */
 
-        ```ts
-        z.number().parse(3.14);      // ✅ 只能通过有限数字
-        z.number().parse(NaN);       // ❌
-        z.number().parse(Infinity);  // ❌
-        
-        z.number().gt(5);						//大于
-        z.number().gte(5);                     // 大于等于
-        z.number().lt(5);						//小于
-        z.number().lte(5);                     // 小于等于
-        z.number().positive();       
-        z.number().nonnegative();    
-        z.number().negative(); 
-        z.number().nonpositive(); 
-        z.number().multipleOf(5);              // 倍数
-        ```
+    printResult(z.email(), "abc@gmail.com");
+    printResult(z.email(), "123");
 
-        ```ts
-        /* -------------- 3. 数字 ------------- */
-        printResult(z.number(), 3.14);
-        printResult(z.number(), NaN);
-        printResult(z.number(), Infinity);
-        
-        printResult(z.number().gt(10), 1);
-        printResult(z.number().gte(10), 10);
-        printResult(z.number().lt(10), 1);
-        printResult(z.number().lte(10), 10);
-        
-        printResult(z.number().positive(), 0);
-        printResult(z.number().nonpositive(), 0);
-        printResult(z.number().negative(), 0);
-        printResult(z.number().nonnegative(), 0);
-        printResult(z.number().multipleOf(111), 222);
-        ```
+    printResult(z.url(), "localhost://zod.dev/api");
+    printResult(z.httpUrl(), "localhost://zod.dev/api");
 
-        ```bash
-        { success: true, data: 3.14 }
-        [ 'Invalid input: expected number, received NaN' ]
-        [ 'Invalid input: expected number, received number' ]
-        [ 'Too small: expected number to be >10' ]
-        { success: true, data: 10 }
-        { success: true, data: 1 }
-        { success: true, data: 10 }
-        [ 'Too small: expected number to be >0' ]
-        { success: true, data: 0 }
-        [ 'Too big: expected number to be <0' ]
-        { success: true, data: 0 }
-        { success: true, data: 222 }
-        ```
+    printResult(z.iso.date(), "2019-09-07");
+    printResult(z.iso.time(), "15:50:00");
+    printResult(z.iso.datetime(), "2019-09-07T15:50:00Z");
+    printResult(z.iso.datetime(), "2019-09-07 15:50:00");
+    ```
 
-    - 整数 int
+    ```bash
+    { success: true, data: 'abc@gmail.com' }
+    [ 'Invalid email address' ]
+    { success: true, data: 'localhost://zod.dev/api' }
+    [ 'Invalid URL' ]
+    { success: true, data: '2019-09-07' }
+    { success: true, data: '15:50:00' }
+    { success: true, data: '2019-09-07T15:50:00Z' }
+    [ 'Invalid ISO datetime' ]
+    ```
 
-        ```
-        z.int();     // restricts to safe integer range
-        z.int32();   // restrict to int32 range
-        ```
+  - Number
 
-        ```ts
-        /* -------------- 4.整数 -------------- */
-        printResult(z.int(), 222);
-        printResult(z.int(), 222.2);
-        
-        printResult(z.int32(), 2222);
-        printResult(z.int32(), 22222222222);
-        ```
+    ```ts
+    z.number().parse(3.14); // ✅ 只能通过有限数字
+    z.number().parse(NaN); // ❌
+    z.number().parse(Infinity); // ❌
 
-        ```
-        { success: true, data: 222 }
-        [ 'Invalid input: expected int, received number' ]
-        
-        { success: true, data: 2222 }
-        [ 'Too big: expected number to be <2147483647' ]
-        ```
+    z.number().gt(5); //大于
+    z.number().gte(5); // 大于等于
+    z.number().lt(5); //小于
+    z.number().lte(5); // 小于等于
+    z.number().positive();
+    z.number().nonnegative();
+    z.number().negative();
+    z.number().nonpositive();
+    z.number().multipleOf(5); // 倍数
+    ```
 
-    - 布尔
+    ```ts
+    /* -------------- 3. 数字 ------------- */
+    printResult(z.number(), 3.14);
+    printResult(z.number(), NaN);
+    printResult(z.number(), Infinity);
 
-        ```ts
-        z.boolean().parse(true); // => true
-        z.boolean().parse(false); // => false
-        ```
+    printResult(z.number().gt(10), 1);
+    printResult(z.number().gte(10), 10);
+    printResult(z.number().lt(10), 1);
+    printResult(z.number().lte(10), 10);
 
-    - 日期 - 和前面的string里的iso日期字符串不同
+    printResult(z.number().positive(), 0);
+    printResult(z.number().nonpositive(), 0);
+    printResult(z.number().negative(), 0);
+    printResult(z.number().nonnegative(), 0);
+    printResult(z.number().multipleOf(111), 222);
+    ```
 
-        ```ts
-        /* -------------- 6.日期 -------------- */
-        printResult(z.date(), "2025-01-01");
-        printResult(z.date(), "2022-01-12T06:15:00.000Z");
-        printResult(z.date(), new Date());
-        ```
+    ```bash
+    { success: true, data: 3.14 }
+    [ 'Invalid input: expected number, received NaN' ]
+    [ 'Invalid input: expected number, received number' ]
+    [ 'Too small: expected number to be >10' ]
+    { success: true, data: 10 }
+    { success: true, data: 1 }
+    { success: true, data: 10 }
+    [ 'Too small: expected number to be >0' ]
+    { success: true, data: 0 }
+    [ 'Too big: expected number to be <0' ]
+    { success: true, data: 0 }
+    { success: true, data: 222 }
+    ```
 
-        ```bash
-        [ 'Invalid input: expected date, received string' ]
-        [ 'Invalid input: expected date, received string' ]
-        { success: true, data: 2025-12-04T01:41:13.817Z }
-        ```
+  - 整数 int
 
-        
+    ```
+    z.int();     // restricts to safe integer range
+    z.int32();   // restrict to int32 range
+    ```
+
+    ```ts
+    /* -------------- 4.整数 -------------- */
+    printResult(z.int(), 222);
+    printResult(z.int(), 222.2);
+
+    printResult(z.int32(), 2222);
+    printResult(z.int32(), 22222222222);
+    ```
+
+    ```
+    { success: true, data: 222 }
+    [ 'Invalid input: expected int, received number' ]
+
+    { success: true, data: 2222 }
+    [ 'Too big: expected number to be <2147483647' ]
+    ```
+
+  - 布尔
+
+    ```ts
+    z.boolean().parse(true); // => true
+    z.boolean().parse(false); // => false
+    ```
+
+  - 日期 - 和前面的 string 里的 iso 日期字符串不同
+
+    ```ts
+    /* -------------- 6.日期 -------------- */
+    printResult(z.date(), "2025-01-01");
+    printResult(z.date(), "2022-01-12T06:15:00.000Z");
+    printResult(z.date(), new Date());
+    ```
+
+    ```bash
+    [ 'Invalid input: expected date, received string' ]
+    [ 'Invalid input: expected date, received string' ]
+    { success: true, data: 2025-12-04T01:41:13.817Z }
+    ```
 
 - **==核心 $\text{Schema}$ 结构 (组合类型)==**
 
-    当数据结构变得复杂时，需要组合这些基本类型：
+  当数据结构变得复杂时，需要组合这些基本类型：
 
-    - **对象**
-
-        ```ts
-        /* -------------- 1. 对象 ------------- */
-        
-        printResult(
-          z.object({
-            name: z.string().nonempty(),
-            age: z.int().min(18).max(100),
-            email: z.email(),
-            isMale: z.boolean(),
-            mobile: z.string().regex(/^02[0-8]\d{7,8}$/),
-          }),
-          {
-            name: "robert",
-            age: 20,
-            email: "rb@gmail.com",
-            isMale: false,
-            mobile: "0231234567",
-          }
-        );
-        
-        ```
-
-        ```bash
-        {
-          success: true,
-          data: {
-            name: 'robert',
-            age: 20,
-            email: 'rb@gmail.com',
-            isMale: false,
-            mobile: '0231234567'
-          }
-        }
-        ```
-
-        高级操作：
-
-        可选和必须 - optional / required
-
-        ```ts
-        printResult(
-          z
-            .object({
-              name: z.string().nonempty(),
-              age: z.int().min(18).max(100).optional(), //可选
-              email: z.email(),
-              isMale: z.boolean(),
-              mobile: z.string().regex(/^02[0-8]\d{7,8}$/),
-            })
-            .required({
-              //必须
-              name: true,
-              email: true,
-            }),
-          {
-            name: "robert",
-            // age: 20,
-            email: "rb@gmail.com",
-            isMale: false,
-            mobile: "0231234567",
-          }
-        );
-        ```
-
-        ```bash
-        {
-          success: true,
-          data: {
-            name: 'robert',
-            email: 'rb@gmail.com',
-            isMale: false,
-            mobile: '0231234567'
-          }
-        }
-        ```
-
-        指定属性验证 - pick
-
-        ```ts
-        printResult(
-          z
-            .object({
-              name: z.string().nonempty(),
-              age: z.int().min(18).max(100).optional(), //可选
-              email: z.email(),
-              isMale: z.boolean(),
-              mobile: z.string().regex(/^02[0-8]\d{7,8}$/),
-            })
-            .pick({ // 挑起某些数据验证
-              name: true,
-              mobile: true,
-            }),
-          {
-            name: "robert",
-            // age: 20,
-            email: "rb@gmail.com",
-            isMale: false,
-            mobile: "0231234567",
-          }
-        );
-        ```
-
-        ```bash
-         success: true, data: { name: 'robert', mobile: '0231234567' } }
-        ```
-
-        忽略某些属性验证  - omit 
-
-        ```ts
-        printResult(
-          z
-            .object({
-              name: z.string().nonempty(),
-              age: z.int().min(18).max(100).optional(), //可选
-              email: z.email(),
-              isMale: z.boolean(),
-              mobile: z.string().regex(/^02[0-8]\d{7,8}$/),
-            })
-            .omit({ // 忽略某些数据验证
-              name: true,
-              mobile: true,
-            }),
-          {
-            name: "robert",
-            age: 20,
-            email: "rb@gmail.com",
-            isMale: false,
-            mobile: "0231234567",
-          }
-        );
-        ```
-
-        ```bash
-        {
-          success: true,
-          data: { age: 20, email: 'rb@gmail.com', isMale: false }
-        }
-        ```
-
-        选择部分数据验证 - partial
-
-        ```ts
-        /* ------------- 选择部分数据 ------------- */
-        
-        printResult(
-          z
-            .object({
-              name: z.string().nonempty(),
-              age: z.int().min(18).max(100).optional(), //可选
-              email: z.email(),
-              isMale: z.boolean(),
-              mobile: z.string().regex(/^02[0-8]\d{7,8}$/),
-            })
-            .partial(),
-          {
-            name: "robert",
-            age: 20,
-          }
-        );
-        ```
-
-        ```bash
-        { success: true, data: { name: 'robert', age: 20 } }
-        ```
-
-        
-
-    - 数组
-
-        ```ts
-        /* -------------- 2.数组 -------------- */
-        printResult(z.array(z.string()), ["fasdf", "fsadf"]);
-        ```
-
-        ```bash
-        { success: true, data: [ 'fasdf', 'fsadf' ] }
-        ```
-
-#### 4. 完善sequelize模型
-
-结合zod的数据验证功能，完善我们之前的sequelize模型已经业务逻辑，以student 为例
-
-- 定义student模型的schema
+  - **对象**
 
     ```ts
-    import { z } from "zod";
-    
-    const studentSchema = z.object({
-      name: z.string().min(1).max(20),
-      dob: z.iso.date().nonempty(),
-      sex: z.boolean(),
-      mobile: z.string().regex(/02[1-8]{1}-[0-9]{7}/),
-      ClassId: z.int(),
-    });
-    
-    export { studentSchema };
-    ```
+    /* -------------- 1. 对象 ------------- */
 
-- 创建学生逻辑中使用
-
-    ```ts
-    import { Class, Student } from "../models/sync";
-    import { Op } from "sequelize";
-    
-    import { studentSchema } from "../schemas/schema";
-    
-    interface Istudent {
-      name: string;
-      dob: string | Date;
-      sex: boolean;
-      mobile: string;
-      ClassId?: number;
-    }
-    
-    /* -------------- 增加数据 -------------- */
-    const studentAdd = async (obj: Istudent) => {
-      const valResult = studentSchema.safeParse(obj); //数据验证
-      if (valResult.success) {
-        const inst = Student.create(obj);
-        const res = inst ? (await inst).toJSON() : null;
-        console.log("add done");
-        console.log(res);
-        return res;
-      } else {
-        console.log(valResult.error.issues.map((e) => e.message));
-      }
-    };
-    
-    export {studentAdd};
-    
-    ```
-
-- 修改学生逻辑中使用
-
-    ```ts
-    import { Class, Student } from "../models/sync";
-    import { Op } from "sequelize";
-    
-    import { studentSchema } from "../schemas/schema";
-    
-    interface Istudent {
-      name: string;
-      dob: string | Date;
-      sex: boolean;
-      mobile: string;
-      ClassId?: number;
-    }
-    
-    /* -------------- 修改数据 -------------- */
-    const studentUpdate = async (id, newObj) => {
-      const valResult = studentSchema.partial().safeParse(newObj); //数据验证
-      if (valResult.success) {
-        const res = await Student.update(newObj, {
-          where: {
-            id,
-          },
-        });
-        console.log(res);
-        console.log("update done");
-      } else {
-        console.log(valResult.error.issues.map((e) => e.message));
-      }
-    };
-    
-    export {  studentAdd,studentUpdate };
-    
-    ```
-
-    
-
-### 3-11 访问器和虚拟字段
-
-#### 1. 访问器
-
-sequelize允许对模型的属性自定义访问器 - getter 和 setter
-
-- Getter ： 自定义的get( ) 方法， 和js中类的getter一样， 在读取字段值时自动调用。
-
-    场景：以student模型为例，我们定义的dob是标准的Date类型，这是数据库存取的标准类型。但是如果我们需要读取学生的数据，并把数据传递给页面显示时，Date类型不好处理，我们需要是一个时间戳。但是同时又不能影响Date类型用于数据库的操作。因此我们可以给dob字段自定义Getter，通过Getter获取dob的时间戳。
-
-    ```ts
-    import {
-      DataTypes,
-      InferAttributes,
-      InferCreationAttributes,
-      Model,
-    } from "sequelize";
-    import sequelize from "./db";
-    
-    export class Student extends Model<
-      InferAttributes<Student>,
-      InferCreationAttributes<Student>
-    > {
-      declare id?: number;
-      declare name: string;
-      declare dob: Date;
-      declare sex: boolean;
-      declare mobile: string;
-      declare deletedAt?: Date | string | null;
-      declare ClassId?: number;
-    }
-    
-    Student.init(
+    printResult(
+      z.object({
+        name: z.string().nonempty(),
+        age: z.int().min(18).max(100),
+        email: z.email(),
+        isMale: z.boolean(),
+        mobile: z.string().regex(/^02[0-8]\d{7,8}$/),
+      }),
       {
-       ...
-        dob: {
-          type: DataTypes.DATE,
-          allowNull: false,
-          //自定义getter - 获取dob的时间戳
-          get() {
-            return this.getDataValue("dob").getTime();
-          },
-        },
-       ...
-      },
-      // 可选配置
-      {
-       ...
+        name: "robert",
+        age: 20,
+        email: "rb@gmail.com",
+        isMale: false,
+        mobile: "0231234567",
       }
     );
     ```
 
     ```bash
-      /* --------- 6. 查询学生 - 按页查询 --------- */
-      await getStudents(2, 5);
-      
-      [
-      {
-        dob: 684070653000, //显示的是时间戳
-        id: 26,
-        name: 'Jack Pagac',
-        sex: false,
-        mobile: '024-3556976',
-        deletedAt: null,
-        ClassId: 4
-      },
-      ...
-      {
-        dob: 824896939000, //显示的是时间戳
-        id: 30,
-        name: 'Miss Vanessa Wunsch',
-        sex: true,
-        mobile: '028-3917624',
-        deletedAt: null,
-        ClassId: 5
+    {
+      success: true,
+      data: {
+        name: 'robert',
+        age: 20,
+        email: 'rb@gmail.com',
+        isMale: false,
+        mobile: '0231234567'
       }
-    ]
+    }
     ```
+
+    高级操作：
+
+    可选和必须 - optional / required
+
+    ```ts
+    printResult(
+      z
+        .object({
+          name: z.string().nonempty(),
+          age: z.int().min(18).max(100).optional(), //可选
+          email: z.email(),
+          isMale: z.boolean(),
+          mobile: z.string().regex(/^02[0-8]\d{7,8}$/),
+        })
+        .required({
+          //必须
+          name: true,
+          email: true,
+        }),
+      {
+        name: "robert",
+        // age: 20,
+        email: "rb@gmail.com",
+        isMale: false,
+        mobile: "0231234567",
+      }
+    );
+    ```
+
+    ```bash
+    {
+      success: true,
+      data: {
+        name: 'robert',
+        email: 'rb@gmail.com',
+        isMale: false,
+        mobile: '0231234567'
+      }
+    }
+    ```
+
+    指定属性验证 - pick
+
+    ```ts
+    printResult(
+      z
+        .object({
+          name: z.string().nonempty(),
+          age: z.int().min(18).max(100).optional(), //可选
+          email: z.email(),
+          isMale: z.boolean(),
+          mobile: z.string().regex(/^02[0-8]\d{7,8}$/),
+        })
+        .pick({
+          // 挑起某些数据验证
+          name: true,
+          mobile: true,
+        }),
+      {
+        name: "robert",
+        // age: 20,
+        email: "rb@gmail.com",
+        isMale: false,
+        mobile: "0231234567",
+      }
+    );
+    ```
+
+    ```bash
+     success: true, data: { name: 'robert', mobile: '0231234567' } }
+    ```
+
+    忽略某些属性验证 - omit
+
+    ```ts
+    printResult(
+      z
+        .object({
+          name: z.string().nonempty(),
+          age: z.int().min(18).max(100).optional(), //可选
+          email: z.email(),
+          isMale: z.boolean(),
+          mobile: z.string().regex(/^02[0-8]\d{7,8}$/),
+        })
+        .omit({
+          // 忽略某些数据验证
+          name: true,
+          mobile: true,
+        }),
+      {
+        name: "robert",
+        age: 20,
+        email: "rb@gmail.com",
+        isMale: false,
+        mobile: "0231234567",
+      }
+    );
+    ```
+
+    ```bash
+    {
+      success: true,
+      data: { age: 20, email: 'rb@gmail.com', isMale: false }
+    }
+    ```
+
+    选择部分数据验证 - partial
+
+    ```ts
+    /* ------------- 选择部分数据 ------------- */
+
+    printResult(
+      z
+        .object({
+          name: z.string().nonempty(),
+          age: z.int().min(18).max(100).optional(), //可选
+          email: z.email(),
+          isMale: z.boolean(),
+          mobile: z.string().regex(/^02[0-8]\d{7,8}$/),
+        })
+        .partial(),
+      {
+        name: "robert",
+        age: 20,
+      }
+    );
+    ```
+
+    ```bash
+    { success: true, data: { name: 'robert', age: 20 } }
+    ```
+
+  - 数组
+
+    ```ts
+    /* -------------- 2.数组 -------------- */
+    printResult(z.array(z.string()), ["fasdf", "fsadf"]);
+    ```
+
+    ```bash
+    { success: true, data: [ 'fasdf', 'fsadf' ] }
+    ```
+
+#### 4. 完善 sequelize 模型
+
+结合 zod 的数据验证功能，完善我们之前的 sequelize 模型已经业务逻辑，以 student 为例
+
+- 定义 student 模型的 schema
+
+  ```ts
+  import { z } from "zod";
+
+  const studentSchema = z.object({
+    name: z.string().min(1).max(20),
+    dob: z.iso.date().nonempty(),
+    sex: z.boolean(),
+    mobile: z.string().regex(/02[1-8]{1}-[0-9]{7}/),
+    ClassId: z.int(),
+  });
+
+  export { studentSchema };
+  ```
+
+- 创建学生逻辑中使用
+
+  ```ts
+  import { Class, Student } from "../models/sync";
+  import { Op } from "sequelize";
+
+  import { studentSchema } from "../schemas/schema";
+
+  interface Istudent {
+    name: string;
+    dob: string | Date;
+    sex: boolean;
+    mobile: string;
+    ClassId?: number;
+  }
+
+  /* -------------- 增加数据 -------------- */
+  const studentAdd = async (obj: Istudent) => {
+    const valResult = studentSchema.safeParse(obj); //数据验证
+    if (valResult.success) {
+      const inst = Student.create(obj);
+      const res = inst ? (await inst).toJSON() : null;
+      console.log("add done");
+      console.log(res);
+      return res;
+    } else {
+      console.log(valResult.error.issues.map((e) => e.message));
+    }
+  };
+
+  export { studentAdd };
+  ```
+
+- 修改学生逻辑中使用
+
+  ```ts
+  import { Class, Student } from "../models/sync";
+  import { Op } from "sequelize";
+  
+  import { studentSchema } from "../schemas/schema";
+  
+  interface Istudent {
+    name: string;
+    dob: string | Date;
+    sex: boolean;
+    mobile: string;
+    ClassId?: number;
+  }
+  
+  /* -------------- 修改数据 -------------- */
+  const studentUpdate = async (id, newObj) => {
+    const valResult = studentSchema.partial().safeParse(newObj); //数据验证
+    if (valResult.success) {
+      const res = await Student.update(newObj, {
+        where: {
+          id,
+        },
+      });
+      console.log(res);
+      console.log("update done");
+    } else {
+      console.log(valResult.error.issues.map((e) => e.message));
+    }
+  };
+  
+  export { studentAdd, studentUpdate };
+  ```
+
+### 3-11 访问器和虚拟字段
+
+#### 1. 访问器
+
+sequelize 允许对模型的属性自定义访问器 - getter 和 setter
+
+- Getter ： 自定义的 get( ) 方法， 和 js 中类的 getter 一样， 在读取字段值时自动调用。
+
+  场景：以 student 模型为例，我们定义的 dob 是标准的 Date 类型，这是数据库存取的标准类型。但是如果我们需要读取学生的数据，并把数据传递给页面显示时，Date 类型不好处理，我们需要是一个时间戳。但是同时又不能影响 Date 类型用于数据库的操作。因此我们可以给 dob 字段自定义 Getter，通过 Getter 获取 dob 的时间戳。
+
+  ```ts
+  import {
+    DataTypes,
+    InferAttributes,
+    InferCreationAttributes,
+    Model,
+  } from "sequelize";
+  import sequelize from "./db";
+
+  export class Student extends Model<
+    InferAttributes<Student>,
+    InferCreationAttributes<Student>
+  > {
+    declare id?: number;
+    declare name: string;
+    declare dob: Date;
+    declare sex: boolean;
+    declare mobile: string;
+    declare deletedAt?: Date | string | null;
+    declare ClassId?: number;
+  }
+
+  Student.init(
+    {
+     ...
+      dob: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        //自定义getter - 获取dob的时间戳
+        get() {
+          return this.getDataValue("dob").getTime();
+        },
+      },
+     ...
+    },
+    // 可选配置
+    {
+     ...
+    }
+  );
+  ```
+
+  ```bash
+    /* --------- 6. 查询学生 - 按页查询 --------- */
+    await getStudents(2, 5);
+
+    [
+    {
+      dob: 684070653000, //显示的是时间戳
+      id: 26,
+      name: 'Jack Pagac',
+      sex: false,
+      mobile: '024-3556976',
+      deletedAt: null,
+      ClassId: 4
+    },
+    ...
+    {
+      dob: 824896939000, //显示的是时间戳
+      id: 30,
+      name: 'Miss Vanessa Wunsch',
+      sex: true,
+      mobile: '028-3917624',
+      deletedAt: null,
+      ClassId: 5
+    }
+  ]
+  ```
 
 - ~~setter - 省略~~
 
 #### 2. 虚拟字段
 
-Sequelize还允许指定所谓的虚拟属性，这些属性存在于Sequelize模型中，但并不真正存在于底层SQL表中，而是由Sequelize自动填充。
+Sequelize 还允许指定所谓的虚拟属性，这些属性存在于 Sequelize 模型中，但并不真正存在于底层 SQL 表中，而是由 Sequelize 自动填充。
 
-虚拟字段类型是：DataTypes.VIRTUAL, 结合getter可以定义（计算）其值
+虚拟字段类型是：DataTypes.VIRTUAL, 结合 getter 可以定义（计算）其值
 
-比如：我们设置一个虚拟字段- 年龄age, 其并不存在于数据库中
+比如：我们设置一个虚拟字段- 年龄 age, 其并不存在于数据库中
 
 ```ts
 import {
@@ -7827,13 +7782,11 @@ export default Student;
 retrive done
 ```
 
-
-
 ### 3-12 日志记录
 
 #### 1. 概述
 
-开发中，需要对一些日志进行记录，方便维护和检查。比如记录执行的sql语句，以便对数据库交互的错误排除等等。
+开发中，需要对一些日志进行记录，方便维护和检查。比如记录执行的 sql 语句，以便对数据库交互的错误排除等等。
 
 通常使用第三方库
 
@@ -7847,299 +7800,293 @@ Log4js 是一个用于 **Node.js** 环境下的**日志记录（logging）模块
 
 - 安装及导入
 
-    ```bash
-    # 使用 npm
-    npm install log4js
-    
-    # 或使用 yarn
-    yarn add log4js
-    ```
+  ```bash
+  # 使用 npm
+  npm install log4js
 
-    ```ts
-    import log4js from "log4js";
-    ```
+  # 或使用 yarn
+  yarn add log4js
+  ```
+
+  ```ts
+  import log4js from "log4js";
+  ```
 
 - 配置 (Configuration)
 
-    Log4js 的核心在于配置，它定义了**日志输出的结构**和**目标**。配置通常通过一个 JavaScript 对象或 JSON 文件完成。
+  Log4js 的核心在于配置，它定义了**日志输出的结构**和**目标**。配置通常通过一个 JavaScript 对象或 JSON 文件完成。
 
-    主要包含以下概念：
+  主要包含以下概念：
 
-    - **Level（日志级别）**: 定义日志的**重要性**，只有大于或等于配置级别的日志才会被输出。常见的级别从高到低有：
+  - **Level（日志级别）**: 定义日志的**重要性**，只有大于或等于配置级别的日志才会被输出。常见的级别从高到低有：
 
-        - Off (不输出) - 默认级别
+    - Off (不输出) - 默认级别
 
-        - **FATAL** (致命)
-        - **ERROR** (错误)
-        - **WARN** (警告)
-        - **INFO** (信息)
-        - **DEBUG** (调试)
-        - **TRACE** (追踪)
-        - All （输出全部）
+    - **FATAL** (致命)
+    - **ERROR** (错误)
+    - **WARN** (警告)
+    - **INFO** (信息)
+    - **DEBUG** (调试)
+    - **TRACE** (追踪)
+    - All （输出全部）
 
-    - **Appenders（附加器/输出目标）**: 定义日志输出到哪里，例如：
+  - **Appenders（附加器/输出目标）**: 定义日志输出到哪里，例如：
 
-        - `stdout`: 输出到控制台。
-        - `file`: 输出到单个文件。
-        - `dateFile`: 按日期分割的文件。
-        - `logLevelFilter`: 根据日志级别进行过滤。
+    - `stdout`: 输出到控制台。
+    - `file`: 输出到单个文件。
+    - `dateFile`: 按日期分割的文件。
+    - `logLevelFilter`: 根据日志级别进行过滤。
 
-    - **Categories（分类/记录器）**: 定义使用哪些 **Appenders** 和 **Log Level**。一个应用可以有多个 Category，例如一个用于应用逻辑，另一个用于数据库操作。
+  - **Categories（分类/记录器）**: 定义使用哪些 **Appenders** 和 **Log Level**。一个应用可以有多个 Category，例如一个用于应用逻辑，另一个用于数据库操作。
 
-    - **格外配置** 
+  - **格外配置**
 
-        - **shutdown** - 接受一个回调函数，该函数将在 log4js 关闭所有输出器并完成日志事件写入后被调用。当程序退出时使用此方法，可确保所有日志写入文件、套接字关闭等操作完成。
+    - **shutdown** - 接受一个回调函数，该函数将在 log4js 关闭所有输出器并完成日志事件写入后被调用。当程序退出时使用此方法，可确保所有日志写入文件、套接字关闭等操作完成。
 
-        - 默认分类 - 配置中必须要有一个默认分类
+    - 默认分类 - 配置中必须要有一个默认分类
 
-        ```ts
-        /* ------------- 1. 模块导入 ------------ */
-        import log4js from "log4js";
-        import path from "path";
-        
-        /* -------------- 2. 配置 ------------- */
-        log4js.configure({
-          // 配置出口
-          appenders: {
-            // sql类的配置
-            sql: {
-              type: "file",
-              filename: path.resolve(__dirname, "logs", "sql", "logging.log"),
-            },
-            default: {
-              type: "stdout", // 控制台输出
-            },
-          },
-          // 配置类别
-          categories: {
-            sql: {
-              appenders: ["sql"], // 使用sql的出口配置写入日志
-              level: "all", // log的级别
-            },
-            default: {
-              appenders: ["default"],
-              level: "all",
-            },
-          },
-        });
-        
-        process.on("exit", () => {
-          log4js.shutdown(); //当程序退出时，确保所有日志写入文件、套接字关闭等操作完成。
-        });
-        ```
+    ```ts
+    /* ------------- 1. 模块导入 ------------ */
+    import log4js from "log4js";
+    import path from "path";
+  
+    /* -------------- 2. 配置 ------------- */
+    log4js.configure({
+      // 配置出口
+      appenders: {
+        // sql类的配置
+        sql: {
+          type: "file",
+          filename: path.resolve(__dirname, "logs", "sql", "logging.log"),
+        },
+        default: {
+          type: "stdout", // 控制台输出
+        },
+      },
+      // 配置类别
+      categories: {
+        sql: {
+          appenders: ["sql"], // 使用sql的出口配置写入日志
+          level: "all", // log的级别
+        },
+        default: {
+          appenders: ["default"],
+          level: "all",
+        },
+      },
+    });
+  
+    process.on("exit", () => {
+      log4js.shutdown(); //当程序退出时，确保所有日志写入文件、套接字关闭等操作完成。
+    });
+    ```
 
 - 使用 (Usage)
 
-    使用时需要先**获取**一个 Logger 实例，然后调用其相应级别的方法来记录日志。
+  使用时需要先**获取**一个 Logger 实例，然后调用其相应级别的方法来记录日志。
+
+  ```ts
+  /* -------------- 3.使用 -------------- */
+
+  const sqlLogger = log4js.getLogger("sql");
+  // console.log(logger);
+  sqlLogger.info("abc");
+  ```
+
+  ```ts
+  // ./src/logs/sql/logging.log
+
+  [2025-12-06T15:05:36.012] [INFO] sql - abc
+  [2025-12-06T15:06:02.953] [INFO] sql - abc
+  [2025-12-06T15:06:04.182] [INFO] sql - abc
+  [2025-12-06T15:06:05.503] [INFO] sql - abc
+  [2025-12-06T15:07:25.626] [INFO] sql - abc
+  [2025-12-06T15:08:29.999] [INFO] sql - abc
+  ```
+
+- 优化配置 - **Layout (布局)**
+
+  通过配置 Layout，可以自定义日志的时间戳、级别、分类名以及消息本身的显示方式，从而使日志更具可读性和信息量。
+
+  Layout 的类型有多种，比如 Basic， Coloured，Tokens 等等，最常用的是 **Pattern（自定义）类型**。
+
+  - 使用一个格式字符串 (`pattern`) 来定义日志的输出结构
+
+  - 可以结果 token 占位符
+
+    | **标记 (Token)** | **描述**                                                                 | **示例输出**                |
+    | ---------------- | ------------------------------------------------------------------------ | --------------------------- |
+    | **`%d`**         | **日期和时间**。可以使用 `{}` 指定格式，如 `{yyyy-MM-dd hh:mm:ss.SSS}`。 | `[2025-12-06 15:12:16.789]` |
+    | **`%p`**         | **日志级别** (Priority)，如 `INFO`, `ERROR`。                            | `[INFO]`                    |
+    | **`%c`**         | **Category (分类/记录器名称)**。                                         | `[system.server]`           |
+    | **`%m`**         | **日志消息本身** (Message)。                                             | `服务器已启动`              |
+    | **`%n`**         | **换行符**。                                                             | `\n`                        |
+    | **`%h`**         | **主机名**。                                                             | `My-PC`                     |
+    | **`%z`**         | **进程 ID (PID)**。                                                      | `12345`                     |
+    | **`%f`**         | **调用日志的源文件名** (如果可用)。                                      | `server.js`                 |
+    | **`%l`**         | **调用日志的行号** (如果可用)。                                          | `42`                        |
+    | **`%%`**         | **转义百分号** (`%`)。                                                   | `%`                         |
+
+  - 优化后的配置示例
 
     ```ts
+    /* -------------- 2. 配置 ------------- */
+    log4js.configure({
+      // 配置出口
+      appenders: {
+        // sql类的配置
+        sql: {
+          type: "file",
+          filename: path.resolve(__dirname, "logs", "sql", "logging.log"),
+  
+          // 优化配置 - **Layout (布局)**
+          layout: {
+            type: "pattern",
+            pattern: "%c [%d{yyyy-MM-dd hh:mm:ss.SSS}] [%p]  - %m%n",
+          },
+        },
+        default: {
+    		...
+        },
+      },
+      // 配置类别
+    ...
+    });
+  
+    ...
+  
+    ```
+
+    ```ts
+    sql [2025-12-06 15:30:50.733] [INFO]  - abc
+  
+    sql [2025-12-06 15:32:41.600] [INFO]  - abc
+  
+    sql [2025-12-06 15:32:42.823] [INFO]  - abc
+    ```
+
+- 优化配置 - log 文件内容分割 **maxLogSize**
+
+  当文件内容过大时，可以配置**maxLogSize**来指定单个 log 文档的大小，超过后会自动记录在新的文件中
+
+  - 配置单个 log 文档的大小 - `maxLogSize:1024`
+
+  - 自动添加日期到文件名称中 - `type: "dateFile"`
+
+  - 保留文件后缀名 - `keepFileExt: true`
+
+  - 保留 log 文件的个数 - `numBackups:1` - 默认是 1 个
+
+    ```ts
+    /* ------------- 1. 模块导入 ------------ */
+    import log4js from "log4js";
+    import path from "path";
+  
+    /* -------------- 2. 配置 ------------- */
+    log4js.configure({
+      // 配置出口
+      appenders: {
+        // sql类的配置
+        sql: {
+          type: "dateFile", //dateFile - 文件名中包含日期
+          filename: path.resolve(__dirname, "logs", "sql", "logging.log"),
+          layout: {
+            type: "pattern",
+            pattern: "%c [%d{yyyy-MM-dd hh:mm:ss.SSS}] [%p]  - %m%n",
+          },
+          maxLogSize: 1024, // 单个文件的大小
+          keepFileExt: true, // 是否保留后缀名
+          numBackups: 5, // 保留文件的个数， 默认是1
+        },
+        default: {
+          type: "stdout",
+          // filename: path.resolve(__dirname, "logs", "default", "logging.log"),
+        },
+      },
+      // 配置类别
+      categories: {
+        sql: {
+          appenders: ["sql"], // 使用sql的出口配置写入日志
+          level: "all", // log的级别
+        },
+        default: {
+          appenders: ["default"],
+          level: "all",
+        },
+      },
+    });
+  
+    process.on("exit", () => {
+      log4js.shutdown(); //当程序退出时，确保所有日志写入文件、套接字关闭等操作完成。
+    });
+  
     /* -------------- 3.使用 -------------- */
-    
+  
     const sqlLogger = log4js.getLogger("sql");
-    // console.log(logger);
-    sqlLogger.info("abc");
+    const defaultLogger = log4js.getLogger("default");
+  
+    export { sqlLogger, defaultLogger };
     ```
-
-    ```ts
-    // ./src/logs/sql/logging.log
-    
-    [2025-12-06T15:05:36.012] [INFO] sql - abc
-    [2025-12-06T15:06:02.953] [INFO] sql - abc
-    [2025-12-06T15:06:04.182] [INFO] sql - abc
-    [2025-12-06T15:06:05.503] [INFO] sql - abc
-    [2025-12-06T15:07:25.626] [INFO] sql - abc
-    [2025-12-06T15:08:29.999] [INFO] sql - abc
-    ```
-
-- 优化配置 - **Layout (布局)** 
-
-    通过配置 Layout，可以自定义日志的时间戳、级别、分类名以及消息本身的显示方式，从而使日志更具可读性和信息量。
-
-     Layout的类型有多种，比如Basic， Coloured，Tokens等等，最常用的是 **Pattern（自定义）类型**。
-
-    - 使用一个格式字符串 (`pattern`) 来定义日志的输出结构
-
-    - 可以结果token占位符
-
-        | **标记 (Token)** | **描述**                                                     | **示例输出**                |
-        | ---------------- | ------------------------------------------------------------ | --------------------------- |
-        | **`%d`**         | **日期和时间**。可以使用 `{}` 指定格式，如 `{yyyy-MM-dd hh:mm:ss.SSS}`。 | `[2025-12-06 15:12:16.789]` |
-        | **`%p`**         | **日志级别** (Priority)，如 `INFO`, `ERROR`。                | `[INFO]`                    |
-        | **`%c`**         | **Category (分类/记录器名称)**。                             | `[system.server]`           |
-        | **`%m`**         | **日志消息本身** (Message)。                                 | `服务器已启动`              |
-        | **`%n`**         | **换行符**。                                                 | `\n`                        |
-        | **`%h`**         | **主机名**。                                                 | `My-PC`                     |
-        | **`%z`**         | **进程 ID (PID)**。                                          | `12345`                     |
-        | **`%f`**         | **调用日志的源文件名** (如果可用)。                          | `server.js`                 |
-        | **`%l`**         | **调用日志的行号** (如果可用)。                              | `42`                        |
-        | **`%%`**         | **转义百分号** (`%`)。                                       | `%`                         |
-
-    - 优化后的配置示例
-
-        ```ts
-        /* -------------- 2. 配置 ------------- */
-        log4js.configure({
-          // 配置出口
-          appenders: {
-            // sql类的配置
-            sql: {
-              type: "file",
-              filename: path.resolve(__dirname, "logs", "sql", "logging.log"),
-                
-              // 优化配置 - **Layout (布局)** 
-              layout: {
-                type: "pattern",
-                pattern: "%c [%d{yyyy-MM-dd hh:mm:ss.SSS}] [%p]  - %m%n",
-              },
-            },
-            default: {
-        		...
-            },
-          },
-          // 配置类别
-        ...
-        });
-        
-        ...
-        
-        ```
-
-        ```ts
-        sql [2025-12-06 15:30:50.733] [INFO]  - abc
-        
-        sql [2025-12-06 15:32:41.600] [INFO]  - abc
-        
-        sql [2025-12-06 15:32:42.823] [INFO]  - abc
-        ```
-
-- 优化配置 -  log文件内容分割 **maxLogSize**
-
-    当文件内容过大时，可以配置**maxLogSize**来指定单个log文档的大小，超过后会自动记录在新的文件中
-
-    - 配置单个log文档的大小 -  `maxLogSize:1024`
-
-    - 自动添加日期到文件名称中 - `type: "dateFile"`
-
-    - 保留文件后缀名 - `keepFileExt: true`
-
-    - 保留log文件的个数 - `numBackups:1` - 默认是1个
-
-        ```ts
-        /* ------------- 1. 模块导入 ------------ */
-        import log4js from "log4js";
-        import path from "path";
-        
-        /* -------------- 2. 配置 ------------- */
-        log4js.configure({
-          // 配置出口
-          appenders: {
-            // sql类的配置
-            sql: {
-              type: "dateFile", //dateFile - 文件名中包含日期
-              filename: path.resolve(__dirname, "logs", "sql", "logging.log"),
-              layout: {
-                type: "pattern",
-                pattern: "%c [%d{yyyy-MM-dd hh:mm:ss.SSS}] [%p]  - %m%n",
-              },
-              maxLogSize: 1024, // 单个文件的大小
-              keepFileExt: true, // 是否保留后缀名
-              numBackups: 5, // 保留文件的个数， 默认是1
-            },
-            default: {
-              type: "stdout",
-              // filename: path.resolve(__dirname, "logs", "default", "logging.log"),
-            },
-          },
-          // 配置类别
-          categories: {
-            sql: {
-              appenders: ["sql"], // 使用sql的出口配置写入日志
-              level: "all", // log的级别
-            },
-            default: {
-              appenders: ["default"],
-              level: "all",
-            },
-          },
-        });
-        
-        process.on("exit", () => {
-          log4js.shutdown(); //当程序退出时，确保所有日志写入文件、套接字关闭等操作完成。
-        });
-        
-        /* -------------- 3.使用 -------------- */
-        
-        const sqlLogger = log4js.getLogger("sql");
-        const defaultLogger = log4js.getLogger("default");
-        
-        export { sqlLogger, defaultLogger };
-        
-        ```
-
-        
 
 - 应用场景 - 在模型数据库中连用
 
-    之前在sequelize中配置数据库的代码：
+  之前在 sequelize 中配置数据库的代码：
 
-    ```ts
-    import { Sequelize } from "sequelize";
-    
-    const sequelize = new Sequelize("schooldb", "root", "123456", {
-      host: "localhost",
-      dialect: "mysql",
-    
-      logging: false, // 不显示sql详情日志
-    });
-    
-    export default sequelize;
-    ```
+  ```ts
+  import { Sequelize } from "sequelize";
+  
+  const sequelize = new Sequelize("schooldb", "root", "123456", {
+    host: "localhost",
+    dialect: "mysql",
+  
+    logging: false, // 不显示sql详情日志
+  });
+  
+  export default sequelize;
+  ```
 
-    现在配置数据库 logging
+  现在配置数据库 logging
 
-    ```ts
-    import { Sequelize } from "sequelize";
-    import { sqlLogger } from "../logger";
-    
-    const sequelize = new Sequelize("schooldb", "root", "123456", {
-      host: "localhost",
-      dialect: "mysql",
-    
-      logging: (msg) => {
-        sqlLogger.debug(msg); // 使用自定义的sqlLogger记录日志
-      },
-    });
-    
-    export default sequelize;
-    
-    ```
+  ```ts
+  import { Sequelize } from "sequelize";
+  import { sqlLogger } from "../logger";
+  
+  const sequelize = new Sequelize("schooldb", "root", "123456", {
+    host: "localhost",
+    dialect: "mysql",
+  
+    logging: (msg) => {
+      sqlLogger.debug(msg); // 使用自定义的sqlLogger记录日志
+    },
+  });
+  
+  export default sequelize;
+  ```
 
-    查询学生，测试log的记录
+  查询学生，测试 log 的记录
 
-    ```sql
-    sql [2025-12-06 16:26:06.608] [DEBUG]  - Executing (default): SELECT `id`, `name`, `dob`, `sex`, `mobile`, `deletedAt`, `ClassId` FROM `Student` AS `Student` WHERE (`Student`.`deletedAt` IS NULL) LIMIT 5, 5;
-    
-    sql [2025-12-06 16:26:44.608] [DEBUG]  - Executing (default): SELECT `id`, `name`, `dob`, `sex`, `mobile`, `deletedAt`, `ClassId` FROM `Student` AS `Student` WHERE (`Student`.`deletedAt` IS NULL);
-    ```
-
-    
+  ```sql
+  sql [2025-12-06 16:26:06.608] [DEBUG]  - Executing (default): SELECT `id`, `name`, `dob`, `sex`, `mobile`, `deletedAt`, `ClassId` FROM `Student` AS `Student` WHERE (`Student`.`deletedAt` IS NULL) LIMIT 5, 5;
+  
+  sql [2025-12-06 16:26:44.608] [DEBUG]  - Executing (default): SELECT `id`, `name`, `dob`, `sex`, `mobile`, `deletedAt`, `ClassId` FROM `Student` AS `Student` WHERE (`Student`.`deletedAt` IS NULL);
+  ```
 
 ## 4. Express.js
 
-### 4-1 express的基础使用
+### 4-1 express 的基础使用
 
-在创建网络请求时，使用HTTP模式有一些问题：
+在创建网络请求时，使用 HTTP 模式有一些问题：
 
-- `http.createServer((req,res)=>{})`要根据不同的请求方法，不同的路径，进行按条件分类实施（类型Switch case或者多层if else结构），不方便使用
+- `http.createServer((req,res)=>{})`要根据不同的请求方法，不同的路径，进行按条件分类实施（类型 Switch case 或者多层 if else 结构），不方便使用
 - `http.createServer((req,res)=>{})`里发送请求和接收消息都是按流的放在进行，如果消息内容不是很大量，使用流效率低下
 
 因此，通常会使用第三方库，使用封装后的方式创建网络请求
 
-#### 1. express概述
+#### 1. express 概述
 
 针对 Node.js 的极简、灵活的 Web 应用程序框架， 它提供了一组强大的功能，用于快速方便地构建 Web 应用程序和 API。
 
-express提供 Web 开发所必需的核心功能，例如：
+express 提供 Web 开发所必需的核心功能，例如：
 
 - **路由（Routing）**：处理不同 URL 路径和 HTTP 请求方法的请求。
 - **中间件（Middleware）**：在请求处理管道的任何位置添加额外的处理逻辑，例如身份验证、日志记录、压缩等。
@@ -8149,270 +8096,263 @@ express提供 Web 开发所必需的核心功能，例如：
 
 - 安装 Express
 
-    ```
-    npm install express
-    ```
+  ```
+  npm install express
+  ```
 
 - 创建 Express 应用实例, 并监听端口
 
-    方式一： 结合http模块
+  方式一： 结合 http 模块
+
+  ```ts
+  import express from "express";
+  import http from "http";
+
+  /* ---------- 创建一个express应用 --------- */
+  const app = express(); // app实际是一个函数 - 处理请求的函数
+
+  const server = http.createServer(app);
+
+  /* -------------- 监听端口 -------------- */
+  const port = 5003;
+  server.listen(port, () => {
+    console.log(`server is listened on ${port}`);
+  });
+  ```
+
+  **==方式二： 直接监听==**
+
+  ```ts
+  import express from "express";
+
+  /* ---------- 创建一个express应用 --------- */
+  const app = express();
+
+  /* -------------- 监听端口 -------------- */
+  const port = 5003;
+  app.listen(port, () => {
+    console.log(`server is listened on ${port}`);
+  });
+  ```
+
+  ```bash
+  server is listened on 5003
+  ```
+
+- 处理请求
+
+  app 实际是一个函数，能够处理任何请求，会匹配不同的请求方法，请求路径，执行不同的请求，类似于一个 map 映射.
+
+  如何匹配映射关系： `app."请求方法("请求路径", "请求方法")`
+
+  ```ts
+  /* -------------- 3. 处理请求 -------------- */
+  app.get("/test", (req, res) => {
+    // req 和 res 是被封装过的对象，不需要使用流去操作
+  });
+  ```
+
+  获取请求体信息
+
+  ```ts
+  app.get("/test", (req, res) => {
+    /* ------------- 获取请求信息 ------------- */
+    console.log("请求头:", req.headers);
+    console.log("请求路径:", req.path);
+    console.log("请求参数:", req.query);
+  });
+  ```
+
+  ```bash
+  请求头: {
+    'user-agent': 'PostmanRuntime/7.49.1',
+    accept: '*/*',
+    'postman-token': 'bf7a499f-f2a8-41d7-908a-4ba80bd2b225',
+    host: 'localhost:5003',
+    'accept-encoding': 'gzip, deflate, br',
+    connection: 'keep-alive'
+  }
+  请求路径: /test
+  请求参数: [Object: null prototype] { a: '1', b: '2', c: '3' }
+  ```
+
+  注意：
+
+  - 映射关系： `app."请求方法("请求路径", "请求方法")`中的请求路径**不能包含请求参数** `?a=1&b=2&c=3`, 只能在发送请求时，通过 postman 或者浏览器路径添加
+
+  - 动态路由： 请求路径可以包含动态路径，比如`/test:id`, 当发送请求时，会动态赋值给 id。 获取时，使用 req.params 属性
 
     ```ts
-    import express from "express";
-    import http from "http";
-    
-    /* ---------- 创建一个express应用 --------- */
-    const app = express(); // app实际是一个函数 - 处理请求的函数
-    
-    const server = http.createServer(app);
-    
-    /* -------------- 监听端口 -------------- */
-    const port = 5003;
-    server.listen(port, () => {
-      console.log(`server is listened on ${port}`);
+    /* -------------- 3. 处理请求 -------------- */
+    app.get("/test/:id", (req, res) => {
+      /* ------------- 获取请求信息 ------------- */
+      console.log("动态路径:", req.params);
     });
-    
     ```
 
-    **==方式二： 直接监听==**
+    ```bash
+    localhost:5003/test/456?a=1&b=2&c=3
+
+    动态路径: [Object: null prototype] { id: '456' }
+    ```
+
+  - 请求路径错误时，会自动返回 404 页面
+
+    ```html
+    <!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="utf-8" />
+        <title>Error</title>
+      </head>
+  
+      <body>
+        <pre>Cannot GET /test1</pre>
+      </body>
+    </html>
+    ```
+
+- 如何响应？
+
+  - 发送消息体， 使用 send 方法。消息体内容接收多种形式：字符，null, html 标签等等。 不需要使用 end 方法结束响应，内部已经封装
+
+    ```TS
+    import express from "express";
+
+    /* ---------- 1. 创建一个express应用 --------- */
+    const app = express(); // app实际是一个函数 - 处理请求的函数
+
+    /* -------------- 3. 处理请求 -------------- */
+    app.get("/test/:id", (req, res) => {
+
+      /* ------------- 获取请求信息 ------------- */
+      ...
+
+     /* -------------- 处理相应 -------------- */
+      /* -------------- 发送消息体 ------------- */
+      // 1. 字符串
+      // res.send("<h1>hello express</h1>");
+      // 2. 数组
+      // res.send([1, 2, 3]);
+      // 3. 对象
+      res.send({
+        name: "Gorge",
+        age: 18,
+        sex: "male",
+      });
+    });
+
+    /* -------------- 2. 监听端口 -------------- */
+    ...
+
+    ```
+
+  - 自定义响应头
+
+    可以自定义响应头，使用`setHeader()`方法. 必须在发送消息体之前自定义响应头
+
+    ```ts
+
+      /* -------------- 处理相应 -------------- */
+
+      /* ------------- 自定义响应头 ------------- */
+      res.setHeader("a", "1");
+
+      /* -------------- 发送消息体 ------------- */
+      res.send({
+        name: "Gorge",
+        age: 18,
+        sex: "male",
+      });
+    });
+    ```
+
+  - 重定向
+
+    可以利用自定义响应头来实现重定向
+
+    ```ts
+    /* -------------- 3. 处理请求 -------------- */
+    app.get("/test/:id", (req, res) => {
+     ...
+  
+      // 4. 重定向
+      // res.status(302).setHeader("location", "https://expressjs.com/").end();
+  
+      // 5. 重定向 - 简洁
+       res.redirect(302, "https://expressjs.com/");
+    });
+    ```
+
+- 请求方法
+
+  app.请求方法符合 restful 风格
+
+  - RESTful API 中的 HTTP 方法
+
+    REST 的思想是：**“用 URL 表示资源，用 HTTP 方法表示动作”**， 比如：资源（users）不需要写动词，如 `/getUsers` 是反模式，应该写 `/users`。
+
+  - RESTful API 与 Express 路由**一一对应关系**
+
+    | REST 风格动作                | HTTP 方法 | Express 方法    | 示例路由      | 作用                       |
+    | ---------------------------- | --------- | --------------- | ------------- | -------------------------- |
+    | **查列表**                   | GET       | `app.get()`     | `/users`      | 获取所有用户               |
+    | **查单个**                   | GET       | `app.get()`     | `/users/:id`  | 获取某个用户               |
+    | **新增资源**                 | POST      | `app.post()`    | `/users`      | 添加用户                   |
+    | **整体更新（全量更新）**     | PUT       | `app.put()`     | `/users/:id`  | 传入所有字段，替换整个用户 |
+    | **部分更新（修改部分字段）** | PATCH     | `app.patch()`   | `/users/:id`  | 传入部分字段进行更新       |
+    | **删除资源**                 | DELETE    | `app.delete()`  | `/users/:id`  | 删除某个用户               |
+    | **CORS 预检**                | OPTIONS   | `app.options()` | `*`、`/users` | 浏览器跨域检查             |
+    | **只要头不要 body**          | HEAD      | `app.head()`    | `/users`      | API 健康检查               |
+    | **所有方法兜底**             | 任意方法  | `app.all()`     | `*`           | 匹配所有请求方法           |
 
     ```ts
     import express from "express";
     
-    /* ---------- 创建一个express应用 --------- */
-    const app = express();
+    /* ---------- 1. 创建一个express应用 --------- */
+    const app = express(); // app实际是一个函数 - 处理请求的函数
     
-    /* -------------- 监听端口 -------------- */
+    /* --- Express 的 RESTful API 示例代码 --- */
+    // 获取用户列表
+    app.get("/users", (req, res) => {
+      res.send("获取所有用户");
+    });
+    
+    // 获取某个用户
+    app.get("/users/:id", (req, res) => {
+      res.send(`获取用户：${req.params.id}`);
+    });
+    
+    // 创建用户
+    app.post("/users", (req, res) => {
+      res.send("创建用户");
+    });
+    
+    // 全量更新用户
+    app.put("/users/:id", (req, res) => {
+      res.send(`全量更新用户：${req.params.id}`);
+    });
+    
+    // 部分更新用户
+    app.patch("/users/:id", (req, res) => {
+      res.send(`部分更新用户：${req.params.id}`);
+    });
+    
+    // 删除用户
+    app.delete("/users/:id", (req, res) => {
+      res.send(`删除用户：${req.params.id}`);
+    });
+    
+    /* -------------- 2. 监听端口 -------------- */
     const port = 5003;
     app.listen(port, () => {
       console.log(`server is listened on ${port}`);
     });
     ```
 
-    ```bash
-    server is listened on 5003
-    ```
+### ~~4-2 nodemon - 见 ts 基础中的配置~~
 
-- 处理请求
-
-    app实际是一个函数，能够处理任何请求，会匹配不同的请求方法，请求路径，执行不同的请求，类似于一个map映射.
-
-    如何匹配映射关系： `app."请求方法("请求路径", "请求方法")`
-
-    ```ts
-    /* -------------- 3. 处理请求 -------------- */
-    app.get("/test", (req, res) => {
-      // req 和 res 是被封装过的对象，不需要使用流去操作
-    });
-    ```
-
-    获取请求体信息
-
-    ```ts
-    
-    app.get("/test", (req, res) => {
-       /* ------------- 获取请求信息 ------------- */
-      console.log("请求头:", req.headers);
-      console.log("请求路径:", req.path);
-      console.log("请求参数:", req.query);
-    });
-    ```
-
-    ```bash
-    请求头: {
-      'user-agent': 'PostmanRuntime/7.49.1',
-      accept: '*/*',
-      'postman-token': 'bf7a499f-f2a8-41d7-908a-4ba80bd2b225',
-      host: 'localhost:5003',
-      'accept-encoding': 'gzip, deflate, br',
-      connection: 'keep-alive'
-    }
-    请求路径: /test
-    请求参数: [Object: null prototype] { a: '1', b: '2', c: '3' }
-    ```
-
-    注意：
-
-    - 映射关系： `app."请求方法("请求路径", "请求方法")`中的请求路径**不能包含请求参数** `?a=1&b=2&c=3`, 只能在发送请求时，通过postman或者浏览器路径添加
-
-    - 动态路由： 请求路径可以包含动态路径，比如`/test:id`, 当发送请求时，会动态赋值给id。 获取时，使用req.params属性
-
-        ```ts
-        /* -------------- 3. 处理请求 -------------- */
-        app.get("/test/:id", (req, res) => {
-         
-          /* ------------- 获取请求信息 ------------- */ 
-          console.log("动态路径:", req.params);
-        });
-        ```
-
-        ```bash
-        localhost:5003/test/456?a=1&b=2&c=3
-        
-        动态路径: [Object: null prototype] { id: '456' }
-        ```
-
-    - 请求路径错误时，会自动返回404页面
-
-        ```html
-        <!DOCTYPE html>
-        <html lang="en">
-        
-        <head>
-        	<meta charset="utf-8">
-        	<title>Error</title>
-        </head>
-        
-        <body>
-        	<pre>Cannot GET /test1</pre>
-        </body>
-        
-        </html>
-        ```
-
-- 如何响应？
-
-    - 发送消息体， 使用send方法。消息体内容接收多种形式：字符，null, html标签等等。 不需要使用end方法结束响应，内部已经封装
-
-        ```TS
-        import express from "express";
-        
-        /* ---------- 1. 创建一个express应用 --------- */
-        const app = express(); // app实际是一个函数 - 处理请求的函数
-        
-        /* -------------- 3. 处理请求 -------------- */
-        app.get("/test/:id", (req, res) => {
-        
-          /* ------------- 获取请求信息 ------------- */
-          ...
-        
-         /* -------------- 处理相应 -------------- */
-          /* -------------- 发送消息体 ------------- */
-          // 1. 字符串
-          // res.send("<h1>hello express</h1>");
-          // 2. 数组
-          // res.send([1, 2, 3]);
-          // 3. 对象
-          res.send({
-            name: "Gorge",
-            age: 18,
-            sex: "male",
-          });
-        });
-        
-        /* -------------- 2. 监听端口 -------------- */
-        ...
-        
-        ```
-
-    - 自定义响应头
-
-        可以自定义响应头，使用`setHeader()`方法. 必须在发送消息体之前自定义响应头
-
-        ```ts
-        
-          /* -------------- 处理相应 -------------- */
-        
-          /* ------------- 自定义响应头 ------------- */
-          res.setHeader("a", "1");
-        
-          /* -------------- 发送消息体 ------------- */
-          res.send({
-            name: "Gorge",
-            age: 18,
-            sex: "male",
-          });
-        });
-        ```
-
-    - 重定向 
-
-        可以利用自定义响应头来实现重定向
-
-        ```ts
-        /* -------------- 3. 处理请求 -------------- */
-        app.get("/test/:id", (req, res) => {
-         ...
-        
-          // 4. 重定向
-          // res.status(302).setHeader("location", "https://expressjs.com/").end();
-        
-          // 5. 重定向 - 简洁
-           res.redirect(302, "https://expressjs.com/");
-        });
-        ```
-
-- 请求方法
-
-    app.请求方法符合restful风格
-
-    - RESTful API 中的 HTTP 方法
-
-        REST 的思想是：**“用 URL 表示资源，用 HTTP 方法表示动作”**， 比如：资源（users）不需要写动词，如 `/getUsers` 是反模式，应该写 `/users`。
-
-    - RESTful API 与 Express 路由**一一对应关系**
-
-        | REST 风格动作                | HTTP 方法 | Express 方法    | 示例路由      | 作用                       |
-        | ---------------------------- | --------- | --------------- | ------------- | -------------------------- |
-        | **查列表**                   | GET       | `app.get()`     | `/users`      | 获取所有用户               |
-        | **查单个**                   | GET       | `app.get()`     | `/users/:id`  | 获取某个用户               |
-        | **新增资源**                 | POST      | `app.post()`    | `/users`      | 添加用户                   |
-        | **整体更新（全量更新）**     | PUT       | `app.put()`     | `/users/:id`  | 传入所有字段，替换整个用户 |
-        | **部分更新（修改部分字段）** | PATCH     | `app.patch()`   | `/users/:id`  | 传入部分字段进行更新       |
-        | **删除资源**                 | DELETE    | `app.delete()`  | `/users/:id`  | 删除某个用户               |
-        | **CORS 预检**                | OPTIONS   | `app.options()` | `*`、`/users` | 浏览器跨域检查             |
-        | **只要头不要 body**          | HEAD      | `app.head()`    | `/users`      | API 健康检查               |
-        | **所有方法兜底**             | 任意方法  | `app.all()`     | `*`           | 匹配所有请求方法           |
-
-        ```ts
-        import express from "express";
-        
-        /* ---------- 1. 创建一个express应用 --------- */
-        const app = express(); // app实际是一个函数 - 处理请求的函数
-        
-        /* --- Express 的 RESTful API 示例代码 --- */
-        // 获取用户列表
-        app.get("/users", (req, res) => {
-          res.send("获取所有用户");
-        });
-        
-        // 获取某个用户
-        app.get("/users/:id", (req, res) => {
-          res.send(`获取用户：${req.params.id}`);
-        });
-        
-        // 创建用户
-        app.post("/users", (req, res) => {
-          res.send("创建用户");
-        });
-        
-        // 全量更新用户
-        app.put("/users/:id", (req, res) => {
-          res.send(`全量更新用户：${req.params.id}`);
-        });
-        
-        // 部分更新用户
-        app.patch("/users/:id", (req, res) => {
-          res.send(`部分更新用户：${req.params.id}`);
-        });
-        
-        // 删除用户
-        app.delete("/users/:id", (req, res) => {
-          res.send(`删除用户：${req.params.id}`);
-        });
-        
-        /* -------------- 2. 监听端口 -------------- */
-        const port = 5003;
-        app.listen(port, () => {
-          console.log(`server is listened on ${port}`);
-        });
-        ```
-
-        
-
-### ~~4-2 nodemon - 见ts基础中的配置~~
-
-### 4-3 express中间件 - Middleware
+### 4-3 express 中间件 - Middleware
 
 **中间件**是 Express.js 框架中用来处理 **HTTP 请求**的函数。它们位于客户端的 **请求 (Request)** 到服务器的 **响应 (Response)** 之间，就像一条**处理请求的流水线或管道**。
 
@@ -8422,186 +8362,182 @@ express提供 Web 开发所必需的核心功能，例如：
 
 - 常规中间件 ：$$\text{Middleware}(\text{req}, \text{res}, \text{next})$$
 
-    - **`req` (Request)**：HTTP 请求对象
+  - **`req` (Request)**：HTTP 请求对象
 
-    - **`res` (Response)**：HTTP 响应对象
+  - **`res` (Response)**：HTTP 响应对象
 
-    - **`next` (Function)**：一个回调函数，控制权转移函数,  **这是中间件机制的关键**。
+  - **`next` (Function)**：一个回调函数，控制权转移函数, **这是中间件机制的关键**。
 
-        当它完成任务后，必须调用 **`next()`**（**不带参数**）将控制权传递给链中的下一个中间件或路由处理器。
+    当它完成任务后，必须调用 **`next()`**（**不带参数**）将控制权传递给链中的下一个中间件或路由处理器。
 
-        ```ts
-        import express from "express";
-        
-        /* ---------- 1. 创建一个express应用 --------- */
-        const app = express(); // app实际是一个函数 - 处理请求的函数
-        
-        app.get(
-          "/",
-          (req, res, next) => {
-            console.log("中间件 1");
-            next();
-          },
-          (req, res, next) => {
-            console.log("中间件 2");
-            next();
-          },
-          (req, res, next) => {
-            console.log("中间件 3");
-            next();
-          },
-          (req, res) => {
-            res.send("响应结束");
-          }
-        );
-        
-        /* -------------- 2. 监听端口 -------------- */
-        const port = 5003;
-        app.listen(port, () => {
-          console.log(`server is listened on ${port}`);
-        });
-        
-        ```
+    ```ts
+    import express from "express";
+  
+    /* ---------- 1. 创建一个express应用 --------- */
+    const app = express(); // app实际是一个函数 - 处理请求的函数
+  
+    app.get(
+      "/",
+      (req, res, next) => {
+        console.log("中间件 1");
+        next();
+      },
+      (req, res, next) => {
+        console.log("中间件 2");
+        next();
+      },
+      (req, res, next) => {
+        console.log("中间件 3");
+        next();
+      },
+      (req, res) => {
+        res.send("响应结束");
+      }
+    );
+  
+    /* -------------- 2. 监听端口 -------------- */
+    const port = 5003;
+    app.listen(port, () => {
+      console.log(`server is listened on ${port}`);
+    });
+    ```
 
 - 错误处理中间件： $$\text{Middleware}(\text{err},\text{req}, \text{res}, \text{next})$$
 
-    - `err`: Error（错误对象）
-    - `req`: Request（请求对象）
-    - `res`: Response（响应对象）
-    - `next`: 控制权转移函数（通常用于继续传递错误）
+  - `err`: Error（错误对象）
+  - `req`: Request（请求对象）
+  - `res`: Response（响应对象）
+  - `next`: 控制权转移函数（通常用于继续传递错误）
 
-    **作用:**
+  **作用:**
 
-    - **集中捕获**和处理应用程序中发生的错误。
-    - 它可以根据错误类型发送不同的 HTTP 响应（如 500 Internal Server Error 或 400 Bad Request）。
+  - **集中捕获**和处理应用程序中发生的错误。
+  - 它可以根据错误类型发送不同的 HTTP 响应（如 500 Internal Server Error 或 400 Bad Request）。
 
-    **触发方式:**
+  **触发方式:**
 
-    - **唯一**的触发方式是上游的常规中间件或路由调用了 **`next(error)`**（**带参数**）。
+  - **唯一**的触发方式是上游的常规中间件或路由调用了 **`next(error)`**（**带参数**）。
 
-    - Express 在捕获到错误后，会**跳过**所有常规中间件，直到找到第一个四参数的错误处理函数。
+  - Express 在捕获到错误后，会**跳过**所有常规中间件，直到找到第一个四参数的错误处理函数。
 
-        ```ts
-        app.get(
-          "/",
-          (req, res, next) => {
-            console.log("中间件 1");
-            next();
-          },
-          (req, res, next) => {
-            console.log("中间件 2 - 抛出错误");
-            // 重点: 调用 next(err) 来跳过常规中间件并跳转到错误处理中间件
-            next(new Error("这是一个测试错误"));
-          },
-          (req, res, next) => {
-            // 这个中间件将被跳过
-            console.log("中间件 3");
-            next();
-          },
-          /* ----------- 错误处理中间件 ----------- */
-          (err, req, res, next) => {
-            console.log("error middleware");
-            // 可以在这里发送错误响应，或继续调用 next(err) 传递给下一个错误处理程序
-            const errObj = {
-              code: 500,
-              msg: err instanceof Error ? err.message : err,
-            };
-            if (err) {
-              res.status(500).send(errObj);
-            } else {
-              next();
-            }
-          },
-          (req, res) => {
-            res.send("响应结束");
-          }
-        );
-        
-        /* -------------- 监听端口 -------------- */
-        const port = 5003;
-        app.listen(port, () => {
-          console.log(`server is listened on ${port}`);
-        });
-        
-        ```
-
-        ```bash
-        //控制台
-        server is listened on 5003
-        中间件 1
-        中间件 2 - 抛出错误
-        error middleware
-        ```
-
-        ```bash
-        // 响应内容
-        
-        {
-            "code": 500,
-            "msg": "这是一个测试错误"
+    ```ts
+    app.get(
+      "/",
+      (req, res, next) => {
+        console.log("中间件 1");
+        next();
+      },
+      (req, res, next) => {
+        console.log("中间件 2 - 抛出错误");
+        // 重点: 调用 next(err) 来跳过常规中间件并跳转到错误处理中间件
+        next(new Error("这是一个测试错误"));
+      },
+      (req, res, next) => {
+        // 这个中间件将被跳过
+        console.log("中间件 3");
+        next();
+      },
+      /* ----------- 错误处理中间件 ----------- */
+      (err, req, res, next) => {
+        console.log("error middleware");
+        // 可以在这里发送错误响应，或继续调用 next(err) 传递给下一个错误处理程序
+        const errObj = {
+          code: 500,
+          msg: err instanceof Error ? err.message : err,
+        };
+        if (err) {
+          res.status(500).send(errObj);
+        } else {
+          next();
         }
-        ```
+      },
+      (req, res) => {
+        res.send("响应结束");
+      }
+    );
+  
+    /* -------------- 监听端口 -------------- */
+    const port = 5003;
+    app.listen(port, () => {
+      console.log(`server is listened on ${port}`);
+    });
+    ```
+
+    ```bash
+    //控制台
+    server is listened on 5003
+    中间件 1
+    中间件 2 - 抛出错误
+    error middleware
+    ```
+
+    ```bash
+    // 响应内容
+  
+    {
+        "code": 500,
+        "msg": "这是一个测试错误"
+    }
+    ```
 
 - 中间件优化：通常，将错误处理中间件封装成模块导入使用，并且单独使用，不在常规中间件链条中混用
 
-    - 封装
+  - 封装
 
-        ```ts
-        export const errorMiddleWare = (err, req, res, next) => {
-          console.log("error middleware");
-          // 可以在这里发送错误响应，或继续调用 next(err) 传递给下一个错误处理程序
-          const errObj = {
-            code: 500,
-            msg: err instanceof Error ? err.message : err,
-          };
-          if (err) {
-            res.status(500).send(errObj);
-          } else {
-            next();
-          }
-        };
-        
-        ```
+    ```ts
+    export const errorMiddleWare = (err, req, res, next) => {
+      console.log("error middleware");
+      // 可以在这里发送错误响应，或继续调用 next(err) 传递给下一个错误处理程序
+      const errObj = {
+        code: 500,
+        msg: err instanceof Error ? err.message : err,
+      };
+      if (err) {
+        res.status(500).send(errObj);
+      } else {
+        next();
+      }
+    };
+    ```
 
-    - 使用 - **中间件通常使用use方法**
+  - 使用 - **中间件通常使用 use 方法**
 
-        ```ts
-        import express from "express";
-        import { errorMiddleWare } from "./errorMiddleWare";
-        
-        const app = express();
-        
-        app.get(
-          "/",
-          (req, res, next) => {
-            console.log("中间件 1");
-            next();
-          },
-          (req, res, next) => {
-            console.log("中间件 2 - 抛出错误");
-            // 重点: 调用 next(err) 来跳过常规中间件并跳转到错误处理中间件
-            next(new Error("这是一个测试错误"));
-          },
-          (req, res, next) => {
-            // 这个中间件将被跳过
-            console.log("中间件 3");
-            next();
-          },
-          (req, res) => {
-            res.send("响应结束");
-          }
-        );
-        /* ----------- 2. 使用错误处理中间件 ----------- */
-        app.use("/", (err, req, res, next) => {
-          errorMiddleWare(err, req, res, next);
-        });
-        
-        ```
+    ```ts
+    import express from "express";
+    import { errorMiddleWare } from "./errorMiddleWare";
+    
+    const app = express();
+    
+    app.get(
+      "/",
+      (req, res, next) => {
+        console.log("中间件 1");
+        next();
+      },
+      (req, res, next) => {
+        console.log("中间件 2 - 抛出错误");
+        // 重点: 调用 next(err) 来跳过常规中间件并跳转到错误处理中间件
+        next(new Error("这是一个测试错误"));
+      },
+      (req, res, next) => {
+        // 这个中间件将被跳过
+        console.log("中间件 3");
+        next();
+      },
+      (req, res) => {
+        res.send("响应结束");
+      }
+    );
+    /* ----------- 2. 使用错误处理中间件 ----------- */
+    app.use("/", (err, req, res, next) => {
+      errorMiddleWare(err, req, res, next);
+    });
+    ```
 
-        **Use vs get/post:** 
+    **Use vs get/post:**
 
-        - use能匹配的范围更广，比如 `app.use("/news",(req,res)=>{})`, 只要基路径是 `"/news"`的路由都能匹配（`"/news/a"`, `"/news/a/b/c:id"`等等）， 而get方法，只能精确匹配。因此中间件通常使用use，来匹配更多路由。
-        - 直接使用 `app.use((req,res)=>{})` - 没有路由路径时，表示**全局匹配**。适用于整个app应用
+    - use 能匹配的范围更广，比如 `app.use("/news",(req,res)=>{})`, 只要基路径是 `"/news"`的路由都能匹配（`"/news/a"`, `"/news/a/b/c:id"`等等）， 而 get 方法，只能精确匹配。因此中间件通常使用 use，来匹配更多路由。
+    - 直接使用 `app.use((req,res)=>{})` - 没有路由路径时，表示**全局匹配**。适用于整个 app 应用
 
 #### 2. 工作原理
 
@@ -8609,91 +8545,89 @@ express提供 Web 开发所必需的核心功能，例如：
 
 - 执行任务并修改对象
 
-    中间件可以执行任何代码，最常见的用途是：
+  中间件可以执行任何代码，最常见的用途是：
 
-    - **记录日志**：记录请求时间、IP 地址等。
-    - **数据解析**：使用 `express.json()` 等解析请求体（Body）。
-    - **修改请求/响应对象**：例如，在 `req` 上添加用户信息 (`req.user`)，或修改响应头。
+  - **记录日志**：记录请求时间、IP 地址等。
+  - **数据解析**：使用 `express.json()` 等解析请求体（Body）。
+  - **修改请求/响应对象**：例如，在 `req` 上添加用户信息 (`req.user`)，或修改响应头。
 
 - 控制流程：`next()` 的作用
 
-    在中间件完成自己的任务后，它通过调用 `next()` 函数，将**控制权**交给**堆栈中的下一个中间件或路由处理程序**。
+  在中间件完成自己的任务后，它通过调用 `next()` 函数，将**控制权**交给**堆栈中的下一个中间件或路由处理程序**。
 
-    - **调用 `next()`**：请求继续沿着流水线前进。
-    - **未调用 `next()`**：请求流停止。如果此时也没有发送响应，客户端将一直等待，直到超时（请求**挂起**）。
+  - **调用 `next()`**：请求继续沿着流水线前进。
+  - **未调用 `next()`**：请求流停止。如果此时也没有发送响应，客户端将一直等待，直到超时（请求**挂起**）。
 
 - 结束请求-响应循环
 
-    如果一个中间件直接向客户端发送了响应（例如，`res.send('Error')` 或 `res.json(data)`），那么：
+  如果一个中间件直接向客户端发送了响应（例如，`res.send('Error')` 或 `res.json(data)`），那么：
 
-    - 它**不应该**调用 `next()`。
-    - **请求-响应循环终止**。后续链中的任何中间件或路由处理程序将**不会**再执行。
+  - 它**不应该**调用 `next()`。
+  - **请求-响应循环终止**。后续链中的任何中间件或路由处理程序将**不会**再执行。
 
 #### 3. 常见应用类型
 
 中间件的灵活应用是 Express 强大的基础。 根据功能，常见应用类型可以归类为:
 
-| **类别**         | **函数签名**                                  | **作用范围**   | **引入方式示例**    | **特点**                                                     |
-| ---------------- | --------------------------------------------- | -------------- | ------------------- | ------------------------------------------------------------ |
-| **应用级中间件** | `(req, res, next)` 或 `(err, req, res, next)` | 整个应用       | `app.use(...)`      | 在所有路由和请求处理之前/之后运行，**最通用**。              |
-| **路由级中间件** | `(req, res, next)` 或 `(err, req, res, next)` | 特定路由/路径  | `app.get('/', ...)` | 仅对匹配特定 **HTTP 方法** 和 **路径** 的请求有效。          |
+| **类别**         | **函数签名**                                  | **作用范围**   | **引入方式示例**    | **特点**                                                       |
+| ---------------- | --------------------------------------------- | -------------- | ------------------- | -------------------------------------------------------------- |
+| **应用级中间件** | `(req, res, next)` 或 `(err, req, res, next)` | 整个应用       | `app.use(...)`      | 在所有路由和请求处理之前/之后运行，**最通用**。                |
+| **路由级中间件** | `(req, res, next)` 或 `(err, req, res, next)` | 特定路由/路径  | `app.get('/', ...)` | 仅对匹配特定 **HTTP 方法** 和 **路径** 的请求有效。            |
 | **内置中间件**   | 依功能而定                                    | 整个应用或局部 | `express.json()`    | Express 内置提供，用于处理静态文件、解析请求体等**核心功能**。 |
-| **第三方中间件** | 依功能而定                                    | 整个应用或局部 | `app.use(helmet())` | 从 npm 导入，用于实现更高级的功能，如安全、日志、会话管理等。 |
+| **第三方中间件** | 依功能而定                                    | 整个应用或局部 | `app.use(helmet())` | 从 npm 导入，用于实现更高级的功能，如安全、日志、会话管理等。  |
 
 - 应用级中间件 (Application-level Middleware)
 
-    - 最常见的中间件类型，使用 `app.use()` 绑定到应用实例。
+  - 最常见的中间件类型，使用 `app.use()` 绑定到应用实例。
 
-    - 它们会在**任何请求**到达**路由处理器**之前被执行。通常用于设置应用级别的功能，如日志记录、请求体解析、CORS 配置等。
+  - 它们会在**任何请求**到达**路由处理器**之前被执行。通常用于设置应用级别的功能，如日志记录、请求体解析、CORS 配置等。
 
-        ```ts
-        // 自定义日志中间件
-        app.use((req, res, next) => {
-          console.log(`${req.method} ${req.url}`);
-          next();
-        });
-        ```
+    ```ts
+    // 自定义日志中间件
+    app.use((req, res, next) => {
+      console.log(`${req.method} ${req.url}`);
+      next();
+    });
+    ```
 
 - 路由级中间件 (Router-level Middleware)
 
-    - 绑定到特定的路由实例 (`app.get()`, `app.post()`, `router.use()`, 等) 或中间件链条中的。
+  - 绑定到特定的路由实例 (`app.get()`, `app.post()`, `router.use()`, 等) 或中间件链条中的。
 
-    - **只对**匹配特定 HTTP 方法和路径的请求有效
+  - **只对**匹配特定 HTTP 方法和路径的请求有效
 
-        ```ts
-        // 只有访问 /admin 的 GET 请求才会执行 checkAuth
-        app.get('/admin', checkAuth, (req, res) => {
-          res.send('Admin Page');
-        });
-        ```
+    ```ts
+    // 只有访问 /admin 的 GET 请求才会执行 checkAuth
+    app.get("/admin", checkAuth, (req, res) => {
+      res.send("Admin Page");
+    });
+    ```
 
 - 内置中间件 (Built-in Middleware)
 
-    - Express 框架自身提供的一些功能，通过 `express` 对象上的方法暴露
+  - Express 框架自身提供的一些功能，通过 `express` 对象上的方法暴露
 
-    - 不依赖于第三方模块，开箱即用，主要用于处理请求的**基础解析**和**静态文件服务**。
+  - 不依赖于第三方模块，开箱即用，主要用于处理请求的**基础解析**和**静态文件服务**。
 
-        ```ts
-        // 在所有路由之前解析 JSON 请求体
-        app.use(express.json()); 
-        
-        app.get('/news', (req, res) => {
-          console.log(`${req.method} ${req.url}`);
-          res.send('解析完成');
-        });
-        ```
+    ```ts
+    // 在所有路由之前解析 JSON 请求体
+    app.use(express.json());
+  
+    app.get("/news", (req, res) => {
+      console.log(`${req.method} ${req.url}`);
+      res.send("解析完成");
+    });
+    ```
 
 - 第三方中间件 (Third-party Middleware)
 
-    - 实现 Express 中不具备的功能，我们需要从 npm 安装和导入的模块
-    - 功能强大且多样，覆盖了从安全到会话管理等各种需求
-    - 比如： 
-        - **`helmet`**: 用于设置各种 HTTP 头部，增强应用安全
-        - **`morgan`**: 用于生成详细的请求日志
-        - **`cookie-parser`**: 用于解析请求中的 Cookie
-        - **`express-session`**: 用于会话管理
-
-
+  - 实现 Express 中不具备的功能，我们需要从 npm 安装和导入的模块
+  - 功能强大且多样，覆盖了从安全到会话管理等各种需求
+  - 比如：
+    - **`helmet`**: 用于设置各种 HTTP 头部，增强应用安全
+    - **`morgan`**: 用于生成详细的请求日志
+    - **`cookie-parser`**: 用于解析请求中的 Cookie
+    - **`express-session`**: 用于会话管理
 
 ### 4-4 内置中间件
 
@@ -8703,82 +8637,76 @@ express提供 Web 开发所必需的核心功能，例如：
 
 - **工作原理：** 它根据请求的 URL 路径，在指定的文件系统目录 (`root`) 中查找匹配的文件，
 
-    - 如果找到该文件，会将内容发送给客户端，而不再将请求移交给后续的中间件。
+  - 如果找到该文件，会将内容发送给客户端，而不再将请求移交给后续的中间件。
 
-    - 如果找不到该文件， 则直接移交给后续中间件处理
+  - 如果找不到该文件， 则直接移交给后续中间件处理
 
-    - 默认情况下：如果默认的结果是一个目录，则会自动使用该目录下的index.html文件
+  - 默认情况下：如果默认的结果是一个目录，则会自动使用该目录下的 index.html 文件
 
-    - 可以再配置对象中进行配置
+  - 可以再配置对象中进行配置
 
-        ```ts
-        express.static(root, {
-        	index: index.html // 默认情况
-        })
-        ```
+    ```ts
+    express.static(root, {
+      index: index.html, // 默认情况
+    });
+    ```
 
 - **典型用法：** 当您需要让浏览器能够访问项目中的公共文件夹（如 `public` 文件夹）时使用。
 
-    ```ts
-    import express from "express";
-    
-    /* ---------- 创建一个express应用 --------- */
-    const app = express();
-    
-    /* -------------- 内置中间件 ------------- */
-    /* -------- express.static1. -------- */
-    const staticRoot = path.resolve(__dirname, "../public");
-    // console.log(staticRoot);
-    app.use("/", express.static(staticRoot));
-    
-    app.get("/", (req, res) => {
-      res.send("aaaaa"); // 这个中间件不运行
-    });
-    
-    /* -------------- 监听端口 -------------- */
-    const port = 5003;
-    app.listen(port, () => {
-      console.log(`server is listened on ${port}`);
-    });
-    
-    ```
-
-    
+  ```ts
+  import express from "express";
+  
+  /* ---------- 创建一个express应用 --------- */
+  const app = express();
+  
+  /* -------------- 内置中间件 ------------- */
+  /* -------- express.static1. -------- */
+  const staticRoot = path.resolve(__dirname, "../public");
+  // console.log(staticRoot);
+  app.use("/", express.static(staticRoot));
+  
+  app.get("/", (req, res) => {
+    res.send("aaaaa"); // 这个中间件不运行
+  });
+  
+  /* -------------- 监听端口 -------------- */
+  const port = 5003;
+  app.listen(port, () => {
+    console.log(`server is listened on ${port}`);
+  });
+  ```
 
 #### 2. express.json()
 
-- 问题： req请求的读写都是以流的形式执行的，因此我们在流完全执行前，无法获取请求体的内容，只能等到流读取完成， 原生流的形式不方便使用
+- 问题： req 请求的读写都是以流的形式执行的，因此我们在流完全执行前，无法获取请求体的内容，只能等到流读取完成， 原生流的形式不方便使用
 
-    ```ts
-    
-    /* ----------- 原生流的形式获取请求体 ---------- */
-    app.post("/api/student", (req, res) => {
-      let str = "";
-      req.on("data", (chunck) => {
-        str += chunck;
-      });
-      req.on("end", () => {
-        req.body = str;
-        console.log(req.body); // { name: 'Allex', age: 18 }
-      });
+  ```ts
+  /* ----------- 原生流的形式获取请求体 ---------- */
+  app.post("/api/student", (req, res) => {
+    let str = "";
+    req.on("data", (chunck) => {
+      str += chunck;
     });
-    ```
-
-    
+    req.on("end", () => {
+      req.body = str;
+      console.log(req.body); // { name: 'Allex', age: 18 }
+    });
+  });
+  ```
 
 - **用途：** 用于解析 **JSON 格式**的请求体（Request Body）
 
 - **工作原理：** 当客户端通过 **POST** 或 **PUT** 请求发送 JSON 数据时（通常设置 `Content-Type: application/json`），此中间件会拦截请求，解析请求体中的 JSON 字符串，并将解析后的数据填充到 `req.body` 属性上。
 
-    ```ts
-    /* -------------- 内置中间件 ------------- */
-    /* -------- express.json -------- */
-    app.use(express.json()); // 解析 application/json 类型的请求体
-    
-    app.post("/api/student", (req, res) => {
-      console.log(req.body); //{ name: 'Allex', age: 18 }
-    });
-    ```
+  ```ts
+  /* -------------- 内置中间件 ------------- */
+  /* -------- express.json -------- */
+  app.use(express.json()); // 解析 application/json 类型的请求体
+  
+  app.post("/api/student", (req, res) => {
+    console.log(req.body); //{ name: 'Allex', age: 18 }
+  });
+  ```
 
 #### 3. express.urlencoded()
 
@@ -8788,28 +8716,26 @@ express提供 Web 开发所必需的核心功能，例如：
 
 - **关键参数 `extended`：**
 
-    - `extended: false`：使用经典的编码方式解析，不支持嵌套对象。
-    - `extended: true` (推荐)：使用 `qs` 库解析，支持解析 URL-encoded 格式的**嵌套对象和数组**。
+  - `extended: false`：使用经典的编码方式解析，不支持嵌套对象。
+  - `extended: true` (推荐)：使用 `qs` 库解析，支持解析 URL-encoded 格式的**嵌套对象和数组**。
 
 - 示例代码：
 
-    ```ts
-    /* -------------- 内置中间件 ------------- */
-    /* -------- express.urlencoded() -------- */
-    app.use(
-      express.urlencoded({
-        extend: true, // 解析 application/x-www-form-urlencoded 类型的请求体，支持嵌套对象
-      })
-    );
-    
-    app.post("/api/student", (req, res) => {
-      console.log(req.body); //{ name: 'Allex', age: 18 }
-    });
-    ```
+  ```ts
+  /* -------------- 内置中间件 ------------- */
+  /* -------- express.urlencoded() -------- */
+  app.use(
+    express.urlencoded({
+      extend: true, // 解析 application/x-www-form-urlencoded 类型的请求体，支持嵌套对象
+    })
+  );
+  
+  app.post("/api/student", (req, res) => {
+    console.log(req.body); //{ name: 'Allex', age: 18 }
+  });
+  ```
 
-    
-
-### 4-5 express路由
+### 4-5 express 路由
 
 #### 1. 路由（Routing）的基本概念
 
@@ -8822,51 +8748,51 @@ express提供 Web 开发所必需的核心功能，例如：
 一个基本的路由定义结构是：
 
 ```ts
-app.METHOD(PATH, HANDLER)
+app.METHOD(PATH, HANDLER);
 ```
 
 #### 2. express.Router()
 
-当应用程序变得越来越复杂时，将所有的路由都放在一个文件中（例如 `app.js` 或 `server.js`）会变得难以维护。express提供了Router模块，用来模块化代码。
+当应用程序变得越来越复杂时，将所有的路由都放在一个文件中（例如 `app.js` 或 `server.js`）会变得难以维护。express 提供了 Router 模块，用来模块化代码。
 
 - **创建路由实例：**通过`express.Router()` 创建一个**独立的、可挂载的路由实例**， 想象成一个“**迷你 Express 应用**”，它只包含自己的路由和中间件定义
 
-    ```ts
-    // users.js
-    const express = require('express')
-    const router = express.Router()
-    ```
+  ```ts
+  // users.js
+  const express = require("express");
+  const router = express.Router();
+  ```
 
 - **定义路由表：** 在这个实例上定义该模块特有的路由。
 
-    ```ts
-    // users.js
-    router.get('/', (req, res) => {
-      // 处理 GET /users 的请求
-      res.send('User list')
-    })
-    
-    router.get('/:id', (req, res) => {
-      // 处理 GET /users/:id 的请求
-      res.send(`User: ${req.params.id}`)
-    })
-    
-    module.exports = router
-    ```
+  ```ts
+  // users.js
+  router.get("/", (req, res) => {
+    // 处理 GET /users 的请求
+    res.send("User list");
+  });
+
+  router.get("/:id", (req, res) => {
+    // 处理 GET /users/:id 的请求
+    res.send(`User: ${req.params.id}`);
+  });
+
+  module.exports = router;
+  ```
 
 - **挂载 Router：** 在主应用文件（如 `app.js`）中，使用 `app.use()` 方法将该路由实例挂载到特定的**基础路径**上。
 
-    ```ts
-    // app.js
-    const express = require('express')
-    const app = express()
-    const usersRouter = require('./users') // 导入路由模块
-    
-    // 将 usersRouter 挂载到 /users 路径下
-    app.use('/users', usersRouter) 
-    
-    // 此时，usersRouter 中定义的 / 就会变成 /users，/users/:id 变成 /users/:id
-    ```
+  ```ts
+  // app.js
+  const express = require("express");
+  const app = express();
+  const usersRouter = require("./users"); // 导入路由模块
+
+  // 将 usersRouter 挂载到 /users 路径下
+  app.use("/users", usersRouter);
+
+  // 此时，usersRouter 中定义的 / 就会变成 /users，/users/:id 变成 /users/:id
+  ```
 
 - 可以为应用程序的不同部分（例如 `/users`、`/admin`、`/api/v1`）创建**单独的路由模块文件**。
 
@@ -8874,448 +8800,683 @@ app.METHOD(PATH, HANDLER)
 
 - **路由函数就是一种特殊的中间件**：
 
-    在 Express 中，处理请求的函数（无论是路由处理函数还是普通的 `app.use()` 函数）本质上都是**中间件**。它们要么处理请求并发送响应结束请求，要么调用 `next()` 将控制权交给下一个中间件或路由。
+  在 Express 中，处理请求的函数（无论是路由处理函数还是普通的 `app.use()` 函数）本质上都是**中间件**。它们要么处理请求并发送响应结束请求，要么调用 `next()` 将控制权交给下一个中间件或路由。
 
 - **Router 实例可以有自己的中间件**：
 
-    可以在 `router` 实例上定义只对该模块路由生效的中间件，例如身份验证或日志记录。
+  可以在 `router` 实例上定义只对该模块路由生效的中间件，例如身份验证或日志记录。
 
-    ```ts
-    // users.js
-    router.use((req, res, next) => {
-      console.log('Time: ', Date.now())
-      next() // 这个中间件只对 /users 及其子路由生效
-    })
-    ```
+  ```ts
+  // users.js
+  router.use((req, res, next) => {
+    console.log("Time: ", Date.now());
+    next(); // 这个中间件只对 /users 及其子路由生效
+  });
+  ```
 
 #### 4. 完善学生模块的路由
 
 - 错误处理中间件捕获错误
 
-    express5能够自动捕获异步请求里的错误，并传递给错误处理中间件，因此不需要使用第三方库或者自定义一个捕获异步错误的工具函数。仅需在异步请求里抛出错误即可。
+  express5 能够自动捕获异步请求里的错误，并传递给错误处理中间件，因此不需要使用第三方库或者自定义一个捕获异步错误的工具函数。仅需在异步请求里抛出错误即可。
 
-    完善student service - 抛出错误
+  完善 student service - 抛出错误
 
-    ```js
-    /* -------------- 增加数据 -------------- */
-    const studentAdd = async (obj: Istudent) => {
-      const valResult = studentSchema.safeParse(obj);
-    
-      if (!valResult.success) {
-        throw new Error(valResult.error.issues.map((e) => e.message).join("; "));
-      }
-    
-      const inst = Student.create(obj);
-      const res = inst ? (await inst).toJSON() : null;
-      return res;
-    };
-    
-    /* -------------- 删除数据 -------------- */
-    ...
-    
-    /* -------------- 修改数据 -------------- */
-    ...
-    ```
+  ```js
+  /* -------------- 增加数据 -------------- */
+  const studentAdd = async (obj: Istudent) => {
+    const valResult = studentSchema.safeParse(obj);
 
-- 数据验证 + UTC日期
+    if (!valResult.success) {
+      throw new Error(valResult.error.issues.map((e) => e.message).join("; "));
+    }
 
-    - HTTP 请求进来的所有数据，在进入 Zod 之前，都是 `string | unknown`
-    - 必须有一个“输入归一化层”，把它们统一转换成 JS 的真实类型：
-         `number / boolean / Date / string`
-    - 然后再交给 Zod 做“最终类型验证”
-    - UTC日期， HTTP 请求进来的日期都转换成UTC时间，存入数据库。读取时间时，再转换成本地时间给响应结果
+    const inst = Student.create(obj);
+    const res = inst ? (await inst).toJSON() : null;
+    return res;
+  };
 
-    ​	
+  /* -------------- 删除数据 -------------- */
+  ...
 
-    封装一个输入归一化层的schema，用于转换成js类型
+  /* -------------- 修改数据 -------------- */
+  ...
+  ```
 
-    ```ts
-    // primitives.ts
-    
-    import { z } from "zod";
-    import dayjs from "dayjs";
-    import utc from "dayjs/plugin/utc";
-    
-    dayjs.extend(utc);
-    
-    /* ---------- number ---------- */
-    
-    export const numberSchema = z.coerce.number();
-    
-    /* ---------- int ---------- */
-    
-    export const intSchema = z.coerce.number().int();
-    
-    /* ---------- string ---------- */
-    
-    export const stringSchema = () =>
-      z.preprocess((v) => (typeof v === "string" ? v.trim() : v), z.string());
-    
-    /* ---------- boolean ---------- */
-    
-    export const booleanSchema = z.preprocess((v) => {
-      if (v === true || v === false) return v;
-      if (v === "true" || v === "1") return true;
-      if (v === "false" || v === "0") return false;
-      return v;
-    }, z.boolean());
-    
-    /* ---------- date (UTC) ---------- */
-    
-    export const utcDateSchema = z.preprocess((v) => {
-      if (v instanceof Date) {
-        return dayjs(v).utc().toDate();
-      }
-      if (typeof v === "string" || typeof v === "number") {
-        const d = dayjs(v);
-        if (!d.isValid()) return v;
-        return d.utc().toDate();
-      }
-    }, z.date());
-    
-    /* =========================
-       统一导出
-       ========================= */
-    
-    export const s = {
-      numberSchema,
-      intSchema,
-      booleanSchema,
-      utcDateSchema,
-      stringSchema,
-    };
-    
-    ```
+- 数据验证 + UTC 日期
 
-    studentSchema中验证数据
+  - HTTP 请求进来的所有数据，在进入 Zod 之前，都是 `string | unknown`
+  - 必须有一个“输入归一化层”，把它们统一转换成 JS 的真实类型：
+    `number / boolean / Date / string`
+  - 然后再交给 Zod 做“最终类型验证”
+  - UTC 日期， HTTP 请求进来的日期都转换成 UTC 时间，存入数据库。读取时间时，再转换成本地时间给响应结果
 
-    ```ts
-    import { z } from "zod";
-    import { s } from "./primitives";
-    
-    const studentSchema = z.object({
-      name: z.string().trim().min(1).max(20),
-      dob: s.utcDateSchema,
-      sex: s.booleanSchema,
-      mobile: z
-        .string()
-        .trim()
-        .regex(/02[1-8]{1}-[0-9]{7}/),
-      ClassId: s.intSchema.positive(),
+  封装一个输入归一化层的 schema，用于转换成 js 类型
+
+  ```ts
+  // primitives.ts
+
+  import { z } from "zod";
+  import dayjs from "dayjs";
+  import utc from "dayjs/plugin/utc";
+
+  dayjs.extend(utc);
+
+  /* ---------- number ---------- */
+
+  export const numberSchema = z.coerce.number();
+
+  /* ---------- int ---------- */
+
+  export const intSchema = z.coerce.number().int();
+
+  /* ---------- string ---------- */
+
+  export const stringSchema = () =>
+    z.preprocess((v) => (typeof v === "string" ? v.trim() : v), z.string());
+
+  /* ---------- boolean ---------- */
+
+  export const booleanSchema = z.preprocess((v) => {
+    if (v === true || v === false) return v;
+    if (v === "true" || v === "1") return true;
+    if (v === "false" || v === "0") return false;
+    return v;
+  }, z.boolean());
+
+  /* ---------- date (UTC) ---------- */
+
+  export const utcDateSchema = z.preprocess((v) => {
+    if (v instanceof Date) {
+      return dayjs(v).utc().toDate();
+    }
+    if (typeof v === "string" || typeof v === "number") {
+      const d = dayjs(v);
+      if (!d.isValid()) return v;
+      return d.utc().toDate();
+    }
+  }, z.date());
+
+  /* =========================
+     统一导出
+     ========================= */
+
+  export const s = {
+    numberSchema,
+    intSchema,
+    booleanSchema,
+    utcDateSchema,
+    stringSchema,
+  };
+  ```
+
+  studentSchema 中验证数据
+
+  ```ts
+  import { z } from "zod";
+  import { s } from "./primitives";
+
+  const studentSchema = z.object({
+    name: z.string().trim().min(1).max(20),
+    dob: s.utcDateSchema,
+    sex: s.booleanSchema,
+    mobile: z
+      .string()
+      .trim()
+      .regex(/02[1-8]{1}-[0-9]{7}/),
+    ClassId: s.intSchema.positive(),
+  });
+
+  type Istudent = z.infer<typeof studentSchema>;
+
+  export { studentSchema, Istudent };
+  ```
+
+- 完善 student service
+
+  ```ts
+  import { Class, Student } from "../models/sync";
+  import { Op } from "sequelize";
+
+  import { studentSchema, Istudent } from "../schemas/schema";
+
+  /* interface Istudent {
+    name: string;
+    dob: string | Date;
+    sex: boolean;
+    mobile: string;
+    ClassId?: number;
+  } */
+
+  /* -------------- 增加数据 -------------- */
+  const studentAdd = async (obj: unknown) => {
+    const valResult = studentSchema.safeParse(obj);
+    // console.log(valResult);
+
+    if (!valResult.success) {
+      // console.log(valResult.error.issues.map((e) => e.message));
+      throw new Error(valResult.error.issues.map((e) => e.message).join("; "));
+    }
+
+    const inst = await Student.create(valResult.data);
+    return inst.toJSON();
+  };
+
+  /* -------------- 删除数据 -------------- */
+  const studentDelete = async (id) => {
+    const parsedId = Number(id);
+    if (!Number.isInteger(parsedId) || parsedId <= 0) {
+      throw new Error("Incorrect ID");
+    }
+    const res = await Student.destroy({
+      where: {
+        id,
+      },
     });
-    
-    type Istudent = z.infer<typeof studentSchema>;
-    
-    export { studentSchema, Istudent };
-    ```
+    if (res === 0) {
+      throw new Error("学生不存在，删除失败");
+    }
+    // console.log("delete done");
+    // console.log(res);
+    return res;
+  };
 
-- 完善student service 
+  /* -------------- 修改数据 -------------- */
+  const studentUpdate = async (id, newObj) => {
+    const valResult = studentSchema.partial().safeParse(newObj);
 
-    ```ts
-    import { Class, Student } from "../models/sync";
-    import { Op } from "sequelize";
-    
-    import { studentSchema, Istudent } from "../schemas/schema";
-    
-    /* interface Istudent {
-      name: string;
-      dob: string | Date;
-      sex: boolean;
-      mobile: string;
-      ClassId?: number;
-    } */
-    
-    /* -------------- 增加数据 -------------- */
-    const studentAdd = async (obj: unknown) => {
-      const valResult = studentSchema.safeParse(obj);
-      // console.log(valResult);
-    
-      if (!valResult.success) {
-        // console.log(valResult.error.issues.map((e) => e.message));
-        throw new Error(valResult.error.issues.map((e) => e.message).join("; "));
-      }
-    
-      const inst = await Student.create(valResult.data);
-      return inst.toJSON();
+    // 打印并且抛出错误
+    if (!valResult.success) {
+      // console.log(valResult.error.issues.map((e) => e.message));
+      throw new Error(valResult.error.issues.map((e) => e.message).join("; "));
+    }
+    // 影响的结果：0 - 没影响：1 - 有影响
+    const [affected] = await Student.update(valResult.data, {
+      where: {
+        id,
+      },
+    });
+    if (affected === 0) {
+      // console.log("学生不存在或内容不变，更新失败");
+      throw new Error("学生不存在或内容不变，更新失败");
+    }
+    // console.log(affected);
+    // console.log("update done");
+    return affected;
+  };
+
+  /* ---------- 查询数据 -findAll --------- */
+  /* ------------- 1. 查询全部 ------------ */
+  const getStudentsAll = async () => {
+    const res = await Student.findAll();
+    const students = res.map((s) => s.toJSON());
+
+    // console.log(students);
+    // console.log("retrive done");
+    return students;
+  };
+  /* --------- 2. 查询部分 - 分页数据 --------- */
+  const getStudents = async (page = 1, limit = 10) => {
+    const res = await Student.findAll({
+      offset: (page - 1) * limit, // 跳过多少条数据
+      limit, // 每页显示多少条数据
+    });
+    const students = res.map((s) => s.toJSON());
+    // console.log(students);
+    // console.log("retrive done");
+    return students;
+  };
+
+  /* --------- 3. 按条件查询 - 女同学 --------- */
+  const getStudentsBySex = async (
+    page = 1,
+    limit = 10,
+    sex: boolean = false
+  ) => {
+    const res = await Student.findAll({
+      offset: (page - 1) * limit, // 跳过多少条数据
+      limit, // 每页显示多少条数据
+      where: {
+        sex, // 按性别查询
+      },
+    });
+
+    const students = res.map((s) => s.toJSON());
+
+    // 获取总数
+    const total = await Student.count({
+      where: { sex },
+    });
+    const data = {
+      total,
+      page,
+      students,
     };
-    
-    /* -------------- 删除数据 -------------- */
-    const studentDelete = async (id) => {
-      const parsedId = Number(id);
-      if (!Number.isInteger(parsedId) || parsedId <= 0) {
-        throw new Error("Incorrect ID");
-      }
-      const res = await Student.destroy({
-        where: {
-          id,
+    console.log(data);
+    console.log("retrive done");
+    return data;
+  };
+
+  /* ------------- 4. 分页查询+总数 ------------ */
+
+  const getStudentsByPage = async (page = 1, limit = 10) => {
+    const res = await Student.findAndCountAll({
+      offset: (page - 1) * limit,
+      limit,
+    });
+
+    const data = {
+      total: res.count,
+      students: JSON.parse(JSON.stringify(res.rows)),
+    };
+    console.log(data);
+    return data;
+  };
+
+  /* ------------- 5. 模糊查询 ------------ */
+
+  const getStudetsLike = async (page = 1, limit = 10, keyword) => {
+    const res = await Student.findAndCountAll({
+      offset: (page - 1) * limit,
+      limit,
+      where: {
+        name: {
+          [Op.like]: `%${keyword}%`,
         },
-      });
-      if (res === 0) {
-        throw new Error("学生不存在，删除失败");
-      }
-      // console.log("delete done");
-      // console.log(res);
-      return res;
+      },
+    });
+    const data = {
+      total: res.count,
+      students: JSON.parse(JSON.stringify(res.rows)),
     };
-    
-    /* -------------- 修改数据 -------------- */
-    const studentUpdate = async (id, newObj) => {
-      const valResult = studentSchema.partial().safeParse(newObj);
-    
-      // 打印并且抛出错误
-      if (!valResult.success) {
-        // console.log(valResult.error.issues.map((e) => e.message));
-        throw new Error(valResult.error.issues.map((e) => e.message).join("; "));
-      }
-      // 影响的结果：0 - 没影响：1 - 有影响
-      const [affected] = await Student.update(valResult.data, {
-        where: {
-          id,
-        },
-      });
-      if (affected === 0) {
-        // console.log("学生不存在或内容不变，更新失败");
-        throw new Error("学生不存在或内容不变，更新失败");
-      }
-      // console.log(affected);
-      // console.log("update done");
-      return affected;
+    console.log(data);
+    return data;
+  };
+
+  /* ------ 6. 查询特定属性  - attributes ------ */
+  /**
+   *
+   * @param page 当前页数
+   * @param limit 每页显示的数量
+   * @param atrrs 需要查询的特点属性的数组
+   * @returns
+   */
+  const getStudentsAttr = async (page = 1, limit = 10, atrrs) => {
+    const res = await Student.findAndCountAll({
+      attributes: atrrs,
+      offset: (page - 1) * limit,
+      limit,
+    });
+    const data = {
+      total: res.count,
+      students: JSON.parse(JSON.stringify(res.rows)),
     };
-    
-    /* ---------- 查询数据 -findAll --------- */
-    /* ------------- 1. 查询全部 ------------ */
-    const getStudentsAll = async () => {
-      const res = await Student.findAll();
-      const students = res.map((s) => s.toJSON());
-    
-      // console.log(students);
-      // console.log("retrive done");
-      return students;
+    console.log(data);
+    return data;
+  };
+
+  /* -------- 7. 包含关系 - include ------- */
+  const getStudentsInclude = async (page = 1, limit = 10) => {
+    const res = await Student.findAndCountAll({
+      offset: (page - 1) * limit,
+      limit,
+      include: [Class],
+    });
+    const data = {
+      total: res.count,
+      students: JSON.parse(JSON.stringify(res.rows)),
     };
-    /* --------- 2. 查询部分 - 分页数据 --------- */
-    const getStudents = async (page = 1, limit = 10) => {
-      const res = await Student.findAll({
-        offset: (page - 1) * limit, // 跳过多少条数据
-        limit, // 每页显示多少条数据
-      });
-      const students = res.map((s) => s.toJSON());
-      // console.log(students);
-      // console.log("retrive done");
-      return students;
-    };
-    
-    /* --------- 3. 按条件查询 - 女同学 --------- */
-    const getStudentsBySex = async (page = 1, limit = 10, sex: boolean = false) => {
-      const res = await Student.findAll({
-        offset: (page - 1) * limit, // 跳过多少条数据
-        limit, // 每页显示多少条数据
-        where: {
-          sex, // 按性别查询
-        },
-      });
-    
-      const students = res.map((s) => s.toJSON());
-    
-      // 获取总数
-      const total = await Student.count({
-        where: { sex },
-      });
-      const data = {
-        total,
-        page,
-        students,
-      };
-      console.log(data);
-      console.log("retrive done");
-      return data;
-    };
-    
-    /* ------------- 4. 分页查询+总数 ------------ */
-    
-    const getStudentsByPage = async (page = 1, limit = 10) => {
-      const res = await Student.findAndCountAll({
-        offset: (page - 1) * limit,
-        limit,
-      });
-    
-      const data = {
-        total: res.count,
-        students: JSON.parse(JSON.stringify(res.rows)),
-      };
-      console.log(data);
-      return data;
-    };
-    
-    /* ------------- 5. 模糊查询 ------------ */
-    
-    const getStudetsLike = async (page = 1, limit = 10, keyword) => {
-      const res = await Student.findAndCountAll({
-        offset: (page - 1) * limit,
-        limit,
-        where: {
-          name: {
-            [Op.like]: `%${keyword}%`,
-          },
-        },
-      });
-      const data = {
-        total: res.count,
-        students: JSON.parse(JSON.stringify(res.rows)),
-      };
-      console.log(data);
-      return data;
-    };
-    
-    /* ------ 6. 查询特定属性  - attributes ------ */
-    /**
-     *
-     * @param page 当前页数
-     * @param limit 每页显示的数量
-     * @param atrrs 需要查询的特点属性的数组
-     * @returns
-     */
-    const getStudentsAttr = async (page = 1, limit = 10, atrrs) => {
-      const res = await Student.findAndCountAll({
-        attributes: atrrs,
-        offset: (page - 1) * limit,
-        limit,
-      });
-      const data = {
-        total: res.count,
-        students: JSON.parse(JSON.stringify(res.rows)),
-      };
-      console.log(data);
-      return data;
-    };
-    
-    /* -------- 7. 包含关系 - include ------- */
-    const getStudentsInclude = async (page = 1, limit = 10) => {
-      const res = await Student.findAndCountAll({
-        offset: (page - 1) * limit,
-        limit,
-        include: [Class],
-      });
-      const data = {
-        total: res.count,
-        students: JSON.parse(JSON.stringify(res.rows)),
-      };
-      console.log(data);
-      return data;
-    };
-    
-    export {
-      studentAdd,
-      studentDelete,
-      studentUpdate,
-      getStudentsAll,
-      getStudents,
-      getStudentsBySex,
-      getStudentsByPage,
-      getStudetsLike,
-      getStudentsAttr,
-      getStudentsInclude,
-    };
-    
-    ```
+    console.log(data);
+    return data;
+  };
+
+  export {
+    studentAdd,
+    studentDelete,
+    studentUpdate,
+    getStudentsAll,
+    getStudents,
+    getStudentsBySex,
+    getStudentsByPage,
+    getStudetsLike,
+    getStudentsAttr,
+    getStudentsInclude,
+  };
+  ```
 
 - 编写学生路由并导出使用
 
-    ```ts
-    import express from "express";
-    import {
-      studentAdd,
-      studentDelete,
-      studentUpdate,
-      getStudentsAll,
-      getStudents,
-      getStudentsBySex,
-      getStudentsByPage,
-      getStudetsLike,
-      getStudentsAttr,
-      getStudentsInclude,
-    } from "../servers/student";
-    
-    /* ------------- 创建路由实例 ------------- */
-    const router = express.Router();
-    
-    /* -------------- 定义路由表 ------------- */
-    /**
-     * 分页查询学生
-     */
-    router.get("/", async (req, res) => {
-      console.log("分页查询");
-      const page = req.query?.page || 1;
-      const limit = req.query?.limit || 10;
-      const data = await getStudentsByPage(+page, +limit);
-      res.send({
-        code: 0,
-        data,
-      });
+  ```ts
+  import express from "express";
+  import {
+    studentAdd,
+    studentDelete,
+    studentUpdate,
+    getStudentsAll,
+    getStudents,
+    getStudentsBySex,
+    getStudentsByPage,
+    getStudetsLike,
+    getStudentsAttr,
+    getStudentsInclude,
+  } from "../servers/student";
+  
+  /* ------------- 创建路由实例 ------------- */
+  const router = express.Router();
+  
+  /* -------------- 定义路由表 ------------- */
+  /**
+   * 分页查询学生
+   */
+  router.get("/", async (req, res) => {
+    console.log("分页查询");
+    const page = req.query?.page || 1;
+    const limit = req.query?.limit || 10;
+    const data = await getStudentsByPage(+page, +limit);
+    res.send({
+      code: 0,
+      data,
     });
-    // 添加学生
-    router.post("/", async (req, res) => {
-      const data = await studentAdd(req.body);
-      res.send(data);
-    });
-    
-    // 修改学生
-    router.put("/:id", async (req, res) => {
-      const id = req.params.id;
-      const result = await studentUpdate(id, req.body);
-      res.send(result);
-    });
-    
-    // 删除学生
-    router.delete("/:id", async (req, res) => {
-      const id = req.params.id;
-      const result = await studentDelete(id);
-      res.send(result);
-    });
-    
-    // 测试error中间件
-    router.get("/__test_error", async (req, res) => {
-      throw new Error("EXPRESS 5 ASYNC TEST");
-    });
-    
-    export { router as studentRouter };
-    ```
+  });
+  // 添加学生
+  router.post("/", async (req, res) => {
+    const data = await studentAdd(req.body);
+    res.send(data);
+  });
+  
+  // 修改学生
+  router.put("/:id", async (req, res) => {
+    const id = req.params.id;
+    const result = await studentUpdate(id, req.body);
+    res.send(result);
+  });
+  
+  // 删除学生
+  router.delete("/:id", async (req, res) => {
+    const id = req.params.id;
+    const result = await studentDelete(id);
+    res.send(result);
+  });
+  
+  // 测试error中间件
+  router.get("/__test_error", async (req, res) => {
+    throw new Error("EXPRESS 5 ASYNC TEST");
+  });
+  
+  export { router as studentRouter };
+  ```
 
-    ```ts
-    import express from "express";
-    import { studentRouter } from "./studentRouter";
-    import { errorMiddleWare } from "./errorMiddleWare";
-    
-    /* ---------- 创建一个express应用 --------- */
-    const app = express();
-    
-    /* ------ 内置中间件 - urlencoded() ------ */
-    app.use(
-      express.urlencoded({
-        extended: true, // 解析 application/x-www-form-urlencoded 类型的请求体，支持嵌套对象
-      })
+  ```ts
+  import express from "express";
+  import { studentRouter } from "./studentRouter";
+  import { errorMiddleWare } from "./errorMiddleWare";
+  
+  /* ---------- 创建一个express应用 --------- */
+  const app = express();
+  
+  /* ------ 内置中间件 - urlencoded() ------ */
+  app.use(
+    express.urlencoded({
+      extended: true, // 解析 application/x-www-form-urlencoded 类型的请求体，支持嵌套对象
+    })
+  );
+  
+  /* ---------- 内置中间件 - json ---------- */
+  app.use(express.json()); // 解析 application/json 类型的请求体
+  
+  /* -------- 路由实例 - studentRouter ------- */
+  app.use("/student", studentRouter);
+  
+  /* -------------- 错误中间件 ------------- */
+  /* ----------- 必须放在所以中间之后 ----------- */
+  app.use(errorMiddleWare);
+  
+  /* -------------- 监听端口 -------------- */
+  const port = 5003;
+  app.listen(port, () => {
+    console.log(`server is listened on ${port}`);
+  });
+  ```
+
+### 4-6 cookie 的基本概念
+
+#### 1. 为什么需要 Cookie
+
+- 问题：
+
+  > 假设一个服务器有一个接口 API，通过这个 API 可以添加一个管理员。
+  >
+  > 但是，不是任何人都有权限这么操作。那么服务器是如何知道请求这个的人有权限的呢？？
+  >
+  > 答案是：逻辑上来说，只有登录过的管理员，才能有权限操作。
+  >
+  > **问题**： 技术上来说，客户端和服务器的传输，使用的是 http 协议。**而 http 协议是无状态的**：服务器不知道只一次请求（添加一个管理员）的人，跟之前已经登录成功的人是不是同一个人。
+
+- 如何解决？
+
+  **服务器**：
+
+  按照下面的方式验证客户端的身份
+
+  - 客户端登录成功后，服务器给客户端一个出入证（令牌 token）
+  - 后续客户端的请求，都必须要附带这个出入证
+
+  服务器通过认证（token）而不是认人的方式，识别了客户端的身份。
+
+  **客户端**：
+
+  用户不可能只在一个网站登录，客户端会收到各个网站的出入证。
+
+  于是客户端需要一个类似卡包一样的东西，需要能够具备以下功能：
+
+  - **存放多个出入证**： 这些出入证来自不同的网站，也可能一个网站有多个出入证，分别用于出入不同的地方
+  - **自动出示出入证**：客户端在访问不同的网站时，能自动把对应的出入证附带请求发送出去
+  - **正确出示出入证**：客户端不能将Google的出入证发送给MS
+  - **管理出入证的有效期**：客户段要能够自动发现过期的出入证，并从卡包中删除
+
+  ==能够满足上述功能的卡包，就是cookie==
+
+- 总结
+
+    **cookie类似于一个卡包，专门用来存放各种出入证，并有着一套机制来自动管理这些证件**
+
+    卡包里的每一张卡，就是一个cookie
+
+#### 2. cookie 的组成
+
+**Cookie** 是浏览器中存放的一小段**数据**，管理着各个网站的身份验证信息。
+
+每个cookie相当于每个网站的一个卡片，记录了如下信息：
+
+- key : 键， 比如身份编号
+- value： 值，身份编号的值，有点像卡片上的条形码
+- domain： 域，表示这个cookie属于哪个网站。是Google还是Ms？
+- path： 路径，表示这个cookie属于该网站的那个基路径，比如输入 `/news` 这个路径还是 `/account` 这个路径？
+- secure：是否使用安全传输
+- expire： 过期时间
+
+当客户端（浏览器）向服务器发送一个请求时，会扫描自己的卡包（cookies），查看哪些卡片适合捎带发送给服务器。
+
+一个cookie需要同时满足以下条件，就会被附带到请求中：
+
+- 没有过期
+- cookie中的域和这次请求的域匹配（不在于端口，只要域匹配即可）
+- cookie中的path和这次请求的path匹配
+    - 比如cookie中的path是`/news`，则可以匹配请求路径 `/news`， `/news/detail`，`/news/a/b/c`等等, 但不能匹配`/blogs`
+    - 如果cookie中的path是`/`， 则可以匹配所有路径
+- 验证cookie的安全传输
+    - `secure:true`， 请求协议必须是`https`， 否则不会发送cookie
+    - `secure:false`,  请求协议可以是`https`，也可以是`http`
+
+一旦同时满足上面的条件，浏览器会自动把这个cookie加入到这次请求中。具体做法：**自动放置到请求头中**
+
+#### 3. cookie 的设置
+
+由于cookie是保存在浏览器端的，同时，很多证件有事服务器颁发的。因此，cookie的设置有2种模式：
+
+- 服务器响应设置
+
+    - 这种模式非常普遍， 当服务器决定给客户端一个证件时，它会在响应的消息中包含cookie，而浏览器或自动保存cookie到卡包中
+
+    - 响应头安装下面的格式设置：
+
+        ```ts
+        set-cookie:cookie1
+        set-cookie:cookie2
+        set-cookie:cookie3
+        ...
+        ```
+
+    - 可以做一次响应中设置多个cookie
+
+    - 每个cookie的格式如下：
+
+        ```ts
+        key=value;path=?;domain=?;expire=?;max-age=?;secure;httponly
+        ```
+
+        其中键值对是必须属性，其他可选，顺序不限
+
+    - 每个属性的说明：
+
+        - Path（作用路径）
+
+            ```ts
+            Set-Cookie: token=abc; Path=/admin
+            ```
+
+            只在 `/admin` 路径及其子路径发送， 通常设置为 `/`
+
+        - Domain（作用域名）
+
+            ```ts
+            Set-Cookie: token=abc; Domain=example.com
+            ```
+
+            允许子域名共享,  如果不设置→**只能当前域名使用**
+
+        -  Expires / Max-Age（生命周期）
+
+            ```ts
+            Set-Cookie: token=abc; Expires='Mon, 05 Jan 2026 10:21:55 GMT'
+            ```
+
+            绝对时间，标准的GMT
+
+            ```ts
+            Set-Cookie: token=abc; Max-Age=3600
+            ```
+
+            相对时间，单位s，`Max-Age=3600` → 1 小时后过期, 如果不设置 → **会话 Cookie（关闭浏览器就没）**
+
+        - Secure（HTTPS）
+
+            ```ts
+            Set-Cookie: token=abc; Secure
+            ```
+
+            只在 HTTPS 下传输， 防止被中间人劫持
+
+        - HttpOnly（安全）
+
+            ```ts
+            Set-Cookie: token=abc; HttpOnly
+            ```
+
+            该cookie只允许通过http传输，而客户端无法通过JS  `document.cookie` 读取， 防止 **XSS 攻击**， **登录态 Cookie 必须加**
+
+- 客户端自行设置
+
+    - 次模式少见一些。比如关闭某个广告，设置以后不要再弹出。此时可以把这种小信息直接通过浏览器的js代码保存到cookie中。后续请求服务器时，服务器会看到浏览器中拒绝弹窗广告的cookie，于是就不在发送广告了
+    - 通过js代码 `document.cookie='token=123; path=/; domain=localhost; Max-age=1000; secure=true'` 重新赋值的方式实现
+    - 无法设置HttpOnly
+
+#### 4. 删除cookie
+
+删除cookie就是重新设置cookie, **把expire时间设置为当前时间或者负数**
+
+```ts
+Set-Cookie: token=abc; Max-Age=-1
+```
+
+浏览器发现cookie过期，会自动删除
+
+#### 5. admin登录设置cookie
+
+添加admin路由
+
+```ts
+import express from "express";
+import { login } from "../servers/admin";
+
+/* ------------- 创建路由实例 ------------- */
+const router = express.Router();
+
+/* -------------- 定义路由表 ------------- */
+
+/**
+ * admin 登录
+ */
+router.get("/login", async (req, res) => {
+  const data = await login(req.body?.loginID, req.body?.loginPwd);
+  if (data) {
+    //登录成功
+    res.header(
+      "set-cookie",
+      `token=${data.id}; path=/; domain=localhost; Max-age=1000; secure=true; httponly=true`
     );
-    
-    /* ---------- 内置中间件 - json ---------- */
-    app.use(express.json()); // 解析 application/json 类型的请求体
-    
-    /* -------- 路由实例 - studentRouter ------- */
-    app.use("/student", studentRouter);
-    
-    /* -------------- 错误中间件 ------------- */
-    /* ----------- 必须放在所以中间之后 ----------- */
-    app.use(errorMiddleWare);
-    
-    /* -------------- 监听端口 -------------- */
-    const port = 5003;
-    app.listen(port, () => {
-      console.log(`server is listened on ${port}`);
-    });
-    
-    ```
+  }
 
-    
+  res.send({
+    code: 0,
+    data,
+  });
+});
 
-### 4-6 cookie的基本概念
+export { router as adminRouter };
+
+```
+
+使用该路由
+
+```ts
+import express from "express";
+import { studentRouter } from "./student";
+import { adminRouter } from "./admin";
+import { errorMiddleWare } from "./errorMiddleWare";
+
+/* ---------- 创建一个express应用 --------- */
+const app = express();
+
+/* ------ 内置中间件 - urlencoded() ------ */
+app.use(
+  express.urlencoded({
+    extended: true, // 解析 application/x-www-form-urlencoded 类型的请求体，支持嵌套对象
+  })
+);
+
+/* ---------- 内置中间件 - json ---------- */
+app.use(express.json()); // 解析 application/json 类型的请求体
+
+/* -------- 路由实例 - studentRouter ------- */
+app.use("/student", studentRouter);
+
+/* -------- 路由实例 - adminRouter ------- */
+app.use("/admin", adminRouter);
+
+/* -------------- 错误中间件 ------------- */
+/* ----------- 必须放在所以中间之后 ----------- */
+app.use(errorMiddleWare);
+
+/* -------------- 监听端口 -------------- */
+const port = 5003;
+app.listen(port, () => {
+  console.log(`server is listened on ${port}`);
+});
+
+```
+
+
 
 ### 4-7 实现登录和认证
 
@@ -9325,7 +9486,7 @@ app.METHOD(PATH, HANDLER)
 
 ### 4-10 跨域 - CORS
 
-### 4-11 CORS中间件
+### 4-11 CORS 中间件
 
 ### 4-12 session
 
@@ -9354,11 +9515,5 @@ app.METHOD(PATH, HANDLER)
 ### 4-24 场景 - 客户端缓存
 
 ### 4-25 场景 - 富文本框
-
-
-
-
-
-
 
 ## 5. websocket
