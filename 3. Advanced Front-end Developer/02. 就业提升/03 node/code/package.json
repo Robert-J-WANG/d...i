@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "npx tsc",
-    "dev": "npx nodemon --watch src -e ts --exec \"npx ts-node\" src/index.ts"
+    "dev": "npx nodemon --watch src -e ts --exec \"node --inspect=9229 -r ts-node/register\" src/index.ts"
   },
   "dependencies": {
     "axios": "^1.13.2",

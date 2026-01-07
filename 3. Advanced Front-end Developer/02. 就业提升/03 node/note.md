@@ -6377,7 +6377,7 @@ const getStudentsInclude = async (page = 1, limit = 10) => {
 
     ```ts
     import md5 from "md5";
-  
+    
     console.log(md5("123"));
     console.log(md5("abc"));
     ```
@@ -6578,21 +6578,21 @@ Day.js 是一个轻量级（约 2KB）的日期时间处理库，其 API 设计�
 
     ```ts
     import dayjs from "dayjs";
-  
+    
     /* ------------- 创建实例对象 ------------- */
-  
+    
     // 1. 不传参数 - 获取当前日期和时间
     console.log(dayjs());
-  
+    
     /* ------- 2. 字符串 - 解析常见格式字符串 ------- */
     console.log(dayjs("2025-1-1"));
-  
+    
     /* ---------- 3. JS Date 对象 --------- */
     console.log(dayjs(new Date()));
-  
+    
     /* --------- 4. 时间戳 (毫秒) -------- */
     console.log(dayjs(1000000000000));
-  
+    
     /* ------------ 5.时间戳 (秒) ----------- */
     console.log(dayjs(1000000000 * 1000));
     ```
@@ -6745,7 +6745,7 @@ Day.js 是一个轻量级（约 2KB）的日期时间处理库，其 API 设计�
     /* ----------- 2. 设为开始/结束 ----------- */
     console.log(now.startOf("year").format(formatRule));
     console.log(now.startOf("month").format(formatRule));
-  
+    
     console.log(now.endOf("year").format(formatRule));
     console.log(now.endOf("day").format(formatRule));
     ```
@@ -7849,7 +7849,7 @@ Log4js 是一个用于 **Node.js** 环境下的**日志记录（logging）模块
     /* ------------- 1. 模块导入 ------------ */
     import log4js from "log4js";
     import path from "path";
-  
+    
     /* -------------- 2. 配置 ------------- */
     log4js.configure({
       // 配置出口
@@ -7875,7 +7875,7 @@ Log4js 是一个用于 **Node.js** 环境下的**日志记录（logging）模块
         },
       },
     });
-  
+    
     process.on("exit", () => {
       log4js.shutdown(); //当程序退出时，确保所有日志写入文件、套接字关闭等操作完成。
     });
@@ -7938,7 +7938,7 @@ Log4js 是一个用于 **Node.js** 环境下的**日志记录（logging）模块
         sql: {
           type: "file",
           filename: path.resolve(__dirname, "logs", "sql", "logging.log"),
-  
+    
           // 优化配置 - **Layout (布局)**
           layout: {
             type: "pattern",
@@ -7952,16 +7952,16 @@ Log4js 是一个用于 **Node.js** 环境下的**日志记录（logging）模块
       // 配置类别
     ...
     });
-  
+    
     ...
-  
+    
     ```
 
     ```ts
     sql [2025-12-06 15:30:50.733] [INFO]  - abc
-  
+    
     sql [2025-12-06 15:32:41.600] [INFO]  - abc
-  
+    
     sql [2025-12-06 15:32:42.823] [INFO]  - abc
     ```
 
@@ -7981,7 +7981,7 @@ Log4js 是一个用于 **Node.js** 环境下的**日志记录（logging）模块
     /* ------------- 1. 模块导入 ------------ */
     import log4js from "log4js";
     import path from "path";
-  
+    
     /* -------------- 2. 配置 ------------- */
     log4js.configure({
       // 配置出口
@@ -8015,16 +8015,16 @@ Log4js 是一个用于 **Node.js** 环境下的**日志记录（logging）模块
         },
       },
     });
-  
+    
     process.on("exit", () => {
       log4js.shutdown(); //当程序退出时，确保所有日志写入文件、套接字关闭等操作完成。
     });
-  
+    
     /* -------------- 3.使用 -------------- */
-  
+    
     const sqlLogger = log4js.getLogger("sql");
     const defaultLogger = log4js.getLogger("default");
-  
+    
     export { sqlLogger, defaultLogger };
     ```
 
@@ -8205,7 +8205,7 @@ express 提供 Web 开发所必需的核心功能，例如：
         <meta charset="utf-8" />
         <title>Error</title>
       </head>
-  
+    
       <body>
         <pre>Cannot GET /test1</pre>
       </body>
@@ -8275,10 +8275,10 @@ express 提供 Web 开发所必需的核心功能，例如：
     /* -------------- 3. 处理请求 -------------- */
     app.get("/test/:id", (req, res) => {
      ...
-  
+    
       // 4. 重定向
       // res.status(302).setHeader("location", "https://expressjs.com/").end();
-  
+    
       // 5. 重定向 - 简洁
        res.redirect(302, "https://expressjs.com/");
     });
@@ -8372,10 +8372,10 @@ express 提供 Web 开发所必需的核心功能，例如：
 
     ```ts
     import express from "express";
-  
+    
     /* ---------- 1. 创建一个express应用 --------- */
     const app = express(); // app实际是一个函数 - 处理请求的函数
-  
+    
     app.get(
       "/",
       (req, res, next) => {
@@ -8394,7 +8394,7 @@ express 提供 Web 开发所必需的核心功能，例如：
         res.send("响应结束");
       }
     );
-  
+    
     /* -------------- 2. 监听端口 -------------- */
     const port = 5003;
     app.listen(port, () => {
@@ -8455,7 +8455,7 @@ express 提供 Web 开发所必需的核心功能，例如：
         res.send("响应结束");
       }
     );
-  
+    
     /* -------------- 监听端口 -------------- */
     const port = 5003;
     app.listen(port, () => {
@@ -8473,7 +8473,7 @@ express 提供 Web 开发所必需的核心功能，例如：
 
     ```bash
     // 响应内容
-  
+    
     {
         "code": 500,
         "msg": "这是一个测试错误"
@@ -8612,7 +8612,7 @@ express 提供 Web 开发所必需的核心功能，例如：
     ```ts
     // 在所有路由之前解析 JSON 请求体
     app.use(express.json());
-  
+    
     app.get("/news", (req, res) => {
       console.log(`${req.method} ${req.url}`);
       res.send("解析完成");
@@ -9962,6 +9962,65 @@ app.listen(port, () => {
     ```
 
 ### 4-8 断点调试
+
+#### 1. 使用 Chrome 浏览器调试
+
+更习惯 Chrome 的开发者工具，可以利用 Node.js 的内置检查器。
+
+- 在终端启动程序时加上 `--inspect` 参数：
+
+    ```ts
+    "scripts": {
+        "build": "npx tsc",
+        "dev": "npx nodemon --watch src -e ts --exec \"node --inspect=9229 -r ts-node/register\" src/index.ts"
+      },
+    ```
+
+    **--inspect 是node命令，ts无法识别，因此先用node 执行inspet， 再注册ts-node， 运行ts代码**
+
+- 启动程序 ： Debugger ending on ws://127.0.0.1:9229/196081f3-075b-4ae8-8861-f14a4e36ecf9
+
+- 打开 Chrome 浏览器，在地址栏输入：`chrome://inspect`。
+
+- 点击页面下方的 **"Open dedicated DevTools for Node"** 或者远程目标点击 **"inspect"**。
+
+- 弹出一个 Chrome 调试窗口，在 Source 面板里打断点。
+
+- 重新发送请求
+
+#### 2. 使用 VS Code 调试
+
+- 直接运行调试
+
+    - 启动程序
+    - 打开要调试的文件
+    - 左侧打断点
+    - 按 `F5`，选择 **"Node.js"** 环境。
+    - 发送请求
+
+- **使用 `launch.json` 配置文件**：如果有复杂的启动参数，可以点击左侧“运行和调试”图标，点击“创建 launch.json 文件”。
+
+    - 创建 launch.json
+
+        ```ts
+        {
+          "version": "0.2.0",
+          "configurations": [
+            {
+              "type": "node",
+              "request": "launch",
+              "name": "启动程序",
+              "program": "${workspaceFolder}/app.js" // 你的入口文件
+            }
+          ]
+        }
+        ```
+
+    - RUN AND DEBUG
+
+    - 选择Attach环境
+
+    
 
 ### 4-9 跨域 - JSONP
 
