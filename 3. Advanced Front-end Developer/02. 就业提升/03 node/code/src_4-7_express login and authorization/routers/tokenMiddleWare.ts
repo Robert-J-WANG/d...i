@@ -23,18 +23,21 @@ export const tokenMiddleWare = (req, res, next) => {
   /* ------------ 需要token验证 ----------- */
 
   // 浏览器从cookie获取token,并解密
-  let token = decrypt(req.cookies?.token);
+  let token = req.cookies?.token;
   // let token = req.signedCookies?.token; // 使用加密后的cookies
 
   if (!token) {
     //  没有通过cookie传递，其他设备从header获取,并解密
-    token = decrypt(req.headers.authorization);
+    token = req.headers.authorization;
   }
   if (!token) {
     // 没有token,没有登录
     throw ForbiddenError("you can not access the api");
   }
   // 有token, 进行认证
+  // 解密token
+  const userID = decrypt(token);
+  res.setHeader("userID", userID);
   next();
 };
 
