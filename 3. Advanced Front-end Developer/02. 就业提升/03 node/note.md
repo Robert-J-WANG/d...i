@@ -9480,6 +9480,487 @@ app.listen(port, () => {
 
 ### 4-7 实现登录和认证
 
+#### 1. 使用cookie中间件
+
+- 安装
+
+    ```bash
+    npm install cookie-parser
+    ```
+
+- 导入使用中间件
+
+    ```ts
+    import express from "express";
+    import cookieParser from "cookie-parser";
+    import { studentRouter } from "./student";
+    import { adminRouter } from "./admin";
+    import { errorMiddleWare } from "./errorMiddleWare";
+    
+    /* ---------- 创建一个express应用 --------- */
+    const app = express();
+    
+    /* ----------- 使用cookie中间件 ---------- */
+    app.use(cookieParser());
+    
+    /* ------ 内置中间件 - urlencoded() ------ */
+    app.use(
+      express.urlencoded({
+        extended: true, // 解析 application/x-www-form-urlencoded 类型的请求体，支持嵌套对象
+      })
+    );
+    
+    /* ---------- 内置中间件 - json ---------- */
+    app.use(express.json()); // 解析 application/json 类型的请求体
+    
+    /* -------- 路由实例 - studentRouter ------- */
+    app.use("/student", studentRouter);
+    
+    /* -------- 路由实例 - adminRouter ------- */
+    app.use("/admin", adminRouter);
+    
+    /* -------------- 错误中间件 ------------- */
+    /* ----------- 必须放在所以中间之后 ----------- */
+    app.use(errorMiddleWare);
+    
+    /* -------------- 监听端口 -------------- */
+    const port = 5003;
+    app.listen(port, () => {
+      console.log(`server is listened on ${port}`);
+    });
+    
+    ```
+
+- 使用此中间件后：
+
+    - 会在req对象中注入cookies属性，用来收集所以请求传递过来的cookie
+    - 会在res对象中注入cookie方法，设置cookie
+
+    ```ts
+    import express from "express";
+    import { login } from "../servers/admin";
+    
+    /* ------------- 创建路由实例 ------------- */
+    const router = express.Router();
+    
+    /* -------------- 定义路由表 ------------- */
+    
+    /**
+     * admin 登录
+     */
+    router.post("/login", async (req, res) => {
+      const data = await login(req.body?.loginID, req.body?.loginPwd);
+      if (data) {
+        //登录成功, 传递cookie
+        res.cookie("token", data.id, {
+          path: "/",
+          domain: "localhost",
+          maxAge: 3600, // 毫秒
+          secure: true,
+          httpOnly: true,
+        });
+      }
+    
+      res.send({
+        code: 0,
+        data,
+      });
+    });
+    
+    export { router as adminRouter };
+    
+    ```
+
+#### 2. 登录成功后给予token
+
+- 通过cookie给予，合适浏览器
+
+- 通过header给予，适合其他客户端（比如移动端）
+
+    ```ts
+    router.post("/login", async (req, res) => {
+      const data = await login(req.body?.loginID, req.body?.loginPwd);
+      if (data) {
+        //登录成功, 传递cookie
+        const value = data.id;
+        /* ----- 适合浏览器 - 通过cookie给于token ---- */
+        res.cookie("token", value, {
+          path: "/",
+          domain: "localhost",
+          maxAge: 3600, // 毫秒
+          secure: true,
+          httpOnly: true,
+        });
+        /* ---- 适合其他客户端 - 通过header给于token --- */
+        res.setHeader("authorization", value?.toString() as string);
+      }
+    ```
+
+#### 3. 客户端对后续请求进行认证
+
+- 解析cookie或者header中的token
+
+    - 浏览器（cookie 自动发送）- 中间件能读到 `req.cookies.token`
+    - 没有 cookie（Postman / axios / mobile） -  发送请求时，手动放入authorization: token （**必须事先记住了token**）
+
+- 验证token:
+
+    - 通过：继续后续操作
+    - 未通过：给于错误
+
+- 封装一个中间件：用于解析token， 并执行验证
+
+    ```ts
+    import { ForbiddenError } from "../utils/errors";
+    
+    export const tokenMiddleWare = (req, res, next) => {
+      /* -------- 浏览器从cookie获取token ------- */
+      let token = req.cookies?.token;
+      if (!token) {
+        /* --- 没有通过cookie传递，其他设备从header获取 --- */
+        token = req.headers.authorization;
+      }
+      if (!token) {
+        /* ---------- 没有token,没有登录 ---------- */
+        throw ForbiddenError("you can not access the api");
+      }
+      /* ---------- 有token, 进行认证 ---------- */
+      next();
+    };
+    ```
+
+- 需要认证的接口的界定
+
+    并非所有的接口请求时都需要认证，比如登录的接口，正因为没有认证，所以需要登录。如果登录的接口也需要认证，那么首次登录时，无法登录（**没有token**）。
+
+    优化中间件：配置需要认证的路由数组
+
+    ```ts
+    import { ForbiddenError } from "../utils/errors";
+    import { match } from "path-to-regexp";
+    
+    const needTokenApis = [
+      {
+        method: "GET",
+        path: "/api/student",
+      },
+      {
+        method: "POST",
+        path: "/api/student",
+      },
+      {
+        method: "PUT",
+        path: "/api/student/:id",
+      },
+      {
+        method: "DELETE",
+        path: "/api/student/:id",
+      },
+    ];
+    
+    export const tokenMiddleWare = (req, res, next) => {
+      /* ------------ 匹配是否需要验证 ------------ */
+    
+      const apis = needTokenApis.filter(
+        (api) => api.method === req.method && isPathMatch(api.path, req.path)
+      );
+      if (apis.length === 0) {
+        // 不在需要token的列表里，不执行后面的token验证
+        next();
+        return;
+      }
+    
+      /* ------------ 需要token验证 ----------- */
+    
+      ...
+    
+    /**
+     * 检测2个path是否匹配
+     * 比如："/api/student/:id" 和 "/api/student/17"
+     * @param pathPattern
+     * @param url
+     * @returns
+     */
+    function isPathMatch(pathPattern: string, url: string) {
+      const matcher = match(pathPattern, { decode: decodeURIComponent });
+      return !!matcher(url); // 返回 true / false
+    }
+    
+    ```
+
+- 优化路由 
+
+    可以优化路由，创建路由表，并自定义authRequired的属性，来控制是否需要认证
+
+    优化student 路由
+
+    ```ts
+    import { Request, Response } from "express";
+    import {
+      studentAdd,
+      studentDelete,
+      studentUpdate,
+      getStudentsByPage,
+    } from "../servers/student";
+    
+    /* ----------------- handler 封装 ----------------- */
+    
+    // 分页查询学生
+    const getStudents = async (req: Request, res: Response) => {
+      const page = req.query?.page || 1;
+      const limit = req.query?.limit || 10;
+      const data = await getStudentsByPage(+page, +limit);
+      res.send({ code: 0, data });
+    };
+    
+    // 添加学生
+    const addStudent = async (req: Request, res: Response) => {
+      const data = await studentAdd(req.body);
+      res.send(data);
+    };
+    
+    // 修改学生
+    const updateStudent = async (req: Request, res: Response) => {
+      const id = req.params.id;
+      const result = await studentUpdate(id, req.body);
+      res.send(result);
+    };
+    
+    // 删除学生
+    const deleteStudent = async (req: Request, res: Response) => {
+      const id = req.params.id;
+      const result = await studentDelete(id);
+      res.send(result);
+    };
+    
+    export { getStudents, addStudent, updateStudent, deleteStudent };
+    
+    ```
+
+    ```ts
+    import express from "express";
+    import * as studentHandlers from "./studentHandlers";
+    import { Irouter } from "./routerType";
+    
+    /* ------------- 创建路由实例 ------------- */
+    const router = express.Router();
+    
+    /* -------------- 定义路由表 ------------- */
+    
+    export const studentRouters: Irouter[] = [
+      {
+        method: "GET",
+        path: "/",
+        handler: studentHandlers.getStudents,
+        authRequired: true,
+      },
+      {
+        method: "POST",
+        path: "/",
+        handler: studentHandlers.addStudent,
+        authRequired: true,
+      },
+      {
+        method: "PUT",
+        path: "/:id",
+        handler: studentHandlers.updateStudent,
+        authRequired: true,
+      },
+      {
+        method: "DELETE",
+        path: "/:id",
+        handler: studentHandlers.deleteStudent,
+        authRequired: true,
+      },
+    ];
+    
+    /* ------------ 动态注册全部路由 ------------ */
+    studentRouters.forEach((route) => {
+      router[route.method.toLowerCase()](route.path, route.handler);
+    });
+    
+    export { router as studentRouter };
+    
+    ```
+
+    优化token中间件
+
+    ```ts
+    import { ForbiddenError } from "../utils/errors";
+    import { match } from "path-to-regexp";
+    import { studentRouters } from "./student";
+    
+    export const tokenMiddleWare = (req, res, next) => {
+      /* ------------ 匹配是否需要验证 ------------ */
+    
+      const authRequired = studentRouters.find((router) => {
+        return (
+          router.method === req.method &&
+          isPathMatch(`/api/student` + router.path, req.path) &&
+          router.authRequired
+        );
+      });
+    
+      if (!authRequired) {
+        // 不在需要token的列表里，不执行后面的token验证
+        next();
+        return;
+      }
+    
+      /* ------------ 需要token验证 ----------- */
+    
+      // 浏览器从cookie获取token
+      let token = req.cookies?.token;
+      if (!token) {
+        //  没有通过cookie传递，其他设备从header获取
+        token = req.headers.authorization;
+      }
+      if (!token) {
+        // 没有token,没有登录
+        throw ForbiddenError("you can not access the api");
+      }
+      // 有token, 进行认证
+      next();
+    };
+    
+    /**
+     * 检测2个path是否匹配
+     * 比如："/api/student/:id" 和 "/api/student/17"
+     * @param pathPattern
+     * @param url
+     * @returns
+     */
+    function isPathMatch(pathPattern: string, url: string) {
+      const matcher = match(pathPattern, { decode: decodeURIComponent });
+      return !!matcher(url); // 返回 true / false
+    }
+    
+    ```
+
+#### 5. 加密处理
+
+目前，cookie的数据没有加密处理。需要加密
+
+- 自动加密：使用cookie-parser中间件加密（防篡改签名） 
+
+    cookie-parser中间件自带加密功能  - 对称加密
+
+    ```ts
+    /* ----------- 使用cookie中间件 ---------- */
+    app.use(cookieParser("SECRET")); // 加密密钥
+    ```
+
+    ```ts
+    
+        res.cookie("token", value, {
+          path: "/",
+          domain: "localhost",
+          maxAge: 365 * 24 * 60 * 60 * 1000, 
+          httpOnly: true,
+          signed:true  // 开启加密
+        });
+    ```
+
+    解析时，使用signedCookies
+
+    ```ts
+    
+      let token = req.signedCookies?.token; // 使用加密后的cookies
+      
+    ```
+
+    **问题：无法对req.headers.authorization进行加密**
+
+- 手动加密 - 使用node内置的crypto模块
+
+    封装一个能同时读cookie和authorization都能加密的函数
+
+    ```ts
+    /* ------------ 使用对称加密算法 ------------ */
+    // aes-128-cbc 128位（16子节）
+    // 使用node内置的库crypto
+    import crypto from "crypto";
+    
+    // const result = crypto.getCiphers();
+    // console.log(result);
+    
+    // 随机生成密钥
+    /* const secret = Buffer.from(Math.random().toString(36).slice(-8)); // 36进制（10个数字+26个字母），取后8个
+    //随机生成向量 */
+    
+    const secret = Buffer.from("4yraitjz8nkjzfpa");
+    
+    /* const iv = Math.random().toString(36).slice(-8); // 36进制（10个数字+26个字母），取后8个 */
+    
+    const iv = Buffer.from("8nkjzfpa4yraitjz");
+    
+    const encrypt = (str: string) => {
+      // 创建加密函数
+      const cryp = crypto.createCipheriv("aes-128-cbc", secret, iv);
+      // 执行加密
+      let result = cryp.update(str, "utf-8", "hex");
+      result += cryp.final("hex");
+      return result;
+    };
+    
+    const decrypt = (str: string) => {
+      // 创建解密函数
+      const decryp = crypto.createDecipheriv("aes-128-cbc", secret, iv);
+      // 执行解密
+      let result = decryp.update(str, "hex", "utf-8");
+      result += decryp.final("utf-8");
+      return result;
+    };
+    
+    export { encrypt, decrypt };
+    
+    ```
+
+    执行加密/解密
+
+    ```ts
+    
+    router.post("/login", async (req, res) => {
+      const data = await login(req.body?.loginID, req.body?.loginPwd);
+      if (data) {
+     
+        let value = data.id?.toString() as string;
+    
+        // 加密
+        value = encrypt(value);
+        /* ----- 适合浏览器 - 通过cookie给于token ---- */
+        res.cookie("token", value, {
+          ...
+        });
+        /* ---- 适合其他客户端 - 通过header给于token --- */
+        res.setHeader("authorization", value);
+      }
+     ...
+    });
+    
+    ```
+
+    ```ts
+    
+    import { encrypt, decrypt } from "../utils/crypt";
+    
+    export const tokenMiddleWare = (req, res, next) => {
+      /* ------------ 匹配是否需要验证 ------------ */
+     ...
+    
+      /* ------------ 需要token验证 ----------- */
+    
+      // 浏览器从cookie获取token,并解密
+      let token = decrypt(req.cookies?.token);
+    
+      if (!token) {
+        //  没有通过cookie传递，其他设备从header获取,并解密
+        token = decrypt(req.headers.authorization);
+      }
+     ...
+    };
+    ```
+
 ### 4-8 断点调试
 
 ### 4-9 跨域 - JSONP
