@@ -10148,6 +10148,566 @@ app.listen(port, () => {
 
 ### 4-10 跨域 - CORS
 
+>JSONP并不是一个好的跨域解决方案，存在着严重的问题。比如，会打乱服务器的消息格式：JSONP要求服务器响应一段js代码，方便浏览器识别并执行。但在非跨域的情况下，服务器又需要响应一个正常的json格式数据。因此服务器需要做复杂的操作来分类处理。因此相比，CORS是一种更好的解决方案。
+
+#### 1. 概述
+
+**CORS (Cross-Origin Resource Sharing，跨源资源共享)** 是基于http1.1的一种跨域解决方案。
+
+- 总体思路是：==**如果浏览器需要跨域访问服务器的资源，需要获得服务器的允许。**==
+
+- 一个请求可以附带很多信息，从而对服务器造成不同的影响。 比如有的请求只获取一下数据，而有的请求可能需要改动服务器的数据。根据不同的请求，CORS规定了3种不同的交换模式：
+
+    - 简单请求
+    - 需要预检的请求
+    - 附带身份凭证的请求
+
+    3种模式从上到下层层递进，请求能做的事越来越多，跨域配置要求对应越来越严格
+
+#### 2. 简单请求
+
+当浏览器运行一段ajax代码（无论是使用XMLHttpRequest还是fetch api），浏览器都会首先判断它属于哪一种请求模式。
+
+当请求同时满足一下条件时，浏览器会认为它是一个简单请求：
+
+- 请求方法属于下面的一张：
+
+    - get
+    - post
+    - head
+
+- 请求头仅包含安全的字段，常见的安全字段如下：
+
+    - **`Accept`**：告知服务器客户端可以处理的内容类型。
+
+    - **`Accept-Language`**：告知服务器客户端能够理解的语言。
+
+    - **`Content-Language`**：说明请求体所属的语言。
+
+    - **`Content-Type`**：**（有限制）** 仅限于以下三个值：
+
+        - `application/x-www-form-urlencoded`  - URL 编码格式的表单， 数据被编码为键值对，用 `&` 分隔，如 `name=val1&age=18`。
+
+        - `multipart/form-data` - 上传文件格式的表单，通过 `<input type="file">` 配合表单即可实现
+
+        - `text/plain` - 纯文本
+
+            **注意**：一旦变成 `application/json` 或 `text/xml`，立刻不再安全。
+
+    - **`Range`**：**（有限制）** 仅允许简单的字节范围（如 `bytes=0-100`）。
+
+    - **弃用/特殊字段**：`DPR`、`Downlink`、`Save-Data`、`Viewport-Width`、`Width`（这些曾在某些草案中被视为安全，但现代标准中对其审查极严）。
+
+**总结：** 所谓的“安全字段”其实就是**“传统 HTML 表单能够模拟出来的字段”**。只要你超出了这个老旧表单的范畴（比如想传个 JSON，或者想加个 Token），CORS 就会启动更严格的预检机制。
+
+**简单请求的交互规范：**
+
+- 客户端：请求头自动注入关键字段：**`Origin`**
+
+    比如在页面`http://anything.com/index.html`中 有以下请求 `fetch("http://something.com/api/news")` 造成了跨域。浏览器先判断它是简单请求， 请求发出后，请求头会是下面的格式：
+
+    ```json
+    GET /api/news HTTP/1.1
+    Host: something.com
+    Connection: keep-alive
+    ...
+    Origin: http://anything.com
+    Referer: http://anything.com/index.html
+    ```
+
+    **`Origin`**: **自动注入。它的值是协议、域名和端口的组合。==它告诉服务器：请求发起者的身份是谁。==**
+
+    
+
+- 服务端：响应头中返回相关的 CORS 字段：**`Access-Control-Allow-Origin `**
+
+    服务器收到请求后，如果允许通过这个跨域请求发送资源，需要在响应头中返回相关的 CORS 字段。服务器的响应头会是下面的格式：
+
+    ```http
+    HTTP/1.1 200 OK
+    Date: Thu, 08 Jan 2026 12:00:00 GMT
+    Content-Type: application/json; charset=utf-8
+    Content-Length: 128
+    Connection: keep-alive
+    
+    /* 关键 CORS 字段 */
+    Access-Control-Allow-Origin: http://anything.com
+    
+    /* 实际的业务数据 */
+    {
+      "status": "success",
+      "data": [ ... ]
+    }
+    ```
+
+- 当响应到达浏览器后，**浏览器**会进行如下“对暗号”: 
+
+    - **检查字段是否存在**：如果没有 `Access-Control-Allow-Origin`，直接拦截。
+    - **检查值是否匹配**：
+        - 如果服务器回的是 `*`：**检查通过**。
+        - 如果服务器回的是 `http://anything.com`：与请求头的 `Origin` 完全一致，**检查通过**。
+        - 如果服务器回的是 `http://wrong.com`：值不匹配，**检查失败**。
+
+注意：`Access-Control-Allow-Origin`的值不推荐总是写 `*`。在生产环境中：允许任何网站读取你的 API 数据是有风险的；此外，如果 API 需要支持附带 **Cookie**（即 `withCredentials` 为 `true`），那么 `Access-Control-Allow-Origin` **严禁使用 `\*`**，必须指定具体的域名。
+
+- 代码实现
+
+    - 静态资源发送请求
+
+        ```js
+        fetch("http://localhost:5003/api/student").then(resp => resp.json()).then(resp => {
+          console.log(resp)
+        })
+        ```
+
+        使用vscode live server打开网页，实现跨域
+
+        ```js
+        http://127.0.0.1:5500/.../code/src/public/index.html
+        ```
+
+        请求头内容：
+
+        ```http
+        GET /api/student HTTP/1.1
+        Accept: */*
+        ...
+        Origin: http://127.0.0.1:5500
+        ...
+        ```
+
+    - 服务器配置跨域
+
+        封装自定义中间件corsMiddleWare
+
+        ```ts
+        import { includes } from "zod";
+        
+        const allowCorsOrigins = ["http://127.0.0.1:5500", "null"];
+        
+        export const corsMiddleWare = (req, res, next) => {
+          /* ------------- 处理简单请求 ------------- */
+          if (
+            "origin" in req.headers &&
+            allowCorsOrigins.includes(req.headers.origin)
+          ) {
+            res.header("Access-Control-Allow-Origin", req.headers.origin);
+          }
+          next();
+        };
+        
+        ```
+
+        注入中间件
+
+        ```ts
+        import express from "express";
+        import cookieParser from "cookie-parser";
+        import { studentRouter } from "./student";
+        import { adminRouter } from "./admin";
+        import { errorMiddleWare } from "./errorMiddleWare";
+        import { tokenMiddleWare } from "./tokenMiddleWare";
+        import path from "path";
+        import { corsMiddleWare } from "./corsMiddleWare";
+        
+        /* ---------- 创建一个express应用 --------- */
+        const app = express();
+        
+        /* -------------- 跨域中间件 ------------- */
+        app.use(corsMiddleWare);
+        
+        ...
+        
+        /* -------------- 监听端口 -------------- */
+        const port = 5003;
+        app.listen(port, () => {
+          console.log(`server is listened on ${port}`);
+        });
+        
+        ```
+
+        重新发送请求，获得数据，响应头内容
+
+        ```http
+        HTTP/1.1 200 OK
+        Access-Control-Allow-Origin: http://127.0.0.1:5500
+        Content-Type: application/json; charset=utf-8
+        Content-Length: 1318
+        ETag: W/"526-QYzsvpBuHcqQZa4c5KlAXqyBv4E"
+        Date: Thu, 08 Jan 2026 19:07:03 GMT
+        Connection: keep-alive
+        Keep-Alive: timeout=5
+        ```
+
+        
+
+#### 3. 需要预检的请求
+
+简单请求对服务器的影响不大，所以允许使用上述简单的交互即可完成， 但是，如果浏览器不认为这是一种简单的请求，就会按照下面的流程进行：
+
+- 浏览器发送预检请求，询问服务器是否允许
+- 服务器允许
+- 浏览器发送真实请求
+- 服务器完成真实的响应
+
+比如，在页面`http://anything.com/index.html`中 有以下请求 `fetch("http://something.com/api/news")` 造成了跨域。
+
+```ts
+fetch("http://something.com/api/news",{
+    method:"POST",
+    headers:{
+        a:1,
+        b:2,
+        "content-type":"application/json"
+    },
+    body:JSON.stringfy({name:hahah, age:18})
+})
+```
+
+
+
+浏览器先判断它不是是简单请求，于是安装下面的流程与服务器交互：
+
+- 浏览器发送预检请求， 询问服务器是否允许，请求头如下：
+
+    ```http
+    OPTIONS /api/news HTTP/1.1
+    Host: something.com
+    ...
+    Origin: http://anything.com
+    Access-Control-Request-Method: POST
+    Access-Control-Request-Headers: a,b,content-type
+    ```
+
+    这并非我们想要发出的真实请求。**预检请求没有请求体**，有一下特征：
+
+    - 请求方法为`OPTIONS`
+    - 没有请求体
+    - 请求头中包括
+        - **`Origin: http://anything.com`**： 告知服务器，是哪个源想跨域访问你。
+        - **`Access-Control-Request-Method: POST`**： 这是询问：“我后面想用 `POST` 方法发请求，你允许吗？”
+        - **`Access-Control-Request-Headers: a,b,content-type`**： 这是询问：“我后面想在 Header 里带上这三个字段，你允许吗？”（注意：浏览器会自动把非安全字段全部列在这里）。
+
+- 服务器允许
+
+    服务器收到 `OPTIONS` 后，**不能**返回普通的业务数据，必须返回允许的策略。需要响应如下的消息格式：
+
+    ```http
+    HTTP/1.1 204 No Content
+    Date: Fri, 09 Jan 2026 08:40:00 GMT
+    ...
+    
+    /* 核心许可字段 */
+    Access-Control-Allow-Origin: http://anything.com
+    Access-Control-Allow-Methods: POST, GET, OPTIONS
+    Access-Control-Allow-Headers: a, b, content-type
+    Access-Control-Max-Age: 86400
+    ```
+
+    对应预检请求，服务器不需要响应任何消息体，只需要在消息头中添加：
+
+    - **`Access-Control-Allow-Origin`**：和简单请求一样，表示运行的源
+    - **`Access-Control-Allow-Methods`**：允许哪些方法。
+    - **`Access-Control-Allow-Headers`**：允许改动哪些请求头。如果这个列表里没有包含请求询问的 `a` 或 `b`，预检就会失败。
+    - **`Access-Control-Max-Age`**：**极其实用**。告诉浏览器：“在接下来的 86400 秒（24小时）内，再次发送同样的请求时，不用再发 `OPTIONS` 预检了，直接发真实请求即可。”这能显著提升性能。
+
+- 浏览器发送真实请求
+
+    当上述预检得到了服务器的允许（状态码通常为 200 或 204，且 Header 匹配），浏览器才会自动发起真实请求。
+
+    **正式请求的请求头：** 此时的请求头将包含真实的业务数据，并且依然带有 `Origin` 字段。
+
+    ```http
+    POST /api/news HTTP/1.1
+    Host: something.com
+    Content-Type: application/json
+    Origin: http://anything.com
+    a: 1
+    b: 2
+    
+    {"name": "hahah", "age": 18}
+    ```
+
+- 服务器响应数据
+
+    ```http
+    HTTP/1.1 200 OK
+    Date: Thu, 08 Jan 2026 19:07:03 GMT
+    ...
+    Access-Control-Allow-Origin: http://127.0.0.1:5500
+    ...
+    添加news成功
+    ```
+
+- 代码实现
+
+    - 静态资源发送请求 
+
+        ```ts
+        /* -------------- 预检请求 -------------- */
+        fetch("http://localhost:5003/api/student", {
+          method: 'POST',
+          headers: {
+            a: 1,
+            b: 2,
+            'content-type': "application/json"
+          },
+          body: JSON.stringify({
+            "name": "Semit",
+            "dob": "2025-11-11",
+            "sex": "false",
+            "mobile": "021-2323454353",
+            "ClassId": "1"
+          })
+        }).then(resp => resp.json()).then(resp => {
+          console.log(resp)
+        })
+        ```
+
+    - 服务端处理预检请求（中间件）
+
+        ```ts
+        const allowCorsOrigins = ["http://127.0.0.1:5500", "null"];
+        
+        export const corsMiddleWare = (req, res, next) => {
+          /* ------------- 处理简单请求 ------------- */
+          if (
+            "origin" in req.headers &&
+            allowCorsOrigins.includes(req.headers.origin)
+          ) {
+            res.header("Access-Control-Allow-Origin", req.headers.origin);
+          }
+          /* ------------- 处理预检请求 ------------- */
+        
+          if (req.method === "OPTIONS") {
+            // 从 Request 字段读取，写入 Allow 字段
+            res.header(
+              "Access-Control-Allow-Methods",
+              req.headers["access-control-request-method"]
+            );
+            res.header(
+              "Access-Control-Allow-Headers",
+              req.headers["access-control-request-headers"]
+            );
+            res.header("Access-Control-Max-Age", 86400);
+        
+            // 预检请求直接返回，先不执行后续业务逻辑
+            return res.status(204).send();
+          }
+          // next();
+        };
+        ```
+
+        请求头信息
+
+        ```http
+        OPTIONS /api/student HTTP/1.1
+        ...
+        Access-Control-Request-Headers: a,b,content-type
+        Access-Control-Request-Method: POST
+        ...
+        Host: localhost:5003
+        Origin: http://127.0.0.1:5500
+        ...
+        ```
+
+        响应头信息
+
+        ```http
+        HTTP/1.1 204 No Content
+        Access-Control-Allow-Origin: http://127.0.0.1:5500
+        Access-Control-Allow-Methods: POST
+        Access-Control-Allow-Headers: a,b,content-type
+        Access-Control-Max-Age: 86400
+        Date: Thu, 08 Jan 2026 20:54:19 GMT
+        ...
+        ```
+
+        浏览器发送真实请求，服务器执行后续业务
+
+        ```ts
+        next();
+        ```
+
+        
+
+#### 4. 附带身份凭证的请求
+
+默认情况下，ajax的跨域请求并不会附带cookie，因此导致某些需要权限的操作就无法进行。通过如下的配置，就可以实现附带cookie
+
+- 前端配置：显式要求携带凭证
+
+    无论是使用传统的 `XMLHttpRequest` 还是现代的 `fetch`，你都需要手动开启凭证开关。
+
+    - 使用 `fetch` API：在 `fetch` 的第二个参数中，设置 `credentials` 属性。
+
+        ```js
+        fetch("http://something.com/api/userinfo", {
+          method: "GET",
+          // 关键配置：include 表示请求无论同源还是跨域都会携带 Cookie
+          credentials: "include" 
+        });
+        ```
+
+        **credentials 可选值：**
+
+        - `omit`: 从不发送 Cookie（默认值）。
+        - `same-origin`: 只有同源请求才发送（旧版浏览器默认值）。
+        - `include`: 无论同源还是跨域都发送。
+
+    - 使用 `XMLHttpRequest`：
+
+        ```js
+        const xhr = new XMLHttpRequest();
+        xhr.withCredentials = true; // 开启凭证
+        xhr.open("GET", "http://something.com/api/userinfo");
+        xhr.send();
+        ```
+
+- 后端配置：明确允许凭证
+
+    当浏览器发现请求要求携带 Cookie 时，它会检查服务器响应头。服务器必须返回以下特定的 Header：
+
+    ```http
+    Access-Control-Allow-Credentials: true
+    ```
+
+- **极其重要的限制：**
+
+    一旦开启了凭证请求，CORS 规范为了防止隐私泄露，会增加两个严苛的限制：
+
+    1. **Origin 不能为通配符 `\*`**： `Access-Control-Allow-Origin` 的值必须是**具体的、与请求头 Origin 完全一致的域名**。如果返回 `*`，浏览器会直接报错并拒绝该响应。
+    2. **Headers 和 Methods 不能为通配符**： 在预检请求中，`Access-Control-Allow-Headers` 和 `Access-Control-Allow-Methods` 同样不能使用 `*`
+
+- 代码实现
+
+    - 静态资源发送请求 ：显式要求携带凭证
+
+        ```ts
+        /* ------------ 附带身份凭证的请求 ----------- */
+        
+        fetch("http://localhost:5003/api/student", {
+          method: 'POST',
+          headers: {
+            a: 1,
+            b: 2,
+            'content-type': "application/json"
+          },
+          body: JSON.stringify({
+            "name": "Semit",
+            "dob": "2025-11-11",
+            "sex": "false",
+            "mobile": "021-2323454353",
+            "ClassId": "1"
+          }),
+          credentials: "include", // 显式要求携带凭证
+        }).then(resp => resp.json()).then(resp => {
+          console.log(resp)
+        })
+        ```
+
+    - 后端配置：明确允许凭证
+
+        ```ts
+        const allowCorsOrigins = ["http://127.0.0.1:5500", "null"];
+        
+        export const corsMiddleWare = (req, res, next) => {
+          /* ------------- 1.处理简单请求 ------------- */
+          if (
+            "origin" in req.headers &&
+            allowCorsOrigins.includes(req.headers.origin)
+          ) {
+            res.header("Access-Control-Allow-Origin", req.headers.origin);
+        
+            /* ------------ 3.允许附带身份凭证的请求 ----------- */
+            res.header("Access-Control-Allow-Credentials", "true");
+          }
+            
+          /* ------------- 2.处理预检请求 ------------- */
+        
+          if (req.method === "OPTIONS") {
+            // 从 Request 字段读取，写入 Allow 字段
+            res.header(
+              "Access-Control-Allow-Methods",
+              req.headers["access-control-request-method"]
+            );
+            res.header(
+              "Access-Control-Allow-Headers",
+              req.headers["access-control-request-headers"]
+            );
+            res.header("Access-Control-Max-Age", 86400);
+          }
+        
+          next();
+        };
+        
+        ```
+
+        注意：
+
+        - **`credentials` 是前端的配置**：`credentials: 'include'` 是你在浏览器 `fetch` 函数中写的一个参数，它告诉浏览器：“发请求时请带上 Cookie”。
+        - **它不会出现在请求头里**：浏览器发出的 HTTP 报文里，并没有一个叫 `credentials` 的 Header。浏览器只会默默地把 `Cookie: xxx` 加入到请求头中。
+        - **后端如何判断？**：如果你想知道前端是否开启了凭证模式，在后端中间件里，你**不需要判断请求是否有这个属性**。你作为服务端，任务是**“表态”**：告诉浏览器你允不允许带凭证。
+
+#### 5. 补充
+
+在跨域访问时，出于安全考虑，浏览器虽然能接收到所有的响应头，但默认只允许前端 JS（通过 `xhr.getResponseHeader()` 或 `fetch` 的 `response.headers`）读取其中一小部分。
+
+如果在后端设置了自定义 Header（例如 `X-Token` 或 `Set-Authorization`），前端默认是**看不见**也**拿不到**的。
+
+- 默认情况下，跨域请求的 JS 只能访问以下 6 个“安全”响应头：
+
+    - Cache-Control
+    - Content-Language
+    - Content-Type
+    - Expires
+    - Last-Modified
+    - Pragma
+
+- 如何设置：`Access-Control-Expose-Headers`
+
+    如果想让前端访问其他的 Header，服务器必须在响应头中明确列出这些 Header 的名称。
+
+    ```ts
+    export const corsMiddleWare = (req, res, next) => {
+      const origin = req.headers.origin;
+      
+      if (origin && allowCorsOrigins.includes(origin)) {
+        res.header("Access-Control-Allow-Origin", origin);
+        
+        // 关键配置：暴露自定义头
+        // 这样前端 JS 才能通过 get('X-Custom-Data') 拿到值
+        res.header("Access-Control-Expose-Headers", "X-Custom-Data, Content-Length, Token");
+      }
+      
+      // ... 其他逻辑
+      next();
+    };
+    ```
+
+    前端读取
+
+    ```ts
+    fetch("http://localhost:5003/api/student")
+      .then(resp => {
+        // 只有在后端设置了 Expose-Headers，这里才能拿到值
+        console.log(resp.headers.get("X-Custom-Data")); 
+      });
+    ```
+
+#### 6. 总结
+
+CORS 响应头全家桶总结
+
+| **响应头字段**                         | **作用**                                   | **必填/可选**        |
+| -------------------------------------- | ------------------------------------------ | -------------------- |
+| **`Access-Control-Allow-Origin`**      | 允许哪些域名跨域。                         | **必填**             |
+| **`Access-Control-Allow-Methods`**     | 允许哪些 HTTP 方法（用于预检）。           | 预检时必填           |
+| **`Access-Control-Allow-Headers`**     | 允许前端发送哪些自定义请求头（用于预检）。 | 预检时必填           |
+| **`Access-Control-Allow-Credentials`** | 是否允许发送 Cookie。                      | 需带 Cookie 时必填   |
+| **`Access-Control-Max-Age`**           | 预检结果的缓存秒数。                       | 建议设置（优化性能） |
+| **`Access-Control-Expose-Headers`**    | 允许前端 JS 读取哪些响应头。               | 需读取自定义头时设置 |
+
 ### 4-11 CORS 中间件
 
 ### 4-12 session
