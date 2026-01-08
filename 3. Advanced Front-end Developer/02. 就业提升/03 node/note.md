@@ -10024,6 +10024,128 @@ app.listen(port, () => {
 
 ### 4-9 跨域 - JSONP
 
+#### 1. 同源策略
+
+**同源策略**是浏览器的安全功能。
+
+- 同源：协议、域名、端口全部相同
+
+- 限制： 浏览器不允许使用非同源的数据。无法向非同源地址发送 AJAX 请求（请求可以发出，但结果会被浏览器拦截）
+
+- 实例
+
+    - 服务器添加静态资源中间件
+
+        ```ts
+        import express from "express";
+        import cookieParser from "cookie-parser";
+        import { studentRouter } from "./student";
+        import { adminRouter } from "./admin";
+        import { errorMiddleWare } from "./errorMiddleWare";
+        import { tokenMiddleWare } from "./tokenMiddleWare";
+        import path from "path";
+        
+        /* ---------- 创建一个express应用 --------- */
+        const app = express();
+        
+        /* ------------- 静态资源中间件 ------------ */
+        const staticRoot = path.resolve(__dirname, "../public");
+        // console.log(staticRoot);
+        app.use("/", express.static(staticRoot));
+        
+        ...
+        
+        /* -------------- 监听端口 -------------- */
+        const port = 5003;
+        app.listen(port, () => {
+          console.log(`server is listened on ${port}`);
+        });
+        
+        ```
+
+    - `public`目录下的js文件, 使用ajax发生请求
+
+        ```ts
+        fetch("http://localhost:5003/api/student")
+          .then((resp) => resp.json())
+          .then((resp) => {
+            console.log(resp);
+          });
+        
+        ```
+
+    - 启动服务器，浏览器访问静态资源 `http://localhost:5003`
+
+    - 说明：
+
+        - 浏览器页面地址和访问（请求的地址）同源，所以能拿到数据 
+        - 如果直接打开index.html文件。页面路径是：`file:///Users/aqiang/Desktop/myGitHub/upload/duyi/.../code/src/public/index.html` 和请求地址不同源， 无法拿到数据
+
+#### 2. 解决方案
+
+在实际开发中，前后端分离架构往往需要跨域请求数据，常见的解决方案包括：
+
+- **CORS (Cross-Origin Resource Sharing)**：现代标准，通过服务端设置 HTTP 响应头来实现。
+- **Nginx 反向代理**：在服务器端转发请求，让浏览器认为是同源请求。
+- **JSONP**：利用浏览器对特定标签的“豁免权”来实现跨域。
+
+#### 3. JSONP
+
+**JSONP** 的核心原理是：浏览器虽然限制了 AJAX 跨域，但允许 `<script>`、`<img>`、`<link>` 等带有 `src` 属性的标签跨域加载资源。
+
+实现步骤：
+
+- **后端包装返回**：服务器接收到请求，将 JSON 数据包装在函数调用中返回，形成字符串类型 callback({"name": "Gemini"})`。
+
+    ```ts
+    // 分页查询学生
+    const getStudents = async (req: Request, res: Response) => {
+      const page = req.query?.page || 1;
+      const limit = req.query?.limit || 10;
+      const data = await getStudentsByPage(+page, +limit);
+    
+      /* ------------- 处理JSONP ------------ */
+      const json = JSON.stringify(data); //转换成字符串
+      const script = `callback(${json})`; // 拼接回调函数调用字符
+      res.header("content-type", "application/javascript").send(script); //发送相应
+    };
+    ```
+
+    这样，响应的结果是字符串脚本：
+
+    ```ts
+    callback({ "total": 540, "students": [{ "dob": 1001914959000, "age": 24, "id": 31, "name": "Ted Kreiger", "sex": false, "mobile": "021-5581392", "deletedAt": null, "ClassId": 34 }, { "dob": 632527496000, "age": 35, "id": 32, "name": "Ronnie Batz", "sex": true, "mobile": "027-5592702", "deletedAt": null, "ClassId": 11 }, { "dob": 1078961044000, "age": 21, "id": 33, "name": "Sheila Hegmann", "sex": false, "mobile": "025-4563890", "deletedAt": null, "ClassId": 2 }, { "dob": 943488823000, "age": 26, "id": 34, "name": "Marshall Heller", "sex": true, "mobile": "027-6331619", "deletedAt": null, "ClassId": 20 }, { "dob": 719136470000, "age": 33, "id": 35, "name": "Kelli Nader", "sex": true, "mobile": "024-1248720", "deletedAt": null, "ClassId": 36 }, { "dob": 692647933000, "age": 34, "id": 36, "name": "Gregory Green", "sex": true, "mobile": "027-8648482", "deletedAt": null, "ClassId": 37 }, { "dob": 896596822000, "age": 27, "id": 37, "name": "Cathy Gerhold", "sex": false, "mobile": "021-1693952", "deletedAt": null, "ClassId": 27 }, { "dob": 828362610000, "age": 29, "id": 38, "name": "Micheal Dickinson", "sex": true, "mobile": "022-4936866", "deletedAt": null, "ClassId": 8 }, { "dob": 986557701000, "age": 24, "id": 39, "name": "Craig Terry", "sex": true, "mobile": "021-1153168", "deletedAt": null, "ClassId": 33 }, { "dob": 733302962000, "age": 32, "id": 40, "name": "Tommie Turcotte", "sex": false, "mobile": "021-1670161", "deletedAt": null, "ClassId": 17 }] })
+    ```
+
+- 前端下载脚本， 脚本下载后会被浏览器当作 JS 执行，从而触发预先定义的 callback 函数。
+
+    - 定义一个处理数据的函数
+    - 动态创建 **script** 标签：其 `src` 指向接口地址，并传回脚本数据
+
+    ```ts
+    const callback = (str) => {
+      console.log(str)
+    }
+    
+    // 动态创建script标签
+    const jsonp = (url) => {
+      const script = document.createElement("script")
+      script.src = url
+      document.body.appendChild(script)
+      script.onload = () => { script.remove() } // 加载完成后删除
+    }
+    
+    jsonp("http://localhost:5003/api/student")
+    ```
+
+- 访问页面，执行js脚本
+
+#### 4. JSONP的缺陷
+
+- **仅支持 GET 请求**：由于其本质是通过 `src` 属性加载脚本，所以无法使用 POST、PUT 或 DELETE。
+- **数据格式受限**：只能传输能够被 JS 引擎解析的数据类型。
+- **错误处理困难**：不像 AJAX 有清晰的错误码（404, 500），`<script>` 标签加载失败时很难捕获具体的 HTTP 错误信息。
+
 ### 4-10 跨域 - CORS
 
 ### 4-11 CORS 中间件

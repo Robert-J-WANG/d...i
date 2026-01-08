@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>login</title>
+</head>
+
+<style>
+  .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .inputDiv {
+    margin: 10px;
+    padding: 10px;
+
+  }
+</style>
+
+<body>
+  <div class="container">
+    <h1>login</h1>
+    <form method="post" action="http://localhost:5003/api/admin/login">
+      <div class="inputDiv"><label for="loginID">loginID</label>
+        <input type="text" name="loginID" value="admin2" />
+      </div>
+      <div class="inputDiv"><label for="loginPwd">loginPwd</label>
+        <input type="text" name="loginPwd" value="000000" />
+      </div>
+      <div class="inputDiv"><button>login</button></div>
+    </form>
+  </div>
+</body>
+
+</html>
