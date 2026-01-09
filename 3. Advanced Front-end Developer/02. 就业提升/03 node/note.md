@@ -10710,6 +10710,103 @@ CORS 响应头全家桶总结
 
 ### 4-11 CORS 中间件
 
+针对跨域，express封装了中间件cors可以直接使用
+
+- 安装
+
+    ```bash
+    npm i cors
+    ```
+
+- 导入并使用
+
+    ```ts
+    import express from "express";
+    ...
+    import cors from "cors";
+    
+    /* ---------- 创建一个express应用 --------- */
+    const app = express();
+    
+    /* -------------- 跨域中间件 ------------- */
+    app.use(cors());
+    
+    ...
+    
+    /* -------------- 监听端口 -------------- */
+    const port = 5003;
+    app.listen(port, () => {
+      console.log(`server is listened on ${port}`);
+    });
+    
+    ```
+
+    **默认情况：不支持带cookie的请求**
+
+- 用法
+
+    - 所有接口跨域
+
+        ```
+        app.use(cors());
+        ```
+
+    - 部分接口跨域: 单独使用中间件
+
+        ```ts
+        app.use("/api/student",cors(), studentRouter);
+        ```
+
+    - 跨域配置对象
+
+        ```ts
+        var corsOptions = {
+          origin: 'http://example.com', // 设置某个请求源
+          optionsSuccessStatus: 200 
+        }
+        app.use(cors(corsOptions));
+        ```
+
+    - 配置白名单
+
+        ```ts
+        const allowCorsOrigins = ["http://127.0.0.1:5500", "null"];
+        
+        var corsOptions = {
+          origin: (origin, callback) => {
+            console.log(origin);
+            if (allowCorsOrigins.includes(origin)) {
+              // 在白名单中
+              callback(null, true); // error:null, allowCors:true
+            } else {
+              callback(new Error("Not allowed by CORS"));
+            }
+          },
+          optionsSuccessStatus: 200,
+        };
+        
+        /* -------------- 跨域中间件 ------------- */
+        app.use(cors(corsOptions));
+        ```
+
+    - 允许带cookie身份认证
+
+        ```ts
+        var corsOptions = {
+          origin: (origin, callback) => {
+            console.log(origin);
+            if (allowCorsOrigins.includes(origin)) {
+              // 在白名单中
+              callback(null, true); // error:null, allowCors:true
+            } else {
+              callback(new Error("Not allowed by CORS"));
+            }
+          },
+          optionsSuccessStatus: 200,
+          credentials: true, // 运行带身份认证跨域
+        };
+        ```
+
 ### 4-12 session
 
 ### 4-13 jwt
