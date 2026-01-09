@@ -10809,6 +10809,236 @@ CORS 响应头全家桶总结
 
 ### 4-12 session
 
+#### 1. 对比cookie
+
+- 存储在客户端
+- 优点
+    - 存储在客户端，不占用服务器资源
+- 缺点
+    - 只能存储字符串（键值对）
+    - 存储量有限（只有几kb）
+    - 数据容易被获取
+    - 数据容易被篡改
+    - 容易丢失
+
+#### 2. 对比session
+
+Cookie 的核心痛点在于**“不安全”**和**“存不下”**。**Session（会话）** 的出现，本质上就是为了解决这些问题。它的核心逻辑是：**数据存在服务器（安全），客户端只拿一把“钥匙”（简洁）。**
+
+- 存储在服务器端
+- 优点
+    - 可以是任何形式
+    - 存储量理论上是无限的
+    - 数据难以被获取
+    - 数据难以被篡改
+- 缺点
+    - 显著占用服务器资源
+
+#### 3. session交互规范（流程）
+
+- **初次访问**：客户端发送登录请求（如 POST 用户名密码）。
+- **创建存储**：服务器验证通过，在内存（或数据库）中开辟一块空间，存入用户信息。
+- **生成 ID**：服务器生成一个唯一的、随机的字符串，称为 **Session ID**。
+- **下发钥匙**：服务器通过cookie(响应头的 `Set-Cookie` )，将这个 Session ID 发给浏览器。
+    - 例如：`Set-Cookie: SESSION_ID=abc12345; HttpOnly`。
+- **后续访问**：浏览器自动在请求头带上这个 Cookie。
+- **识别身份**：服务器取出 Session ID，去自己的内存里“查表”，找到对应的信息。
+
+#### 4. session用法
+
+使用express中间件 `express-session`， 来实现session的使用
+
+- 安装并使用中间件
+
+    ```ts
+    import express from "express";
+    import cookieParser from "cookie-parser";
+    import { studentRouter } from "./student";
+    import { adminRouter } from "./admin";
+    import { errorMiddleWare } from "./errorMiddleWare";
+    import { tokenMiddleWare } from "./tokenMiddleWare";
+    import path from "path";
+    import { corsMiddleWare } from "./corsMiddleWare";
+    import cors from "cors";
+    import session from "express-session";
+    
+    /* ---------- 创建一个express应用 --------- */
+    const app = express();
+    
+    ...
+    
+    /* ---------- 使用session中间件 ---------- */
+    app.use(
+      session({
+        secret: "haha", // 加密密钥
+      })
+    );
+    ...
+    
+    /* -------------- 监听端口 -------------- */
+    const port = 5003;
+    app.listen(port, () => {
+      console.log(`server is listened on ${port}`);
+    });
+    
+    ```
+
+- 一些配置
+
+    ```ts
+    app.use(
+      session({
+        secret: "hehe", // 加密密钥
+        name: "sessionID", // 默认是'connect.sid'.
+      })
+    );
+    ```
+
+    发送请求后，请求头信息
+
+    ```http
+    POST /api/student HTTP/1.1
+    ...
+    Cookie: token=15dd2a94e9d298458e2dfad3ecd324d3; sessionID=s%3A0Mm5yq-9cFCBiIP9kwI9Twuv7EQTxMIV.wWdFEHNsD3zJrl8xW9XCL0S73ZwFeVHuP%2FbYP0aHxbU
+    Host: localhost:5003
+    Origin: http://localhost:5003
+    ...
+    ```
+
+#### 5. 代码实现
+
+- 静态页面创建登录和修改学生的按钮功能
+
+    ```js
+    
+    // 登录
+    login.onclick = () => {
+      fetch("http://localhost:5003/api/admin/login", {
+        method: 'POST',
+        headers: {
+          'content-type': "application/json"
+        },
+        body: JSON.stringify({
+          loginID: "admin2",
+          loginPwd: "000000"
+        }),
+        credentials: "include", // 显式要求携带凭证
+      }).then(resp => resp.json()).then(resp => {
+        console.log(resp)
+      })
+    }
+    
+    updateStudent.onclick = () => {
+    
+      fetch("http://localhost:5003/api/student/111", {
+        method: 'PUT',
+        headers: {
+          'content-type': "application/json"
+        },
+        body: JSON.stringify({
+          "dob": "2022-11-22"
+        }),
+        credentials: "include", // 显式要求携带凭证
+      }).then(resp => resp.json()).then(resp => {
+        console.log(resp)
+      })
+    }
+    ```
+
+    
+
+- 服务端修改使用session身份认证
+
+    登录成功后，处理session（登录信息保存进session里）
+
+    ```ts
+    import express from "express";
+    import { login } from "../servers/admin";
+    
+    declare module "express-session" {
+      interface SessionData {
+        loginUser?: any;
+      }
+    }
+    
+    /* ------------- 创建路由实例 ------------- */
+    const router = express.Router();
+    
+    /* -------------- 定义路由表 ------------- */
+    
+    /**
+     * admin 登录
+     */
+    router.post("/login", async (req, res) => {
+      const data = await login(req.body?.loginID, req.body?.loginPwd);
+      if (data) {
+        /* --------- 登录成功后，响应session -------- */
+        //保存信息到session
+        req.session.loginUser = data;
+      }
+    
+      res.send({
+        code: 0,
+        data,
+      });
+    });
+    
+    export { router as adminRouter };
+    
+    ```
+
+    后续请求，读取session，进行身份验证
+
+    ```ts
+    import { ForbiddenError } from "../utils/errors";
+    import { match } from "path-to-regexp";
+    import { studentRouters } from "./student";
+    import { decrypt } from "../utils/crypt";
+    
+    export const tokenMiddleWare = (req, res, next) => {
+      /* ------------ 匹配是否需要验证 ------------ */
+    
+      const authRequired = studentRouters.find((router) => {
+        return (
+          router.method === req.method &&
+          isPathMatch(`/api/student` + router.path, req.path) &&
+          router.authRequired
+        );
+      });
+    
+      if (!authRequired) {
+        // 不在需要token的列表里，不执行后面的token验证
+        next();
+        return;
+      }
+    
+      /* ------------ 需要token验证 ----------- */
+      // 使用session验证
+      // console.log(req.session);
+      if (!req.session.loginUser) {
+        // 没有登录
+        throw ForbiddenError("you can not access the api");
+      }
+      // 登录，认证通过
+      next();
+    };
+    
+    /**
+     * 检测2个path是否匹配
+     * 比如："/api/student/:id" 和 "/api/student/17"
+     * @param pathPattern
+     * @param url
+     * @returns
+     */
+    function isPathMatch(pathPattern: string, url: string) {
+      const matcher = match(pathPattern, { decode: decodeURIComponent });
+      return !!matcher(url); // 返回 true / false
+    }
+    
+    ```
+
+    
+
 ### 4-13 jwt
 
 ### 4-14 登录和认证 - 服务器开发
