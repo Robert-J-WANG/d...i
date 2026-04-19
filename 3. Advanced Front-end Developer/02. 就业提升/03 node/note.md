@@ -155,14 +155,14 @@
 
   ````js
   console.log(__dirname);
-  
+
   // Users/aqiang/Desktop/myGitHub/upload/duyi/3. Advanced Front-end Developer/02. 就业提升/03 node/code/src
-  
+
   - \_\_filename ：当前模块文件的完整绝对路径
-  
+
   ```js
   console.log(__filename);
-  
+
   // /Users/aqiang/Desktop/myGitHub/upload/duyi/3. Advanced Front-end Developer/02. 就业提升/03 node/code/src/index.ts
   ````
 
@@ -259,7 +259,7 @@ process ：当前 Node 的**进程**对象，包含运行环境、参数、事�
   ```js
   const buf = Buffer.from("hello");
   console.log(buf);
-  
+
   // <Buffer 68 65 6c 6c 6f>
   ```
 
@@ -929,12 +929,12 @@ console.log(url.format(urlOjb)); // https://www.example.com:8080/path/to/resourc
     },
     f: 5,
   };
-  
+
   const obj2 = {
     a: 1,
     b: 2,
   };
-  
+
   console.log(util.isDeepStrictEqual(obj1, obj2)); // false
   ```
 
@@ -1486,15 +1486,15 @@ console.log(stream);
   rs.on("open", () => {
     console.log("file opend");
   });
-  
+
   rs.on("data", (chunk) => {
     console.log("reading data:", chunk);
   });
-  
+
   rs.on("end", () => {
     console.log("reading data done");
   });
-  
+
   rs.on("close", () => {
     console.log("file colesd");
   });
@@ -1522,27 +1522,27 @@ console.log(stream);
   rs.on("open", () => {
     console.log("file opend");
   });
-  
+
   rs.on("data", (chunk) => {
     console.log("reading data:", chunk);
     rs.pause();
   });
-  
+
   rs.on("pause", () => {
     console.log("reading puased");
     setTimeout(() => {
       rs.resume();
     }, 1000);
   });
-  
+
   rs.on("resume", () => {
     console.log("reading resumed");
   });
-  
+
   rs.on("end", () => {
     console.log("reading data done");
   });
-  
+
   rs.on("close", () => {
     console.log("file colesd");
   });
@@ -1761,20 +1761,20 @@ console.log(stream);
   function method_2() {
     const from = path.resolve(__dirname, "./myFiles/file.txt");
     const to = path.resolve(__dirname, "./myFiles/file_copy.txt");
-  
+
     const rs = fs.createReadStream(from);
-  
+
     const ws = fs.createWriteStream(to);
     console.time("method 2");
-  
+
     rs.pipe(ws); // 使用管道方法
-  
+
     rs.on("close", () => {
       console.timeEnd("method 2");
       console.log("copy down");
     });
   }
-  
+
   method_2();
   ```
 
@@ -2085,7 +2085,7 @@ server.on("connection", (socket) => {
       console.log("响应消息", resp.statusMessage);
       console.log("响应头", resp.headers);
       console.log("响应头类型", resp.headers["content-type"]);
-  
+
       // 获取响应体
       let respBody = "";
       // 读取流
@@ -2273,28 +2273,28 @@ server.on("connection", (socket) => {
   ```ts
   import http from "http";
   import url from "url";
-  
+
   function handleReq(req) {
    ...
   }
-  
+
   function handlerRes(res) {
     res.setHeader("a", 1);
     res.setHeader("b", 1);
     res.statusCode = 404;
-  
+
     res.write("hello");
     res.end();
   }
-  
+
   const server = http.createServer((req, res) => {
     // 请求数据获取
     handleReq(req);
-  
+
     // 响应体对象设置
     handlerRes(res);
   });
-  
+
   server.listen(9530);
   server.on("listening", () => {
     console.log("server is listening on 9530");
@@ -2826,7 +2826,7 @@ services:
   mysql:
     container_name: mysql-study
     image: mysql:8.0
-    restart: always
+    restart: no
     environment:
       MYSQL_ROOT_PASSWORD: "123456"
     ports:
@@ -4508,7 +4508,7 @@ GROUP BY 语句根据一个或多个列对结果集进行分组
           INNER JOIN company c2 ON d2.companyId = c2.id
           WHERE c2.name = 'GreenSoft'
       );
-  
+
   ```
 
   ```bash
@@ -4795,7 +4795,7 @@ mysql2 提供了 promise 的功能，避免回调函数的使用，方便我们�
 
   ```ts
   import mysql from "mysql2/promise";
-  
+
   const getData = async (queryStr) => {
     const connection = await mysql.createConnection({
       host: "localhost",
@@ -5017,7 +5017,7 @@ mysql2 提供了 promise 的功能，避免回调函数的使用，方便我们�
     );
     console.log(res);
   };
-  
+
   const getCompany = async (id) => {
     const [res] = await connecttionPool.execute(
       `SELECT * FROM company where id=?`,
@@ -5251,13 +5251,13 @@ mysql2 提供了 promise 的功能，避免回调函数的使用，方便我们�
   import Class from "./Class";
   import Student from "./Student";
   import sequelize from "./db";
-  
+
   //表之间的关系定义：
   Class.hasMany(Student);
   Student.hasMany(Book);
-  
+
   export { sequelize, Admin, Book, Class, Student };
-  
+
   ```
 
 ### 3-4 模型的增删改
@@ -5676,7 +5676,7 @@ console.log(users);
   ```ts
   import { faker } from "@faker-js/faker";
   import { Student } from "../models/sync";
-  
+
   export const students = faker.helpers.multiple(
     () => {
       return {
@@ -5695,7 +5695,7 @@ console.log(users);
     }
   );
   console.log(students);
-  
+
   Student.bulkCreate(students);
   ```
 
@@ -5993,14 +5993,14 @@ findAll - 查询全部或者多条数据
         sex, // 按性别查询
       },
     });
-  
+
     const students = res ? JSON.parse(JSON.stringify(res)) : null; // 先将数组转成字符串，再转成json对象
-  
+
     // 获取总数
     const total = await Student.count({
       where: { sex },
     });
-  
+
     // 包装数据 并返回
     const data = {
       total,
@@ -6377,7 +6377,7 @@ const getStudentsInclude = async (page = 1, limit = 10) => {
 
     ```ts
     import md5 from "md5";
-    
+
     console.log(md5("123"));
     console.log(md5("abc"));
     ```
@@ -6471,7 +6471,7 @@ const getStudentsInclude = async (page = 1, limit = 10) => {
     import { log } from "console";
     import { Admin } from "../models/sync";
     import md5 from "md5";
-    
+
     /* -------------- 加密改造 -------------- */
     const login = async (loginID, loginPwd) => {
       //加密处理
@@ -6482,26 +6482,26 @@ const getStudentsInclude = async (page = 1, limit = 10) => {
           loginPwd,
         },
       });
-    
+
       if (res) {
         console.log(res.toJSON());
         return res.toJSON();
       }
       return null;
     };
-    
+
     export { adminAdd, adminDelete, adminUpdate, login, getAdminByID };
     ```
 
     ```ts
     import { sequelize } from "./models/sync";
     import { login } from "./servers/admin";
-    
+
     async function main() {
       /* ----- 5. 查询数据 findOne - 登录验证 ----- */
       await login("admin2", "000000");
     }
-    
+
     main();
     ```
 
@@ -6578,21 +6578,21 @@ Day.js 是一个轻量级（约 2KB）的日期时间处理库，其 API 设计�
 
     ```ts
     import dayjs from "dayjs";
-    
+
     /* ------------- 创建实例对象 ------------- */
-    
+
     // 1. 不传参数 - 获取当前日期和时间
     console.log(dayjs());
-    
+
     /* ------- 2. 字符串 - 解析常见格式字符串 ------- */
     console.log(dayjs("2025-1-1"));
-    
+
     /* ---------- 3. JS Date 对象 --------- */
     console.log(dayjs(new Date()));
-    
+
     /* --------- 4. 时间戳 (毫秒) -------- */
     console.log(dayjs(1000000000000));
-    
+
     /* ------------ 5.时间戳 (秒) ----------- */
     console.log(dayjs(1000000000 * 1000));
     ```
@@ -6745,7 +6745,7 @@ Day.js 是一个轻量级（约 2KB）的日期时间处理库，其 API 设计�
     /* ----------- 2. 设为开始/结束 ----------- */
     console.log(now.startOf("year").format(formatRule));
     console.log(now.startOf("month").format(formatRule));
-    
+
     console.log(now.endOf("year").format(formatRule));
     console.log(now.endOf("day").format(formatRule));
     ```
@@ -6978,14 +6978,14 @@ Day.js 是一个轻量级（约 2KB）的日期时间处理库，其 API 设计�
 
     ```ts
     /* ----------- 4.本地时间与偏移量 ----------- */
-    
+
     /* ---- Getter/Setter 方法默认操作的本地时间 --- */
     console.log(now.get("year"));
     console.log(now.get("hour"));
-    
+
     /* -------- 实例与 UTC 之间的分钟偏移量 -------- */
     console.log(now.utcOffset());
-    
+
     /* ----------- 获取当前实例的时区名称 ---------- */
     console.log(dayjs.tz.guess());
     ```
@@ -7582,9 +7582,9 @@ $\text{Zod}$ 的 $\text{API}$ 设计非常直观，所有验证都是通过链�
   ```ts
   import { Class, Student } from "../models/sync";
   import { Op } from "sequelize";
-  
+
   import { studentSchema } from "../schemas/schema";
-  
+
   interface Istudent {
     name: string;
     dob: string | Date;
@@ -7592,7 +7592,7 @@ $\text{Zod}$ 的 $\text{API}$ 设计非常直观，所有验证都是通过链�
     mobile: string;
     ClassId?: number;
   }
-  
+
   /* -------------- 修改数据 -------------- */
   const studentUpdate = async (id, newObj) => {
     const valResult = studentSchema.partial().safeParse(newObj); //数据验证
@@ -7608,7 +7608,7 @@ $\text{Zod}$ 的 $\text{API}$ 设计非常直观，所有验证都是通过链�
       console.log(valResult.error.issues.map((e) => e.message));
     }
   };
-  
+
   export { studentAdd, studentUpdate };
   ```
 
@@ -7849,7 +7849,7 @@ Log4js 是一个用于 **Node.js** 环境下的**日志记录（logging）模块
     /* ------------- 1. 模块导入 ------------ */
     import log4js from "log4js";
     import path from "path";
-    
+
     /* -------------- 2. 配置 ------------- */
     log4js.configure({
       // 配置出口
@@ -7875,7 +7875,7 @@ Log4js 是一个用于 **Node.js** 环境下的**日志记录（logging）模块
         },
       },
     });
-    
+
     process.on("exit", () => {
       log4js.shutdown(); //当程序退出时，确保所有日志写入文件、套接字关闭等操作完成。
     });
@@ -7938,7 +7938,7 @@ Log4js 是一个用于 **Node.js** 环境下的**日志记录（logging）模块
         sql: {
           type: "file",
           filename: path.resolve(__dirname, "logs", "sql", "logging.log"),
-    
+
           // 优化配置 - **Layout (布局)**
           layout: {
             type: "pattern",
@@ -7952,16 +7952,16 @@ Log4js 是一个用于 **Node.js** 环境下的**日志记录（logging）模块
       // 配置类别
     ...
     });
-    
+
     ...
-    
+
     ```
 
     ```ts
     sql [2025-12-06 15:30:50.733] [INFO]  - abc
-    
+
     sql [2025-12-06 15:32:41.600] [INFO]  - abc
-    
+
     sql [2025-12-06 15:32:42.823] [INFO]  - abc
     ```
 
@@ -7981,7 +7981,7 @@ Log4js 是一个用于 **Node.js** 环境下的**日志记录（logging）模块
     /* ------------- 1. 模块导入 ------------ */
     import log4js from "log4js";
     import path from "path";
-    
+
     /* -------------- 2. 配置 ------------- */
     log4js.configure({
       // 配置出口
@@ -8015,16 +8015,16 @@ Log4js 是一个用于 **Node.js** 环境下的**日志记录（logging）模块
         },
       },
     });
-    
+
     process.on("exit", () => {
       log4js.shutdown(); //当程序退出时，确保所有日志写入文件、套接字关闭等操作完成。
     });
-    
+
     /* -------------- 3.使用 -------------- */
-    
+
     const sqlLogger = log4js.getLogger("sql");
     const defaultLogger = log4js.getLogger("default");
-    
+
     export { sqlLogger, defaultLogger };
     ```
 
@@ -8034,14 +8034,14 @@ Log4js 是一个用于 **Node.js** 环境下的**日志记录（logging）模块
 
   ```ts
   import { Sequelize } from "sequelize";
-  
+
   const sequelize = new Sequelize("schooldb", "root", "123456", {
     host: "localhost",
     dialect: "mysql",
-  
+
     logging: false, // 不显示sql详情日志
   });
-  
+
   export default sequelize;
   ```
 
@@ -8050,16 +8050,16 @@ Log4js 是一个用于 **Node.js** 环境下的**日志记录（logging）模块
   ```ts
   import { Sequelize } from "sequelize";
   import { sqlLogger } from "../logger";
-  
+
   const sequelize = new Sequelize("schooldb", "root", "123456", {
     host: "localhost",
     dialect: "mysql",
-  
+
     logging: (msg) => {
       sqlLogger.debug(msg); // 使用自定义的sqlLogger记录日志
     },
   });
-  
+
   export default sequelize;
   ```
 
@@ -8067,7 +8067,7 @@ Log4js 是一个用于 **Node.js** 环境下的**日志记录（logging）模块
 
   ```sql
   sql [2025-12-06 16:26:06.608] [DEBUG]  - Executing (default): SELECT `id`, `name`, `dob`, `sex`, `mobile`, `deletedAt`, `ClassId` FROM `Student` AS `Student` WHERE (`Student`.`deletedAt` IS NULL) LIMIT 5, 5;
-  
+
   sql [2025-12-06 16:26:44.608] [DEBUG]  - Executing (default): SELECT `id`, `name`, `dob`, `sex`, `mobile`, `deletedAt`, `ClassId` FROM `Student` AS `Student` WHERE (`Student`.`deletedAt` IS NULL);
   ```
 
@@ -8205,7 +8205,7 @@ express 提供 Web 开发所必需的核心功能，例如：
         <meta charset="utf-8" />
         <title>Error</title>
       </head>
-    
+
       <body>
         <pre>Cannot GET /test1</pre>
       </body>
@@ -8275,10 +8275,10 @@ express 提供 Web 开发所必需的核心功能，例如：
     /* -------------- 3. 处理请求 -------------- */
     app.get("/test/:id", (req, res) => {
      ...
-    
+
       // 4. 重定向
       // res.status(302).setHeader("location", "https://expressjs.com/").end();
-    
+
       // 5. 重定向 - 简洁
        res.redirect(302, "https://expressjs.com/");
     });
@@ -8308,41 +8308,41 @@ express 提供 Web 开发所必需的核心功能，例如：
 
     ```ts
     import express from "express";
-    
+
     /* ---------- 1. 创建一个express应用 --------- */
     const app = express(); // app实际是一个函数 - 处理请求的函数
-    
+
     /* --- Express 的 RESTful API 示例代码 --- */
     // 获取用户列表
     app.get("/users", (req, res) => {
       res.send("获取所有用户");
     });
-    
+
     // 获取某个用户
     app.get("/users/:id", (req, res) => {
       res.send(`获取用户：${req.params.id}`);
     });
-    
+
     // 创建用户
     app.post("/users", (req, res) => {
       res.send("创建用户");
     });
-    
+
     // 全量更新用户
     app.put("/users/:id", (req, res) => {
       res.send(`全量更新用户：${req.params.id}`);
     });
-    
+
     // 部分更新用户
     app.patch("/users/:id", (req, res) => {
       res.send(`部分更新用户：${req.params.id}`);
     });
-    
+
     // 删除用户
     app.delete("/users/:id", (req, res) => {
       res.send(`删除用户：${req.params.id}`);
     });
-    
+
     /* -------------- 2. 监听端口 -------------- */
     const port = 5003;
     app.listen(port, () => {
@@ -8372,10 +8372,10 @@ express 提供 Web 开发所必需的核心功能，例如：
 
     ```ts
     import express from "express";
-    
+
     /* ---------- 1. 创建一个express应用 --------- */
     const app = express(); // app实际是一个函数 - 处理请求的函数
-    
+
     app.get(
       "/",
       (req, res, next) => {
@@ -8394,7 +8394,7 @@ express 提供 Web 开发所必需的核心功能，例如：
         res.send("响应结束");
       }
     );
-    
+
     /* -------------- 2. 监听端口 -------------- */
     const port = 5003;
     app.listen(port, () => {
@@ -8455,7 +8455,7 @@ express 提供 Web 开发所必需的核心功能，例如：
         res.send("响应结束");
       }
     );
-    
+
     /* -------------- 监听端口 -------------- */
     const port = 5003;
     app.listen(port, () => {
@@ -8473,7 +8473,7 @@ express 提供 Web 开发所必需的核心功能，例如：
 
     ```bash
     // 响应内容
-    
+
     {
         "code": 500,
         "msg": "这是一个测试错误"
@@ -8505,9 +8505,9 @@ express 提供 Web 开发所必需的核心功能，例如：
     ```ts
     import express from "express";
     import { errorMiddleWare } from "./errorMiddleWare";
-    
+
     const app = express();
-    
+
     app.get(
       "/",
       (req, res, next) => {
@@ -8612,7 +8612,7 @@ express 提供 Web 开发所必需的核心功能，例如：
     ```ts
     // 在所有路由之前解析 JSON 请求体
     app.use(express.json());
-    
+
     app.get("/news", (req, res) => {
       console.log(`${req.method} ${req.url}`);
       res.send("解析完成");
@@ -8655,20 +8655,20 @@ express 提供 Web 开发所必需的核心功能，例如：
 
   ```ts
   import express from "express";
-  
+
   /* ---------- 创建一个express应用 --------- */
   const app = express();
-  
+
   /* -------------- 内置中间件 ------------- */
   /* -------- express.static1. -------- */
   const staticRoot = path.resolve(__dirname, "../public");
   // console.log(staticRoot);
   app.use("/", express.static(staticRoot));
-  
+
   app.get("/", (req, res) => {
     res.send("aaaaa"); // 这个中间件不运行
   });
-  
+
   /* -------------- 监听端口 -------------- */
   const port = 5003;
   app.listen(port, () => {
@@ -8702,7 +8702,7 @@ express 提供 Web 开发所必需的核心功能，例如：
   /* -------------- 内置中间件 ------------- */
   /* -------- express.json -------- */
   app.use(express.json()); // 解析 application/json 类型的请求体
-  
+
   app.post("/api/student", (req, res) => {
     console.log(req.body); //{ name: 'Allex', age: 18 }
   });
@@ -8729,7 +8729,7 @@ express 提供 Web 开发所必需的核心功能，例如：
       extend: true, // 解析 application/x-www-form-urlencoded 类型的请求体，支持嵌套对象
     })
   );
-  
+
   app.post("/api/student", (req, res) => {
     console.log(req.body); //{ name: 'Allex', age: 18 }
   });
@@ -9160,10 +9160,10 @@ app.METHOD(PATH, HANDLER);
     getStudentsAttr,
     getStudentsInclude,
   } from "../servers/student";
-  
+
   /* ------------- 创建路由实例 ------------- */
   const router = express.Router();
-  
+
   /* -------------- 定义路由表 ------------- */
   /**
    * 分页查询学生
@@ -9183,26 +9183,26 @@ app.METHOD(PATH, HANDLER);
     const data = await studentAdd(req.body);
     res.send(data);
   });
-  
+
   // 修改学生
   router.put("/:id", async (req, res) => {
     const id = req.params.id;
     const result = await studentUpdate(id, req.body);
     res.send(result);
   });
-  
+
   // 删除学生
   router.delete("/:id", async (req, res) => {
     const id = req.params.id;
     const result = await studentDelete(id);
     res.send(result);
   });
-  
+
   // 测试error中间件
   router.get("/__test_error", async (req, res) => {
     throw new Error("EXPRESS 5 ASYNC TEST");
   });
-  
+
   export { router as studentRouter };
   ```
 
@@ -9210,27 +9210,27 @@ app.METHOD(PATH, HANDLER);
   import express from "express";
   import { studentRouter } from "./studentRouter";
   import { errorMiddleWare } from "./errorMiddleWare";
-  
+
   /* ---------- 创建一个express应用 --------- */
   const app = express();
-  
+
   /* ------ 内置中间件 - urlencoded() ------ */
   app.use(
     express.urlencoded({
       extended: true, // 解析 application/x-www-form-urlencoded 类型的请求体，支持嵌套对象
     })
   );
-  
+
   /* ---------- 内置中间件 - json ---------- */
   app.use(express.json()); // 解析 application/json 类型的请求体
-  
+
   /* -------- 路由实例 - studentRouter ------- */
   app.use("/student", studentRouter);
-  
+
   /* -------------- 错误中间件 ------------- */
   /* ----------- 必须放在所以中间之后 ----------- */
   app.use(errorMiddleWare);
-  
+
   /* -------------- 监听端口 -------------- */
   const port = 5003;
   app.listen(port, () => {
@@ -9271,139 +9271,139 @@ app.METHOD(PATH, HANDLER);
 
   - **存放多个出入证**： 这些出入证来自不同的网站，也可能一个网站有多个出入证，分别用于出入不同的地方
   - **自动出示出入证**：客户端在访问不同的网站时，能自动把对应的出入证附带请求发送出去
-  - **正确出示出入证**：客户端不能将Google的出入证发送给MS
+  - **正确出示出入证**：客户端不能将 Google 的出入证发送给 MS
   - **管理出入证的有效期**：客户段要能够自动发现过期的出入证，并从卡包中删除
 
-  ==能够满足上述功能的卡包，就是cookie==
+  ==能够满足上述功能的卡包，就是 cookie==
 
 - 总结
 
-    **cookie类似于一个卡包，专门用来存放各种出入证，并有着一套机制来自动管理这些证件**
+  **cookie 类似于一个卡包，专门用来存放各种出入证，并有着一套机制来自动管理这些证件**
 
-    卡包里的每一张卡，就是一个cookie
+  卡包里的每一张卡，就是一个 cookie
 
 #### 2. cookie 的组成
 
 **Cookie** 是浏览器中存放的一小段**数据**，管理着各个网站的身份验证信息。
 
-每个cookie相当于每个网站的一个卡片，记录了如下信息：
+每个 cookie 相当于每个网站的一个卡片，记录了如下信息：
 
 - key : 键， 比如身份编号
 - value： 值，身份编号的值，有点像卡片上的条形码
-- domain： 域，表示这个cookie属于哪个网站。是Google还是Ms？
-- path： 路径，表示这个cookie属于该网站的那个基路径，比如输入 `/news` 这个路径还是 `/account` 这个路径？
+- domain： 域，表示这个 cookie 属于哪个网站。是 Google 还是 Ms？
+- path： 路径，表示这个 cookie 属于该网站的那个基路径，比如输入 `/news` 这个路径还是 `/account` 这个路径？
 - secure：是否使用安全传输
 - expire： 过期时间
 
 当客户端（浏览器）向服务器发送一个请求时，会扫描自己的卡包（cookies），查看哪些卡片适合捎带发送给服务器。
 
-一个cookie需要同时满足以下条件，就会被附带到请求中：
+一个 cookie 需要同时满足以下条件，就会被附带到请求中：
 
 - 没有过期
-- cookie中的域和这次请求的域匹配（不在于端口，只要域匹配即可）
-- cookie中的path和这次请求的path匹配
-    - 比如cookie中的path是`/news`，则可以匹配请求路径 `/news`， `/news/detail`，`/news/a/b/c`等等, 但不能匹配`/blogs`
-    - 如果cookie中的path是`/`， 则可以匹配所有路径
-- 验证cookie的安全传输
-    - `secure:true`， 请求协议必须是`https`， 否则不会发送cookie
-    - `secure:false`,  请求协议可以是`https`，也可以是`http`
+- cookie 中的域和这次请求的域匹配（不在于端口，只要域匹配即可）
+- cookie 中的 path 和这次请求的 path 匹配
+  - 比如 cookie 中的 path 是`/news`，则可以匹配请求路径 `/news`， `/news/detail`，`/news/a/b/c`等等, 但不能匹配`/blogs`
+  - 如果 cookie 中的 path 是`/`， 则可以匹配所有路径
+- 验证 cookie 的安全传输
+  - `secure:true`， 请求协议必须是`https`， 否则不会发送 cookie
+  - `secure:false`, 请求协议可以是`https`，也可以是`http`
 
-一旦同时满足上面的条件，浏览器会自动把这个cookie加入到这次请求中。具体做法：**自动放置到请求头中**
+一旦同时满足上面的条件，浏览器会自动把这个 cookie 加入到这次请求中。具体做法：**自动放置到请求头中**
 
 #### 3. cookie 的设置
 
-由于cookie是保存在浏览器端的，同时，很多证件有事服务器颁发的。因此，cookie的设置有2种模式：
+由于 cookie 是保存在浏览器端的，同时，很多证件有事服务器颁发的。因此，cookie 的设置有 2 种模式：
 
 - 服务器响应设置
 
-    - 这种模式非常普遍， 当服务器决定给客户端一个证件时，它会在响应的消息中包含cookie，而浏览器或自动保存cookie到卡包中
+  - 这种模式非常普遍， 当服务器决定给客户端一个证件时，它会在响应的消息中包含 cookie，而浏览器或自动保存 cookie 到卡包中
 
-    - 响应头安装下面的格式设置：
+  - 响应头安装下面的格式设置：
 
-        ```ts
-        set-cookie:cookie1
-        set-cookie:cookie2
-        set-cookie:cookie3
-        ...
-        ```
+    ```ts
+    set-cookie:cookie1
+    set-cookie:cookie2
+    set-cookie:cookie3
+    ...
+    ```
 
-    - 可以做一次响应中设置多个cookie
+  - 可以做一次响应中设置多个 cookie
 
-    - 每个cookie的格式如下：
+  - 每个 cookie 的格式如下：
 
-        ```ts
-        key=value;path=?;domain=?;expire=?;max-age=?;secure;httponly
-        ```
+    ```ts
+    key=value;path=?;domain=?;expire=?;max-age=?;secure;httponly
+    ```
 
-        其中键值对是必须属性，其他可选，顺序不限
+    其中键值对是必须属性，其他可选，顺序不限
 
-    - 每个属性的说明：
+  - 每个属性的说明：
 
-        - Path（作用路径）
+    - Path（作用路径）
 
-            ```ts
-            Set-Cookie: token=abc; Path=/admin
-            ```
+      ```ts
+      Set-Cookie: token=abc; Path=/admin
+      ```
 
-            只在 `/admin` 路径及其子路径发送， 通常设置为 `/`
+      只在 `/admin` 路径及其子路径发送， 通常设置为 `/`
 
-        - Domain（作用域名）
+    - Domain（作用域名）
 
-            ```ts
-            Set-Cookie: token=abc; Domain=example.com
-            ```
+      ```ts
+      Set-Cookie: token=abc; Domain=example.com
+      ```
 
-            允许子域名共享,  如果不设置→**只能当前域名使用**
+      允许子域名共享, 如果不设置 →**只能当前域名使用**
 
-        -  Expires / Max-Age（生命周期）
+    - Expires / Max-Age（生命周期）
 
-            ```ts
-            Set-Cookie: token=abc; Expires='Mon, 05 Jan 2026 10:21:55 GMT'
-            ```
+      ```ts
+      Set-Cookie: token=abc; Expires='Mon, 05 Jan 2026 10:21:55 GMT'
+      ```
 
-            绝对时间，标准的GMT
+      绝对时间，标准的 GMT
 
-            ```ts
-            Set-Cookie: token=abc; Max-Age=3600
-            ```
+      ```ts
+      Set-Cookie: token=abc; Max-Age=3600
+      ```
 
-            相对时间，单位s，`Max-Age=3600` → 1 小时后过期, 如果不设置 → **会话 Cookie（关闭浏览器就没）**
+      相对时间，单位 s，`Max-Age=3600` → 1 小时后过期, 如果不设置 → **会话 Cookie（关闭浏览器就没）**
 
-        - Secure（HTTPS）
+    - Secure（HTTPS）
 
-            ```ts
-            Set-Cookie: token=abc; Secure
-            ```
+      ```ts
+      Set-Cookie: token=abc; Secure
+      ```
 
-            只在 HTTPS 下传输， 防止被中间人劫持
+      只在 HTTPS 下传输， 防止被中间人劫持
 
-        - HttpOnly（安全）
+    - HttpOnly（安全）
 
-            ```ts
-            Set-Cookie: token=abc; HttpOnly
-            ```
+      ```ts
+      Set-Cookie: token=abc; HttpOnly
+      ```
 
-            该cookie只允许通过http传输，而客户端无法通过JS  `document.cookie` 读取， 防止 **XSS 攻击**， **登录态 Cookie 必须加**
+      该 cookie 只允许通过 http 传输，而客户端无法通过 JS `document.cookie` 读取， 防止 **XSS 攻击**， **登录态 Cookie 必须加**
 
 - 客户端自行设置
 
-    - 次模式少见一些。比如关闭某个广告，设置以后不要再弹出。此时可以把这种小信息直接通过浏览器的js代码保存到cookie中。后续请求服务器时，服务器会看到浏览器中拒绝弹窗广告的cookie，于是就不在发送广告了
-    - 通过js代码 `document.cookie='token=123; path=/; domain=localhost; Max-age=1000; secure=true'` 重新赋值的方式实现
-    - 无法设置HttpOnly
+  - 次模式少见一些。比如关闭某个广告，设置以后不要再弹出。此时可以把这种小信息直接通过浏览器的 js 代码保存到 cookie 中。后续请求服务器时，服务器会看到浏览器中拒绝弹窗广告的 cookie，于是就不在发送广告了
+  - 通过 js 代码 `document.cookie='token=123; path=/; domain=localhost; Max-age=1000; secure=true'` 重新赋值的方式实现
+  - 无法设置 HttpOnly
 
-#### 4. 删除cookie
+#### 4. 删除 cookie
 
-删除cookie就是重新设置cookie, **把expire时间设置为当前时间或者负数**
+删除 cookie 就是重新设置 cookie, **把 expire 时间设置为当前时间或者负数**
 
 ```ts
 Set-Cookie: token=abc; Max-Age=-1
 ```
 
-浏览器发现cookie过期，会自动删除
+浏览器发现 cookie 过期，会自动删除
 
-#### 5. admin登录设置cookie
+#### 5. admin 登录设置 cookie
 
-添加admin路由
+添加 admin 路由
 
 ```ts
 import express from "express";
@@ -9434,7 +9434,6 @@ router.get("/login", async (req, res) => {
 });
 
 export { router as adminRouter };
-
 ```
 
 使用该路由
@@ -9473,493 +9472,481 @@ const port = 5003;
 app.listen(port, () => {
   console.log(`server is listened on ${port}`);
 });
-
 ```
-
-
 
 ### 4-7 实现登录和认证
 
-#### 1. 使用cookie中间件
+#### 1. 使用 cookie 中间件
 
 - 安装
 
-    ```bash
-    npm install cookie-parser
-    ```
+  ```bash
+  npm install cookie-parser
+  ```
 
 - 导入使用中间件
 
-    ```ts
-    import express from "express";
-    import cookieParser from "cookie-parser";
-    import { studentRouter } from "./student";
-    import { adminRouter } from "./admin";
-    import { errorMiddleWare } from "./errorMiddleWare";
-    
-    /* ---------- 创建一个express应用 --------- */
-    const app = express();
-    
-    /* ----------- 使用cookie中间件 ---------- */
-    app.use(cookieParser());
-    
-    /* ------ 内置中间件 - urlencoded() ------ */
-    app.use(
-      express.urlencoded({
-        extended: true, // 解析 application/x-www-form-urlencoded 类型的请求体，支持嵌套对象
-      })
-    );
-    
-    /* ---------- 内置中间件 - json ---------- */
-    app.use(express.json()); // 解析 application/json 类型的请求体
-    
-    /* -------- 路由实例 - studentRouter ------- */
-    app.use("/student", studentRouter);
-    
-    /* -------- 路由实例 - adminRouter ------- */
-    app.use("/admin", adminRouter);
-    
-    /* -------------- 错误中间件 ------------- */
-    /* ----------- 必须放在所以中间之后 ----------- */
-    app.use(errorMiddleWare);
-    
-    /* -------------- 监听端口 -------------- */
-    const port = 5003;
-    app.listen(port, () => {
-      console.log(`server is listened on ${port}`);
-    });
-    
-    ```
+  ```ts
+  import express from "express";
+  import cookieParser from "cookie-parser";
+  import { studentRouter } from "./student";
+  import { adminRouter } from "./admin";
+  import { errorMiddleWare } from "./errorMiddleWare";
+
+  /* ---------- 创建一个express应用 --------- */
+  const app = express();
+
+  /* ----------- 使用cookie中间件 ---------- */
+  app.use(cookieParser());
+
+  /* ------ 内置中间件 - urlencoded() ------ */
+  app.use(
+    express.urlencoded({
+      extended: true, // 解析 application/x-www-form-urlencoded 类型的请求体，支持嵌套对象
+    })
+  );
+
+  /* ---------- 内置中间件 - json ---------- */
+  app.use(express.json()); // 解析 application/json 类型的请求体
+
+  /* -------- 路由实例 - studentRouter ------- */
+  app.use("/student", studentRouter);
+
+  /* -------- 路由实例 - adminRouter ------- */
+  app.use("/admin", adminRouter);
+
+  /* -------------- 错误中间件 ------------- */
+  /* ----------- 必须放在所以中间之后 ----------- */
+  app.use(errorMiddleWare);
+
+  /* -------------- 监听端口 -------------- */
+  const port = 5003;
+  app.listen(port, () => {
+    console.log(`server is listened on ${port}`);
+  });
+  ```
 
 - 使用此中间件后：
 
-    - 会在req对象中注入cookies属性，用来收集所以请求传递过来的cookie
-    - 会在res对象中注入cookie方法，设置cookie
+  - 会在 req 对象中注入 cookies 属性，用来收集所以请求传递过来的 cookie
+  - 会在 res 对象中注入 cookie 方法，设置 cookie
 
-    ```ts
-    import express from "express";
-    import { login } from "../servers/admin";
-    
-    /* ------------- 创建路由实例 ------------- */
-    const router = express.Router();
-    
-    /* -------------- 定义路由表 ------------- */
-    
-    /**
-     * admin 登录
-     */
-    router.post("/login", async (req, res) => {
-      const data = await login(req.body?.loginID, req.body?.loginPwd);
-      if (data) {
-        //登录成功, 传递cookie
-        res.cookie("token", data.id, {
-          path: "/",
-          domain: "localhost",
-          maxAge: 3600, // 毫秒
-          secure: true,
-          httpOnly: true,
-        });
-      }
-    
-      res.send({
-        code: 0,
-        data,
+  ```ts
+  import express from "express";
+  import { login } from "../servers/admin";
+
+  /* ------------- 创建路由实例 ------------- */
+  const router = express.Router();
+
+  /* -------------- 定义路由表 ------------- */
+
+  /**
+   * admin 登录
+   */
+  router.post("/login", async (req, res) => {
+    const data = await login(req.body?.loginID, req.body?.loginPwd);
+    if (data) {
+      //登录成功, 传递cookie
+      res.cookie("token", data.id, {
+        path: "/",
+        domain: "localhost",
+        maxAge: 3600, // 毫秒
+        secure: true,
+        httpOnly: true,
       });
+    }
+
+    res.send({
+      code: 0,
+      data,
     });
-    
-    export { router as adminRouter };
-    
-    ```
+  });
 
-#### 2. 登录成功后给予token
+  export { router as adminRouter };
+  ```
 
-- 通过cookie给予，合适浏览器
+#### 2. 登录成功后给予 token
 
-- 通过header给予，适合其他客户端（比如移动端）
+- 通过 cookie 给予，合适浏览器
 
-    ```ts
-    router.post("/login", async (req, res) => {
-      const data = await login(req.body?.loginID, req.body?.loginPwd);
-      if (data) {
-        //登录成功, 传递cookie
-        const value = data.id;
-        /* ----- 适合浏览器 - 通过cookie给于token ---- */
-        res.cookie("token", value, {
-          path: "/",
-          domain: "localhost",
-          maxAge: 3600, // 毫秒
-          secure: true,
-          httpOnly: true,
-        });
-        /* ---- 适合其他客户端 - 通过header给于token --- */
-        res.setHeader("authorization", value?.toString() as string);
-      }
-    ```
+- 通过 header 给予，适合其他客户端（比如移动端）
+
+  ```ts
+  router.post("/login", async (req, res) => {
+    const data = await login(req.body?.loginID, req.body?.loginPwd);
+    if (data) {
+      //登录成功, 传递cookie
+      const value = data.id;
+      /* ----- 适合浏览器 - 通过cookie给于token ---- */
+      res.cookie("token", value, {
+        path: "/",
+        domain: "localhost",
+        maxAge: 3600, // 毫秒
+        secure: true,
+        httpOnly: true,
+      });
+      /* ---- 适合其他客户端 - 通过header给于token --- */
+      res.setHeader("authorization", value?.toString() as string);
+    }
+  ```
 
 #### 3. 客户端对后续请求进行认证
 
-- 解析cookie或者header中的token
+- 解析 cookie 或者 header 中的 token
 
-    - 浏览器（cookie 自动发送）- 中间件能读到 `req.cookies.token`
-    - 没有 cookie（Postman / axios / mobile） -  发送请求时，手动放入authorization: token （**必须事先记住了token**）
+  - 浏览器（cookie 自动发送）- 中间件能读到 `req.cookies.token`
+  - 没有 cookie（Postman / axios / mobile） - 发送请求时，手动放入 authorization: token （**必须事先记住了 token**）
 
-- 验证token:
+- 验证 token:
 
-    - 通过：继续后续操作
-    - 未通过：给于错误
+  - 通过：继续后续操作
+  - 未通过：给于错误
 
-- 封装一个中间件：用于解析token， 并执行验证
+- 封装一个中间件：用于解析 token， 并执行验证
 
-    ```ts
-    import { ForbiddenError } from "../utils/errors";
-    
-    export const tokenMiddleWare = (req, res, next) => {
-      /* -------- 浏览器从cookie获取token ------- */
-      let token = req.cookies?.token;
-      if (!token) {
-        /* --- 没有通过cookie传递，其他设备从header获取 --- */
-        token = req.headers.authorization;
-      }
-      if (!token) {
-        /* ---------- 没有token,没有登录 ---------- */
-        throw ForbiddenError("you can not access the api");
-      }
-      /* ---------- 有token, 进行认证 ---------- */
-      next();
-    };
-    ```
+  ```ts
+  import { ForbiddenError } from "../utils/errors";
+
+  export const tokenMiddleWare = (req, res, next) => {
+    /* -------- 浏览器从cookie获取token ------- */
+    let token = req.cookies?.token;
+    if (!token) {
+      /* --- 没有通过cookie传递，其他设备从header获取 --- */
+      token = req.headers.authorization;
+    }
+    if (!token) {
+      /* ---------- 没有token,没有登录 ---------- */
+      throw ForbiddenError("you can not access the api");
+    }
+    /* ---------- 有token, 进行认证 ---------- */
+    next();
+  };
+  ```
 
 - 需要认证的接口的界定
 
-    并非所有的接口请求时都需要认证，比如登录的接口，正因为没有认证，所以需要登录。如果登录的接口也需要认证，那么首次登录时，无法登录（**没有token**）。
+  并非所有的接口请求时都需要认证，比如登录的接口，正因为没有认证，所以需要登录。如果登录的接口也需要认证，那么首次登录时，无法登录（**没有 token**）。
 
-    优化中间件：配置需要认证的路由数组
+  优化中间件：配置需要认证的路由数组
 
-    ```ts
-    import { ForbiddenError } from "../utils/errors";
-    import { match } from "path-to-regexp";
-    
-    const needTokenApis = [
-      {
-        method: "GET",
-        path: "/api/student",
-      },
-      {
-        method: "POST",
-        path: "/api/student",
-      },
-      {
-        method: "PUT",
-        path: "/api/student/:id",
-      },
-      {
-        method: "DELETE",
-        path: "/api/student/:id",
-      },
-    ];
-    
-    export const tokenMiddleWare = (req, res, next) => {
-      /* ------------ 匹配是否需要验证 ------------ */
-    
-      const apis = needTokenApis.filter(
-        (api) => api.method === req.method && isPathMatch(api.path, req.path)
-      );
-      if (apis.length === 0) {
-        // 不在需要token的列表里，不执行后面的token验证
-        next();
-        return;
-      }
-    
-      /* ------------ 需要token验证 ----------- */
-    
-      ...
-    
-    /**
-     * 检测2个path是否匹配
-     * 比如："/api/student/:id" 和 "/api/student/17"
-     * @param pathPattern
-     * @param url
-     * @returns
-     */
-    function isPathMatch(pathPattern: string, url: string) {
-      const matcher = match(pathPattern, { decode: decodeURIComponent });
-      return !!matcher(url); // 返回 true / false
-    }
-    
-    ```
+  ```ts
+  import { ForbiddenError } from "../utils/errors";
+  import { match } from "path-to-regexp";
 
-- 优化路由 
+  const needTokenApis = [
+    {
+      method: "GET",
+      path: "/api/student",
+    },
+    {
+      method: "POST",
+      path: "/api/student",
+    },
+    {
+      method: "PUT",
+      path: "/api/student/:id",
+    },
+    {
+      method: "DELETE",
+      path: "/api/student/:id",
+    },
+  ];
 
-    可以优化路由，创建路由表，并自定义authRequired的属性，来控制是否需要认证
+  export const tokenMiddleWare = (req, res, next) => {
+    /* ------------ 匹配是否需要验证 ------------ */
 
-    优化student 路由
-
-    ```ts
-    import { Request, Response } from "express";
-    import {
-      studentAdd,
-      studentDelete,
-      studentUpdate,
-      getStudentsByPage,
-    } from "../servers/student";
-    
-    /* ----------------- handler 封装 ----------------- */
-    
-    // 分页查询学生
-    const getStudents = async (req: Request, res: Response) => {
-      const page = req.query?.page || 1;
-      const limit = req.query?.limit || 10;
-      const data = await getStudentsByPage(+page, +limit);
-      res.send({ code: 0, data });
-    };
-    
-    // 添加学生
-    const addStudent = async (req: Request, res: Response) => {
-      const data = await studentAdd(req.body);
-      res.send(data);
-    };
-    
-    // 修改学生
-    const updateStudent = async (req: Request, res: Response) => {
-      const id = req.params.id;
-      const result = await studentUpdate(id, req.body);
-      res.send(result);
-    };
-    
-    // 删除学生
-    const deleteStudent = async (req: Request, res: Response) => {
-      const id = req.params.id;
-      const result = await studentDelete(id);
-      res.send(result);
-    };
-    
-    export { getStudents, addStudent, updateStudent, deleteStudent };
-    
-    ```
-
-    ```ts
-    import express from "express";
-    import * as studentHandlers from "./studentHandlers";
-    import { Irouter } from "./routerType";
-    
-    /* ------------- 创建路由实例 ------------- */
-    const router = express.Router();
-    
-    /* -------------- 定义路由表 ------------- */
-    
-    export const studentRouters: Irouter[] = [
-      {
-        method: "GET",
-        path: "/",
-        handler: studentHandlers.getStudents,
-        authRequired: true,
-      },
-      {
-        method: "POST",
-        path: "/",
-        handler: studentHandlers.addStudent,
-        authRequired: true,
-      },
-      {
-        method: "PUT",
-        path: "/:id",
-        handler: studentHandlers.updateStudent,
-        authRequired: true,
-      },
-      {
-        method: "DELETE",
-        path: "/:id",
-        handler: studentHandlers.deleteStudent,
-        authRequired: true,
-      },
-    ];
-    
-    /* ------------ 动态注册全部路由 ------------ */
-    studentRouters.forEach((route) => {
-      router[route.method.toLowerCase()](route.path, route.handler);
-    });
-    
-    export { router as studentRouter };
-    
-    ```
-
-    优化token中间件
-
-    ```ts
-    import { ForbiddenError } from "../utils/errors";
-    import { match } from "path-to-regexp";
-    import { studentRouters } from "./student";
-    
-    export const tokenMiddleWare = (req, res, next) => {
-      /* ------------ 匹配是否需要验证 ------------ */
-    
-      const authRequired = studentRouters.find((router) => {
-        return (
-          router.method === req.method &&
-          isPathMatch(`/api/student` + router.path, req.path) &&
-          router.authRequired
-        );
-      });
-    
-      if (!authRequired) {
-        // 不在需要token的列表里，不执行后面的token验证
-        next();
-        return;
-      }
-    
-      /* ------------ 需要token验证 ----------- */
-    
-      // 浏览器从cookie获取token
-      let token = req.cookies?.token;
-      if (!token) {
-        //  没有通过cookie传递，其他设备从header获取
-        token = req.headers.authorization;
-      }
-      if (!token) {
-        // 没有token,没有登录
-        throw ForbiddenError("you can not access the api");
-      }
-      // 有token, 进行认证
+    const apis = needTokenApis.filter(
+      (api) => api.method === req.method && isPathMatch(api.path, req.path)
+    );
+    if (apis.length === 0) {
+      // 不在需要token的列表里，不执行后面的token验证
       next();
-    };
-    
-    /**
-     * 检测2个path是否匹配
-     * 比如："/api/student/:id" 和 "/api/student/17"
-     * @param pathPattern
-     * @param url
-     * @returns
-     */
-    function isPathMatch(pathPattern: string, url: string) {
-      const matcher = match(pathPattern, { decode: decodeURIComponent });
-      return !!matcher(url); // 返回 true / false
+      return;
     }
-    
-    ```
+
+    /* ------------ 需要token验证 ----------- */
+
+    ...
+
+  /**
+   * 检测2个path是否匹配
+   * 比如："/api/student/:id" 和 "/api/student/17"
+   * @param pathPattern
+   * @param url
+   * @returns
+   */
+  function isPathMatch(pathPattern: string, url: string) {
+    const matcher = match(pathPattern, { decode: decodeURIComponent });
+    return !!matcher(url); // 返回 true / false
+  }
+
+  ```
+
+- 优化路由
+
+  可以优化路由，创建路由表，并自定义 authRequired 的属性，来控制是否需要认证
+
+  优化 student 路由
+
+  ```ts
+  import { Request, Response } from "express";
+  import {
+    studentAdd,
+    studentDelete,
+    studentUpdate,
+    getStudentsByPage,
+  } from "../servers/student";
+
+  /* ----------------- handler 封装 ----------------- */
+
+  // 分页查询学生
+  const getStudents = async (req: Request, res: Response) => {
+    const page = req.query?.page || 1;
+    const limit = req.query?.limit || 10;
+    const data = await getStudentsByPage(+page, +limit);
+    res.send({ code: 0, data });
+  };
+
+  // 添加学生
+  const addStudent = async (req: Request, res: Response) => {
+    const data = await studentAdd(req.body);
+    res.send(data);
+  };
+
+  // 修改学生
+  const updateStudent = async (req: Request, res: Response) => {
+    const id = req.params.id;
+    const result = await studentUpdate(id, req.body);
+    res.send(result);
+  };
+
+  // 删除学生
+  const deleteStudent = async (req: Request, res: Response) => {
+    const id = req.params.id;
+    const result = await studentDelete(id);
+    res.send(result);
+  };
+
+  export { getStudents, addStudent, updateStudent, deleteStudent };
+  ```
+
+  ```ts
+  import express from "express";
+  import * as studentHandlers from "./studentHandlers";
+  import { Irouter } from "./routerType";
+
+  /* ------------- 创建路由实例 ------------- */
+  const router = express.Router();
+
+  /* -------------- 定义路由表 ------------- */
+
+  export const studentRouters: Irouter[] = [
+    {
+      method: "GET",
+      path: "/",
+      handler: studentHandlers.getStudents,
+      authRequired: true,
+    },
+    {
+      method: "POST",
+      path: "/",
+      handler: studentHandlers.addStudent,
+      authRequired: true,
+    },
+    {
+      method: "PUT",
+      path: "/:id",
+      handler: studentHandlers.updateStudent,
+      authRequired: true,
+    },
+    {
+      method: "DELETE",
+      path: "/:id",
+      handler: studentHandlers.deleteStudent,
+      authRequired: true,
+    },
+  ];
+
+  /* ------------ 动态注册全部路由 ------------ */
+  studentRouters.forEach((route) => {
+    router[route.method.toLowerCase()](route.path, route.handler);
+  });
+
+  export { router as studentRouter };
+  ```
+
+  优化 token 中间件
+
+  ```ts
+  import { ForbiddenError } from "../utils/errors";
+  import { match } from "path-to-regexp";
+  import { studentRouters } from "./student";
+
+  export const tokenMiddleWare = (req, res, next) => {
+    /* ------------ 匹配是否需要验证 ------------ */
+
+    const authRequired = studentRouters.find((router) => {
+      return (
+        router.method === req.method &&
+        isPathMatch(`/api/student` + router.path, req.path) &&
+        router.authRequired
+      );
+    });
+
+    if (!authRequired) {
+      // 不在需要token的列表里，不执行后面的token验证
+      next();
+      return;
+    }
+
+    /* ------------ 需要token验证 ----------- */
+
+    // 浏览器从cookie获取token
+    let token = req.cookies?.token;
+    if (!token) {
+      //  没有通过cookie传递，其他设备从header获取
+      token = req.headers.authorization;
+    }
+    if (!token) {
+      // 没有token,没有登录
+      throw ForbiddenError("you can not access the api");
+    }
+    // 有token, 进行认证
+    next();
+  };
+
+  /**
+   * 检测2个path是否匹配
+   * 比如："/api/student/:id" 和 "/api/student/17"
+   * @param pathPattern
+   * @param url
+   * @returns
+   */
+  function isPathMatch(pathPattern: string, url: string) {
+    const matcher = match(pathPattern, { decode: decodeURIComponent });
+    return !!matcher(url); // 返回 true / false
+  }
+  ```
 
 #### 5. 加密处理
 
-目前，cookie的数据没有加密处理。需要加密
+目前，cookie 的数据没有加密处理。需要加密
 
-- 自动加密：使用cookie-parser中间件加密（防篡改签名） 
+- 自动加密：使用 cookie-parser 中间件加密（防篡改签名）
 
-    cookie-parser中间件自带加密功能  - 对称加密
+  cookie-parser 中间件自带加密功能 - 对称加密
 
-    ```ts
-    /* ----------- 使用cookie中间件 ---------- */
-    app.use(cookieParser("SECRET")); // 加密密钥
-    ```
+  ```ts
+  /* ----------- 使用cookie中间件 ---------- */
+  app.use(cookieParser("SECRET")); // 加密密钥
+  ```
 
-    ```ts
-    
-        res.cookie("token", value, {
-          path: "/",
-          domain: "localhost",
-          maxAge: 365 * 24 * 60 * 60 * 1000, 
-          httpOnly: true,
-          signed:true  // 开启加密
-        });
-    ```
+  ```ts
+  res.cookie("token", value, {
+    path: "/",
+    domain: "localhost",
+    maxAge: 365 * 24 * 60 * 60 * 1000,
+    httpOnly: true,
+    signed: true, // 开启加密
+  });
+  ```
 
-    解析时，使用signedCookies
+  解析时，使用 signedCookies
 
-    ```ts
-    
-      let token = req.signedCookies?.token; // 使用加密后的cookies
-      
-    ```
+  ```ts
+  let token = req.signedCookies?.token; // 使用加密后的cookies
+  ```
 
-    **问题：无法对req.headers.authorization进行加密**
+  **问题：无法对 req.headers.authorization 进行加密**
 
-- 手动加密 - 使用node内置的crypto模块
+- 手动加密 - 使用 node 内置的 crypto 模块
 
-    封装一个能同时读cookie和authorization都能加密的函数
+  封装一个能同时读 cookie 和 authorization 都能加密的函数
 
-    ```ts
-    /* ------------ 使用对称加密算法 ------------ */
-    // aes-128-cbc 128位（16子节）
-    // 使用node内置的库crypto
-    import crypto from "crypto";
-    
-    // const result = crypto.getCiphers();
-    // console.log(result);
-    
-    // 随机生成密钥
-    /* const secret = Buffer.from(Math.random().toString(36).slice(-8)); // 36进制（10个数字+26个字母），取后8个
-    //随机生成向量 */
-    
-    const secret = Buffer.from("4yraitjz8nkjzfpa");
-    
-    /* const iv = Math.random().toString(36).slice(-8); // 36进制（10个数字+26个字母），取后8个 */
-    
-    const iv = Buffer.from("8nkjzfpa4yraitjz");
-    
-    const encrypt = (str: string) => {
-      // 创建加密函数
-      const cryp = crypto.createCipheriv("aes-128-cbc", secret, iv);
-      // 执行加密
-      let result = cryp.update(str, "utf-8", "hex");
-      result += cryp.final("hex");
-      return result;
-    };
-    
-    const decrypt = (str: string) => {
-      // 创建解密函数
-      const decryp = crypto.createDecipheriv("aes-128-cbc", secret, iv);
-      // 执行解密
-      let result = decryp.update(str, "hex", "utf-8");
-      result += decryp.final("utf-8");
-      return result;
-    };
-    
-    export { encrypt, decrypt };
-    
-    ```
+  ```ts
+  /* ------------ 使用对称加密算法 ------------ */
+  // aes-128-cbc 128位（16子节）
+  // 使用node内置的库crypto
+  import crypto from "crypto";
 
-    执行加密/解密
+  // const result = crypto.getCiphers();
+  // console.log(result);
 
-    ```ts
-    
-    router.post("/login", async (req, res) => {
-      const data = await login(req.body?.loginID, req.body?.loginPwd);
-      if (data) {
-     
-        let value = data.id?.toString() as string;
-    
-        // 加密
-        value = encrypt(value);
-        /* ----- 适合浏览器 - 通过cookie给于token ---- */
-        res.cookie("token", value, {
-          ...
-        });
-        /* ---- 适合其他客户端 - 通过header给于token --- */
-        res.setHeader("authorization", value);
-      }
-     ...
-    });
-    
-    ```
+  // 随机生成密钥
+  /* const secret = Buffer.from(Math.random().toString(36).slice(-8)); // 36进制（10个数字+26个字母），取后8个
+  //随机生成向量 */
 
-    ```ts
-    
-    import { encrypt, decrypt } from "../utils/crypt";
-    
-    export const tokenMiddleWare = (req, res, next) => {
-      /* ------------ 匹配是否需要验证 ------------ */
-     ...
-    
-      /* ------------ 需要token验证 ----------- */
-    
-      // 浏览器从cookie获取token,并解密
-      let token = decrypt(req.cookies?.token);
-    
-      if (!token) {
-        //  没有通过cookie传递，其他设备从header获取,并解密
-        token = decrypt(req.headers.authorization);
-      }
-     ...
-    };
-    ```
+  const secret = Buffer.from("4yraitjz8nkjzfpa");
+
+  /* const iv = Math.random().toString(36).slice(-8); // 36进制（10个数字+26个字母），取后8个 */
+
+  const iv = Buffer.from("8nkjzfpa4yraitjz");
+
+  const encrypt = (str: string) => {
+    // 创建加密函数
+    const cryp = crypto.createCipheriv("aes-128-cbc", secret, iv);
+    // 执行加密
+    let result = cryp.update(str, "utf-8", "hex");
+    result += cryp.final("hex");
+    return result;
+  };
+
+  const decrypt = (str: string) => {
+    // 创建解密函数
+    const decryp = crypto.createDecipheriv("aes-128-cbc", secret, iv);
+    // 执行解密
+    let result = decryp.update(str, "hex", "utf-8");
+    result += decryp.final("utf-8");
+    return result;
+  };
+
+  export { encrypt, decrypt };
+  ```
+
+  执行加密/解密
+
+  ```ts
+
+  router.post("/login", async (req, res) => {
+    const data = await login(req.body?.loginID, req.body?.loginPwd);
+    if (data) {
+
+      let value = data.id?.toString() as string;
+
+      // 加密
+      value = encrypt(value);
+      /* ----- 适合浏览器 - 通过cookie给于token ---- */
+      res.cookie("token", value, {
+        ...
+      });
+      /* ---- 适合其他客户端 - 通过header给于token --- */
+      res.setHeader("authorization", value);
+    }
+   ...
+  });
+
+  ```
+
+  ```ts
+
+  import { encrypt, decrypt } from "../utils/crypt";
+
+  export const tokenMiddleWare = (req, res, next) => {
+    /* ------------ 匹配是否需要验证 ------------ */
+   ...
+
+    /* ------------ 需要token验证 ----------- */
+
+    // 浏览器从cookie获取token,并解密
+    let token = decrypt(req.cookies?.token);
+
+    if (!token) {
+      //  没有通过cookie传递，其他设备从header获取,并解密
+      token = decrypt(req.headers.authorization);
+    }
+   ...
+  };
+  ```
 
 ### 4-8 断点调试
 
@@ -9969,14 +9956,14 @@ app.listen(port, () => {
 
 - 在终端启动程序时加上 `--inspect` 参数：
 
-    ```ts
-    "scripts": {
-        "build": "npx tsc",
-        "dev": "npx nodemon --watch src -e ts --exec \"node --inspect=9229 -r ts-node/register\" src/index.ts"
-      },
-    ```
+  ```ts
+  "scripts": {
+      "build": "npx tsc",
+      "dev": "npx nodemon --watch src -e ts --exec \"node --inspect=9229 -r ts-node/register\" src/index.ts"
+    },
+  ```
 
-    **--inspect 是node命令，ts无法识别，因此先用node 执行inspet， 再注册ts-node， 运行ts代码**
+  **--inspect 是 node 命令，ts 无法识别，因此先用 node 执行 inspet， 再注册 ts-node， 运行 ts 代码**
 
 - 启动程序 ： Debugger ending on ws://127.0.0.1:9229/196081f3-075b-4ae8-8861-f14a4e36ecf9
 
@@ -9992,35 +9979,33 @@ app.listen(port, () => {
 
 - 直接运行调试
 
-    - 启动程序
-    - 打开要调试的文件
-    - 左侧打断点
-    - 按 `F5`，选择 **"Node.js"** 环境。
-    - 发送请求
+  - 启动程序
+  - 打开要调试的文件
+  - 左侧打断点
+  - 按 `F5`，选择 **"Node.js"** 环境。
+  - 发送请求
 
 - **使用 `launch.json` 配置文件**：如果有复杂的启动参数，可以点击左侧“运行和调试”图标，点击“创建 launch.json 文件”。
 
-    - 创建 launch.json
+  - 创建 launch.json
 
-        ```ts
+    ```ts
+    {
+      "version": "0.2.0",
+      "configurations": [
         {
-          "version": "0.2.0",
-          "configurations": [
-            {
-              "type": "node",
-              "request": "launch",
-              "name": "启动程序",
-              "program": "${workspaceFolder}/app.js" // 你的入口文件
-            }
-          ]
+          "type": "node",
+          "request": "launch",
+          "name": "启动程序",
+          "program": "${workspaceFolder}/app.js" // 你的入口文件
         }
-        ```
+      ]
+    }
+    ```
 
-    - RUN AND DEBUG
+  - RUN AND DEBUG
 
-    - 选择Attach环境
-
-    
+  - 选择 Attach 环境
 
 ### 4-9 跨域 - JSONP
 
@@ -10034,52 +10019,51 @@ app.listen(port, () => {
 
 - 实例
 
-    - 服务器添加静态资源中间件
+  - 服务器添加静态资源中间件
 
-        ```ts
-        import express from "express";
-        import cookieParser from "cookie-parser";
-        import { studentRouter } from "./student";
-        import { adminRouter } from "./admin";
-        import { errorMiddleWare } from "./errorMiddleWare";
-        import { tokenMiddleWare } from "./tokenMiddleWare";
-        import path from "path";
-        
-        /* ---------- 创建一个express应用 --------- */
-        const app = express();
-        
-        /* ------------- 静态资源中间件 ------------ */
-        const staticRoot = path.resolve(__dirname, "../public");
-        // console.log(staticRoot);
-        app.use("/", express.static(staticRoot));
-        
-        ...
-        
-        /* -------------- 监听端口 -------------- */
-        const port = 5003;
-        app.listen(port, () => {
-          console.log(`server is listened on ${port}`);
-        });
-        
-        ```
+    ```ts
+    import express from "express";
+    import cookieParser from "cookie-parser";
+    import { studentRouter } from "./student";
+    import { adminRouter } from "./admin";
+    import { errorMiddleWare } from "./errorMiddleWare";
+    import { tokenMiddleWare } from "./tokenMiddleWare";
+    import path from "path";
 
-    - `public`目录下的js文件, 使用ajax发生请求
+    /* ---------- 创建一个express应用 --------- */
+    const app = express();
 
-        ```ts
-        fetch("http://localhost:5003/api/student")
-          .then((resp) => resp.json())
-          .then((resp) => {
-            console.log(resp);
-          });
-        
-        ```
+    /* ------------- 静态资源中间件 ------------ */
+    const staticRoot = path.resolve(__dirname, "../public");
+    // console.log(staticRoot);
+    app.use("/", express.static(staticRoot));
 
-    - 启动服务器，浏览器访问静态资源 `http://localhost:5003`
+    ...
 
-    - 说明：
+    /* -------------- 监听端口 -------------- */
+    const port = 5003;
+    app.listen(port, () => {
+      console.log(`server is listened on ${port}`);
+    });
 
-        - 浏览器页面地址和访问（请求的地址）同源，所以能拿到数据 
-        - 如果直接打开index.html文件。页面路径是：`file:///Users/aqiang/Desktop/myGitHub/upload/duyi/.../code/src/public/index.html` 和请求地址不同源， 无法拿到数据
+    ```
+
+  - `public`目录下的 js 文件, 使用 ajax 发生请求
+
+    ```ts
+    fetch("http://localhost:5003/api/student")
+      .then((resp) => resp.json())
+      .then((resp) => {
+        console.log(resp);
+      });
+    ```
+
+  - 启动服务器，浏览器访问静态资源 `http://localhost:5003`
+
+  - 说明：
+
+    - 浏览器页面地址和访问（请求的地址）同源，所以能拿到数据
+    - 如果直接打开 index.html 文件。页面路径是：`file:///Users/aqiang/Desktop/myGitHub/upload/duyi/.../code/src/public/index.html` 和请求地址不同源， 无法拿到数据
 
 #### 2. 解决方案
 
@@ -10097,50 +10081,156 @@ app.listen(port, () => {
 
 - **后端包装返回**：服务器接收到请求，将 JSON 数据包装在函数调用中返回，形成字符串类型 callback({"name": "Gemini"})`。
 
-    ```ts
-    // 分页查询学生
-    const getStudents = async (req: Request, res: Response) => {
-      const page = req.query?.page || 1;
-      const limit = req.query?.limit || 10;
-      const data = await getStudentsByPage(+page, +limit);
-    
-      /* ------------- 处理JSONP ------------ */
-      const json = JSON.stringify(data); //转换成字符串
-      const script = `callback(${json})`; // 拼接回调函数调用字符
-      res.header("content-type", "application/javascript").send(script); //发送相应
-    };
-    ```
+  ```ts
+  // 分页查询学生
+  const getStudents = async (req: Request, res: Response) => {
+    const page = req.query?.page || 1;
+    const limit = req.query?.limit || 10;
+    const data = await getStudentsByPage(+page, +limit);
 
-    这样，响应的结果是字符串脚本：
+    /* ------------- 处理JSONP ------------ */
+    const json = JSON.stringify(data); //转换成字符串
+    const script = `callback(${json})`; // 拼接回调函数调用字符
+    res.header("content-type", "application/javascript").send(script); //发送相应
+  };
+  ```
 
-    ```ts
-    callback({ "total": 540, "students": [{ "dob": 1001914959000, "age": 24, "id": 31, "name": "Ted Kreiger", "sex": false, "mobile": "021-5581392", "deletedAt": null, "ClassId": 34 }, { "dob": 632527496000, "age": 35, "id": 32, "name": "Ronnie Batz", "sex": true, "mobile": "027-5592702", "deletedAt": null, "ClassId": 11 }, { "dob": 1078961044000, "age": 21, "id": 33, "name": "Sheila Hegmann", "sex": false, "mobile": "025-4563890", "deletedAt": null, "ClassId": 2 }, { "dob": 943488823000, "age": 26, "id": 34, "name": "Marshall Heller", "sex": true, "mobile": "027-6331619", "deletedAt": null, "ClassId": 20 }, { "dob": 719136470000, "age": 33, "id": 35, "name": "Kelli Nader", "sex": true, "mobile": "024-1248720", "deletedAt": null, "ClassId": 36 }, { "dob": 692647933000, "age": 34, "id": 36, "name": "Gregory Green", "sex": true, "mobile": "027-8648482", "deletedAt": null, "ClassId": 37 }, { "dob": 896596822000, "age": 27, "id": 37, "name": "Cathy Gerhold", "sex": false, "mobile": "021-1693952", "deletedAt": null, "ClassId": 27 }, { "dob": 828362610000, "age": 29, "id": 38, "name": "Micheal Dickinson", "sex": true, "mobile": "022-4936866", "deletedAt": null, "ClassId": 8 }, { "dob": 986557701000, "age": 24, "id": 39, "name": "Craig Terry", "sex": true, "mobile": "021-1153168", "deletedAt": null, "ClassId": 33 }, { "dob": 733302962000, "age": 32, "id": 40, "name": "Tommie Turcotte", "sex": false, "mobile": "021-1670161", "deletedAt": null, "ClassId": 17 }] })
-    ```
+  这样，响应的结果是字符串脚本：
+
+  ```ts
+  callback({
+    total: 540,
+    students: [
+      {
+        dob: 1001914959000,
+        age: 24,
+        id: 31,
+        name: "Ted Kreiger",
+        sex: false,
+        mobile: "021-5581392",
+        deletedAt: null,
+        ClassId: 34,
+      },
+      {
+        dob: 632527496000,
+        age: 35,
+        id: 32,
+        name: "Ronnie Batz",
+        sex: true,
+        mobile: "027-5592702",
+        deletedAt: null,
+        ClassId: 11,
+      },
+      {
+        dob: 1078961044000,
+        age: 21,
+        id: 33,
+        name: "Sheila Hegmann",
+        sex: false,
+        mobile: "025-4563890",
+        deletedAt: null,
+        ClassId: 2,
+      },
+      {
+        dob: 943488823000,
+        age: 26,
+        id: 34,
+        name: "Marshall Heller",
+        sex: true,
+        mobile: "027-6331619",
+        deletedAt: null,
+        ClassId: 20,
+      },
+      {
+        dob: 719136470000,
+        age: 33,
+        id: 35,
+        name: "Kelli Nader",
+        sex: true,
+        mobile: "024-1248720",
+        deletedAt: null,
+        ClassId: 36,
+      },
+      {
+        dob: 692647933000,
+        age: 34,
+        id: 36,
+        name: "Gregory Green",
+        sex: true,
+        mobile: "027-8648482",
+        deletedAt: null,
+        ClassId: 37,
+      },
+      {
+        dob: 896596822000,
+        age: 27,
+        id: 37,
+        name: "Cathy Gerhold",
+        sex: false,
+        mobile: "021-1693952",
+        deletedAt: null,
+        ClassId: 27,
+      },
+      {
+        dob: 828362610000,
+        age: 29,
+        id: 38,
+        name: "Micheal Dickinson",
+        sex: true,
+        mobile: "022-4936866",
+        deletedAt: null,
+        ClassId: 8,
+      },
+      {
+        dob: 986557701000,
+        age: 24,
+        id: 39,
+        name: "Craig Terry",
+        sex: true,
+        mobile: "021-1153168",
+        deletedAt: null,
+        ClassId: 33,
+      },
+      {
+        dob: 733302962000,
+        age: 32,
+        id: 40,
+        name: "Tommie Turcotte",
+        sex: false,
+        mobile: "021-1670161",
+        deletedAt: null,
+        ClassId: 17,
+      },
+    ],
+  });
+  ```
 
 - 前端下载脚本， 脚本下载后会被浏览器当作 JS 执行，从而触发预先定义的 callback 函数。
 
-    - 定义一个处理数据的函数
-    - 动态创建 **script** 标签：其 `src` 指向接口地址，并传回脚本数据
+  - 定义一个处理数据的函数
+  - 动态创建 **script** 标签：其 `src` 指向接口地址，并传回脚本数据
 
-    ```ts
-    const callback = (str) => {
-      console.log(str)
-    }
-    
-    // 动态创建script标签
-    const jsonp = (url) => {
-      const script = document.createElement("script")
-      script.src = url
-      document.body.appendChild(script)
-      script.onload = () => { script.remove() } // 加载完成后删除
-    }
-    
-    jsonp("http://localhost:5003/api/student")
-    ```
+  ```ts
+  const callback = (str) => {
+    console.log(str);
+  };
 
-- 访问页面，执行js脚本
+  // 动态创建script标签
+  const jsonp = (url) => {
+    const script = document.createElement("script");
+    script.src = url;
+    document.body.appendChild(script);
+    script.onload = () => {
+      script.remove();
+    }; // 加载完成后删除
+  };
 
-#### 4. JSONP的缺陷
+  jsonp("http://localhost:5003/api/student");
+  ```
+
+- 访问页面，执行 js 脚本
+
+#### 4. JSONP 的缺陷
 
 - **仅支持 GET 请求**：由于其本质是通过 `src` 属性加载脚本，所以无法使用 POST、PUT 或 DELETE。
 - **数据格式受限**：只能传输能够被 JS 引擎解析的数据类型。
@@ -10148,55 +10238,55 @@ app.listen(port, () => {
 
 ### 4-10 跨域 - CORS
 
->JSONP并不是一个好的跨域解决方案，存在着严重的问题。比如，会打乱服务器的消息格式：JSONP要求服务器响应一段js代码，方便浏览器识别并执行。但在非跨域的情况下，服务器又需要响应一个正常的json格式数据。因此服务器需要做复杂的操作来分类处理。因此相比，CORS是一种更好的解决方案。
+> JSONP 并不是一个好的跨域解决方案，存在着严重的问题。比如，会打乱服务器的消息格式：JSONP 要求服务器响应一段 js 代码，方便浏览器识别并执行。但在非跨域的情况下，服务器又需要响应一个正常的 json 格式数据。因此服务器需要做复杂的操作来分类处理。因此相比，CORS 是一种更好的解决方案。
 
 #### 1. 概述
 
-**CORS (Cross-Origin Resource Sharing，跨源资源共享)** 是基于http1.1的一种跨域解决方案。
+**CORS (Cross-Origin Resource Sharing，跨源资源共享)** 是基于 http1.1 的一种跨域解决方案。
 
 - 总体思路是：==**如果浏览器需要跨域访问服务器的资源，需要获得服务器的允许。**==
 
-- 一个请求可以附带很多信息，从而对服务器造成不同的影响。 比如有的请求只获取一下数据，而有的请求可能需要改动服务器的数据。根据不同的请求，CORS规定了3种不同的交换模式：
+- 一个请求可以附带很多信息，从而对服务器造成不同的影响。 比如有的请求只获取一下数据，而有的请求可能需要改动服务器的数据。根据不同的请求，CORS 规定了 3 种不同的交换模式：
 
-    - 简单请求
-    - 需要预检的请求
-    - 附带身份凭证的请求
+  - 简单请求
+  - 需要预检的请求
+  - 附带身份凭证的请求
 
-    3种模式从上到下层层递进，请求能做的事越来越多，跨域配置要求对应越来越严格
+  3 种模式从上到下层层递进，请求能做的事越来越多，跨域配置要求对应越来越严格
 
 #### 2. 简单请求
 
-当浏览器运行一段ajax代码（无论是使用XMLHttpRequest还是fetch api），浏览器都会首先判断它属于哪一种请求模式。
+当浏览器运行一段 ajax 代码（无论是使用 XMLHttpRequest 还是 fetch api），浏览器都会首先判断它属于哪一种请求模式。
 
 当请求同时满足一下条件时，浏览器会认为它是一个简单请求：
 
 - 请求方法属于下面的一张：
 
-    - get
-    - post
-    - head
+  - get
+  - post
+  - head
 
 - 请求头仅包含安全的字段，常见的安全字段如下：
 
-    - **`Accept`**：告知服务器客户端可以处理的内容类型。
+  - **`Accept`**：告知服务器客户端可以处理的内容类型。
 
-    - **`Accept-Language`**：告知服务器客户端能够理解的语言。
+  - **`Accept-Language`**：告知服务器客户端能够理解的语言。
 
-    - **`Content-Language`**：说明请求体所属的语言。
+  - **`Content-Language`**：说明请求体所属的语言。
 
-    - **`Content-Type`**：**（有限制）** 仅限于以下三个值：
+  - **`Content-Type`**：**（有限制）** 仅限于以下三个值：
 
-        - `application/x-www-form-urlencoded`  - URL 编码格式的表单， 数据被编码为键值对，用 `&` 分隔，如 `name=val1&age=18`。
+    - `application/x-www-form-urlencoded` - URL 编码格式的表单， 数据被编码为键值对，用 `&` 分隔，如 `name=val1&age=18`。
 
-        - `multipart/form-data` - 上传文件格式的表单，通过 `<input type="file">` 配合表单即可实现
+    - `multipart/form-data` - 上传文件格式的表单，通过 `<input type="file">` 配合表单即可实现
 
-        - `text/plain` - 纯文本
+    - `text/plain` - 纯文本
 
-            **注意**：一旦变成 `application/json` 或 `text/xml`，立刻不再安全。
+      **注意**：一旦变成 `application/json` 或 `text/xml`，立刻不再安全。
 
-    - **`Range`**：**（有限制）** 仅允许简单的字节范围（如 `bytes=0-100`）。
+  - **`Range`**：**（有限制）** 仅允许简单的字节范围（如 `bytes=0-100`）。
 
-    - **弃用/特殊字段**：`DPR`、`Downlink`、`Save-Data`、`Viewport-Width`、`Width`（这些曾在某些草案中被视为安全，但现代标准中对其审查极严）。
+  - **弃用/特殊字段**：`DPR`、`Downlink`、`Save-Data`、`Viewport-Width`、`Width`（这些曾在某些草案中被视为安全，但现代标准中对其审查极严）。
 
 **总结：** 所谓的“安全字段”其实就是**“传统 HTML 表单能够模拟出来的字段”**。只要你超出了这个老旧表单的范畴（比如想传个 JSON，或者想加个 Token），CORS 就会启动更严格的预检机制。
 
@@ -10204,142 +10294,139 @@ app.listen(port, () => {
 
 - 客户端：请求头自动注入关键字段：**`Origin`**
 
-    比如在页面`http://anything.com/index.html`中 有以下请求 `fetch("http://something.com/api/news")` 造成了跨域。浏览器先判断它是简单请求， 请求发出后，请求头会是下面的格式：
+  比如在页面`http://anything.com/index.html`中 有以下请求 `fetch("http://something.com/api/news")` 造成了跨域。浏览器先判断它是简单请求， 请求发出后，请求头会是下面的格式：
 
-    ```json
-    GET /api/news HTTP/1.1
-    Host: something.com
-    Connection: keep-alive
-    ...
-    Origin: http://anything.com
-    Referer: http://anything.com/index.html
-    ```
+  ```json
+  GET /api/news HTTP/1.1
+  Host: something.com
+  Connection: keep-alive
+  ...
+  Origin: http://anything.com
+  Referer: http://anything.com/index.html
+  ```
 
-    **`Origin`**: **自动注入。它的值是协议、域名和端口的组合。==它告诉服务器：请求发起者的身份是谁。==**
-
-    
+  **`Origin`**: **自动注入。它的值是协议、域名和端口的组合。==它告诉服务器：请求发起者的身份是谁。==**
 
 - 服务端：响应头中返回相关的 CORS 字段：**`Access-Control-Allow-Origin `**
 
-    服务器收到请求后，如果允许通过这个跨域请求发送资源，需要在响应头中返回相关的 CORS 字段。服务器的响应头会是下面的格式：
+  服务器收到请求后，如果允许通过这个跨域请求发送资源，需要在响应头中返回相关的 CORS 字段。服务器的响应头会是下面的格式：
 
-    ```http
-    HTTP/1.1 200 OK
-    Date: Thu, 08 Jan 2026 12:00:00 GMT
-    Content-Type: application/json; charset=utf-8
-    Content-Length: 128
-    Connection: keep-alive
-    
-    /* 关键 CORS 字段 */
-    Access-Control-Allow-Origin: http://anything.com
-    
-    /* 实际的业务数据 */
-    {
-      "status": "success",
-      "data": [ ... ]
-    }
-    ```
+  ```http
+  HTTP/1.1 200 OK
+  Date: Thu, 08 Jan 2026 12:00:00 GMT
+  Content-Type: application/json; charset=utf-8
+  Content-Length: 128
+  Connection: keep-alive
 
-- 当响应到达浏览器后，**浏览器**会进行如下“对暗号”: 
+  /* 关键 CORS 字段 */
+  Access-Control-Allow-Origin: http://anything.com
 
-    - **检查字段是否存在**：如果没有 `Access-Control-Allow-Origin`，直接拦截。
-    - **检查值是否匹配**：
-        - 如果服务器回的是 `*`：**检查通过**。
-        - 如果服务器回的是 `http://anything.com`：与请求头的 `Origin` 完全一致，**检查通过**。
-        - 如果服务器回的是 `http://wrong.com`：值不匹配，**检查失败**。
+  /* 实际的业务数据 */
+  {
+    "status": "success",
+    "data": [ ... ]
+  }
+  ```
+
+- 当响应到达浏览器后，**浏览器**会进行如下“对暗号”:
+
+  - **检查字段是否存在**：如果没有 `Access-Control-Allow-Origin`，直接拦截。
+  - **检查值是否匹配**：
+    - 如果服务器回的是 `*`：**检查通过**。
+    - 如果服务器回的是 `http://anything.com`：与请求头的 `Origin` 完全一致，**检查通过**。
+    - 如果服务器回的是 `http://wrong.com`：值不匹配，**检查失败**。
 
 注意：`Access-Control-Allow-Origin`的值不推荐总是写 `*`。在生产环境中：允许任何网站读取你的 API 数据是有风险的；此外，如果 API 需要支持附带 **Cookie**（即 `withCredentials` 为 `true`），那么 `Access-Control-Allow-Origin` **严禁使用 `\*`**，必须指定具体的域名。
 
 - 代码实现
 
-    - 静态资源发送请求
+  - 静态资源发送请求
 
-        ```js
-        fetch("http://localhost:5003/api/student").then(resp => resp.json()).then(resp => {
-          console.log(resp)
-        })
-        ```
+    ```js
+    fetch("http://localhost:5003/api/student")
+      .then((resp) => resp.json())
+      .then((resp) => {
+        console.log(resp);
+      });
+    ```
 
-        使用vscode live server打开网页，实现跨域
+    使用 vscode live server 打开网页，实现跨域
 
-        ```js
-        http://127.0.0.1:5500/.../code/src/public/index.html
-        ```
+    ```js
+    http://127.0.0.1:5500/.../code/src/public/index.html
+    ```
 
-        请求头内容：
+    请求头内容：
 
-        ```http
-        GET /api/student HTTP/1.1
-        Accept: */*
-        ...
-        Origin: http://127.0.0.1:5500
-        ...
-        ```
+    ```http
+    GET /api/student HTTP/1.1
+    Accept: */*
+    ...
+    Origin: http://127.0.0.1:5500
+    ...
+    ```
 
-    - 服务器配置跨域
+  - 服务器配置跨域
 
-        封装自定义中间件corsMiddleWare
+    封装自定义中间件 corsMiddleWare
 
-        ```ts
-        import { includes } from "zod";
-        
-        const allowCorsOrigins = ["http://127.0.0.1:5500", "null"];
-        
-        export const corsMiddleWare = (req, res, next) => {
-          /* ------------- 处理简单请求 ------------- */
-          if (
-            "origin" in req.headers &&
-            allowCorsOrigins.includes(req.headers.origin)
-          ) {
-            res.header("Access-Control-Allow-Origin", req.headers.origin);
-          }
-          next();
-        };
-        
-        ```
+    ```ts
+    import { includes } from "zod";
 
-        注入中间件
+    const allowCorsOrigins = ["http://127.0.0.1:5500", "null"];
 
-        ```ts
-        import express from "express";
-        import cookieParser from "cookie-parser";
-        import { studentRouter } from "./student";
-        import { adminRouter } from "./admin";
-        import { errorMiddleWare } from "./errorMiddleWare";
-        import { tokenMiddleWare } from "./tokenMiddleWare";
-        import path from "path";
-        import { corsMiddleWare } from "./corsMiddleWare";
-        
-        /* ---------- 创建一个express应用 --------- */
-        const app = express();
-        
-        /* -------------- 跨域中间件 ------------- */
-        app.use(corsMiddleWare);
-        
-        ...
-        
-        /* -------------- 监听端口 -------------- */
-        const port = 5003;
-        app.listen(port, () => {
-          console.log(`server is listened on ${port}`);
-        });
-        
-        ```
+    export const corsMiddleWare = (req, res, next) => {
+      /* ------------- 处理简单请求 ------------- */
+      if (
+        "origin" in req.headers &&
+        allowCorsOrigins.includes(req.headers.origin)
+      ) {
+        res.header("Access-Control-Allow-Origin", req.headers.origin);
+      }
+      next();
+    };
+    ```
 
-        重新发送请求，获得数据，响应头内容
+    注入中间件
 
-        ```http
-        HTTP/1.1 200 OK
-        Access-Control-Allow-Origin: http://127.0.0.1:5500
-        Content-Type: application/json; charset=utf-8
-        Content-Length: 1318
-        ETag: W/"526-QYzsvpBuHcqQZa4c5KlAXqyBv4E"
-        Date: Thu, 08 Jan 2026 19:07:03 GMT
-        Connection: keep-alive
-        Keep-Alive: timeout=5
-        ```
+    ```ts
+    import express from "express";
+    import cookieParser from "cookie-parser";
+    import { studentRouter } from "./student";
+    import { adminRouter } from "./admin";
+    import { errorMiddleWare } from "./errorMiddleWare";
+    import { tokenMiddleWare } from "./tokenMiddleWare";
+    import path from "path";
+    import { corsMiddleWare } from "./corsMiddleWare";
 
-        
+    /* ---------- 创建一个express应用 --------- */
+    const app = express();
+
+    /* -------------- 跨域中间件 ------------- */
+    app.use(corsMiddleWare);
+
+    ...
+
+    /* -------------- 监听端口 -------------- */
+    const port = 5003;
+    app.listen(port, () => {
+      console.log(`server is listened on ${port}`);
+    });
+
+    ```
+
+    重新发送请求，获得数据，响应头内容
+
+    ```http
+    HTTP/1.1 200 OK
+    Access-Control-Allow-Origin: http://127.0.0.1:5500
+    Content-Type: application/json; charset=utf-8
+    Content-Length: 1318
+    ETag: W/"526-QYzsvpBuHcqQZa4c5KlAXqyBv4E"
+    Date: Thu, 08 Jan 2026 19:07:03 GMT
+    Connection: keep-alive
+    Keep-Alive: timeout=5
+    ```
 
 #### 3. 需要预检的请求
 
@@ -10353,301 +10440,300 @@ app.listen(port, () => {
 比如，在页面`http://anything.com/index.html`中 有以下请求 `fetch("http://something.com/api/news")` 造成了跨域。
 
 ```ts
-fetch("http://something.com/api/news",{
-    method:"POST",
-    headers:{
-        a:1,
-        b:2,
-        "content-type":"application/json"
-    },
-    body:JSON.stringfy({name:hahah, age:18})
-})
+fetch("http://something.com/api/news", {
+  method: "POST",
+  headers: {
+    a: 1,
+    b: 2,
+    "content-type": "application/json",
+  },
+  body: JSON.stringfy({ name: hahah, age: 18 }),
+});
 ```
-
-
 
 浏览器先判断它不是是简单请求，于是安装下面的流程与服务器交互：
 
 - 浏览器发送预检请求， 询问服务器是否允许，请求头如下：
 
-    ```http
-    OPTIONS /api/news HTTP/1.1
-    Host: something.com
-    ...
-    Origin: http://anything.com
-    Access-Control-Request-Method: POST
-    Access-Control-Request-Headers: a,b,content-type
-    ```
+  ```http
+  OPTIONS /api/news HTTP/1.1
+  Host: something.com
+  ...
+  Origin: http://anything.com
+  Access-Control-Request-Method: POST
+  Access-Control-Request-Headers: a,b,content-type
+  ```
 
-    这并非我们想要发出的真实请求。**预检请求没有请求体**，有一下特征：
+  这并非我们想要发出的真实请求。**预检请求没有请求体**，有一下特征：
 
-    - 请求方法为`OPTIONS`
-    - 没有请求体
-    - 请求头中包括
-        - **`Origin: http://anything.com`**： 告知服务器，是哪个源想跨域访问你。
-        - **`Access-Control-Request-Method: POST`**： 这是询问：“我后面想用 `POST` 方法发请求，你允许吗？”
-        - **`Access-Control-Request-Headers: a,b,content-type`**： 这是询问：“我后面想在 Header 里带上这三个字段，你允许吗？”（注意：浏览器会自动把非安全字段全部列在这里）。
+  - 请求方法为`OPTIONS`
+  - 没有请求体
+  - 请求头中包括
+    - **`Origin: http://anything.com`**： 告知服务器，是哪个源想跨域访问你。
+    - **`Access-Control-Request-Method: POST`**： 这是询问：“我后面想用 `POST` 方法发请求，你允许吗？”
+    - **`Access-Control-Request-Headers: a,b,content-type`**： 这是询问：“我后面想在 Header 里带上这三个字段，你允许吗？”（注意：浏览器会自动把非安全字段全部列在这里）。
 
 - 服务器允许
 
-    服务器收到 `OPTIONS` 后，**不能**返回普通的业务数据，必须返回允许的策略。需要响应如下的消息格式：
+  服务器收到 `OPTIONS` 后，**不能**返回普通的业务数据，必须返回允许的策略。需要响应如下的消息格式：
 
-    ```http
-    HTTP/1.1 204 No Content
-    Date: Fri, 09 Jan 2026 08:40:00 GMT
-    ...
-    
-    /* 核心许可字段 */
-    Access-Control-Allow-Origin: http://anything.com
-    Access-Control-Allow-Methods: POST, GET, OPTIONS
-    Access-Control-Allow-Headers: a, b, content-type
-    Access-Control-Max-Age: 86400
-    ```
+  ```http
+  HTTP/1.1 204 No Content
+  Date: Fri, 09 Jan 2026 08:40:00 GMT
+  ...
 
-    对应预检请求，服务器不需要响应任何消息体，只需要在消息头中添加：
+  /* 核心许可字段 */
+  Access-Control-Allow-Origin: http://anything.com
+  Access-Control-Allow-Methods: POST, GET, OPTIONS
+  Access-Control-Allow-Headers: a, b, content-type
+  Access-Control-Max-Age: 86400
+  ```
 
-    - **`Access-Control-Allow-Origin`**：和简单请求一样，表示运行的源
-    - **`Access-Control-Allow-Methods`**：允许哪些方法。
-    - **`Access-Control-Allow-Headers`**：允许改动哪些请求头。如果这个列表里没有包含请求询问的 `a` 或 `b`，预检就会失败。
-    - **`Access-Control-Max-Age`**：**极其实用**。告诉浏览器：“在接下来的 86400 秒（24小时）内，再次发送同样的请求时，不用再发 `OPTIONS` 预检了，直接发真实请求即可。”这能显著提升性能。
+  对应预检请求，服务器不需要响应任何消息体，只需要在消息头中添加：
+
+  - **`Access-Control-Allow-Origin`**：和简单请求一样，表示运行的源
+  - **`Access-Control-Allow-Methods`**：允许哪些方法。
+  - **`Access-Control-Allow-Headers`**：允许改动哪些请求头。如果这个列表里没有包含请求询问的 `a` 或 `b`，预检就会失败。
+  - **`Access-Control-Max-Age`**：**极其实用**。告诉浏览器：“在接下来的 86400 秒（24 小时）内，再次发送同样的请求时，不用再发 `OPTIONS` 预检了，直接发真实请求即可。”这能显著提升性能。
 
 - 浏览器发送真实请求
 
-    当上述预检得到了服务器的允许（状态码通常为 200 或 204，且 Header 匹配），浏览器才会自动发起真实请求。
+  当上述预检得到了服务器的允许（状态码通常为 200 或 204，且 Header 匹配），浏览器才会自动发起真实请求。
 
-    **正式请求的请求头：** 此时的请求头将包含真实的业务数据，并且依然带有 `Origin` 字段。
+  **正式请求的请求头：** 此时的请求头将包含真实的业务数据，并且依然带有 `Origin` 字段。
 
-    ```http
-    POST /api/news HTTP/1.1
-    Host: something.com
-    Content-Type: application/json
-    Origin: http://anything.com
-    a: 1
-    b: 2
-    
-    {"name": "hahah", "age": 18}
-    ```
+  ```http
+  POST /api/news HTTP/1.1
+  Host: something.com
+  Content-Type: application/json
+  Origin: http://anything.com
+  a: 1
+  b: 2
+
+  {"name": "hahah", "age": 18}
+  ```
 
 - 服务器响应数据
 
-    ```http
-    HTTP/1.1 200 OK
-    Date: Thu, 08 Jan 2026 19:07:03 GMT
-    ...
-    Access-Control-Allow-Origin: http://127.0.0.1:5500
-    ...
-    添加news成功
-    ```
+  ```http
+  HTTP/1.1 200 OK
+  Date: Thu, 08 Jan 2026 19:07:03 GMT
+  ...
+  Access-Control-Allow-Origin: http://127.0.0.1:5500
+  ...
+  添加news成功
+  ```
 
 - 代码实现
 
-    - 静态资源发送请求 
+  - 静态资源发送请求
 
-        ```ts
-        /* -------------- 预检请求 -------------- */
-        fetch("http://localhost:5003/api/student", {
-          method: 'POST',
-          headers: {
-            a: 1,
-            b: 2,
-            'content-type': "application/json"
-          },
-          body: JSON.stringify({
-            "name": "Semit",
-            "dob": "2025-11-11",
-            "sex": "false",
-            "mobile": "021-2323454353",
-            "ClassId": "1"
-          })
-        }).then(resp => resp.json()).then(resp => {
-          console.log(resp)
-        })
-        ```
+    ```ts
+    /* -------------- 预检请求 -------------- */
+    fetch("http://localhost:5003/api/student", {
+      method: "POST",
+      headers: {
+        a: 1,
+        b: 2,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        name: "Semit",
+        dob: "2025-11-11",
+        sex: "false",
+        mobile: "021-2323454353",
+        ClassId: "1",
+      }),
+    })
+      .then((resp) => resp.json())
+      .then((resp) => {
+        console.log(resp);
+      });
+    ```
 
-    - 服务端处理预检请求（中间件）
+  - 服务端处理预检请求（中间件）
 
-        ```ts
-        const allowCorsOrigins = ["http://127.0.0.1:5500", "null"];
-        
-        export const corsMiddleWare = (req, res, next) => {
-          /* ------------- 处理简单请求 ------------- */
-          if (
-            "origin" in req.headers &&
-            allowCorsOrigins.includes(req.headers.origin)
-          ) {
-            res.header("Access-Control-Allow-Origin", req.headers.origin);
-          }
-          /* ------------- 处理预检请求 ------------- */
-        
-          if (req.method === "OPTIONS") {
-            // 从 Request 字段读取，写入 Allow 字段
-            res.header(
-              "Access-Control-Allow-Methods",
-              req.headers["access-control-request-method"]
-            );
-            res.header(
-              "Access-Control-Allow-Headers",
-              req.headers["access-control-request-headers"]
-            );
-            res.header("Access-Control-Max-Age", 86400);
-        
-            // 预检请求直接返回，先不执行后续业务逻辑
-            return res.status(204).send();
-          }
-          // next();
-        };
-        ```
+    ```ts
+    const allowCorsOrigins = ["http://127.0.0.1:5500", "null"];
 
-        请求头信息
+    export const corsMiddleWare = (req, res, next) => {
+      /* ------------- 处理简单请求 ------------- */
+      if (
+        "origin" in req.headers &&
+        allowCorsOrigins.includes(req.headers.origin)
+      ) {
+        res.header("Access-Control-Allow-Origin", req.headers.origin);
+      }
+      /* ------------- 处理预检请求 ------------- */
 
-        ```http
-        OPTIONS /api/student HTTP/1.1
-        ...
-        Access-Control-Request-Headers: a,b,content-type
-        Access-Control-Request-Method: POST
-        ...
-        Host: localhost:5003
-        Origin: http://127.0.0.1:5500
-        ...
-        ```
+      if (req.method === "OPTIONS") {
+        // 从 Request 字段读取，写入 Allow 字段
+        res.header(
+          "Access-Control-Allow-Methods",
+          req.headers["access-control-request-method"]
+        );
+        res.header(
+          "Access-Control-Allow-Headers",
+          req.headers["access-control-request-headers"]
+        );
+        res.header("Access-Control-Max-Age", 86400);
 
-        响应头信息
+        // 预检请求直接返回，先不执行后续业务逻辑
+        return res.status(204).send();
+      }
+      // next();
+    };
+    ```
 
-        ```http
-        HTTP/1.1 204 No Content
-        Access-Control-Allow-Origin: http://127.0.0.1:5500
-        Access-Control-Allow-Methods: POST
-        Access-Control-Allow-Headers: a,b,content-type
-        Access-Control-Max-Age: 86400
-        Date: Thu, 08 Jan 2026 20:54:19 GMT
-        ...
-        ```
+    请求头信息
 
-        浏览器发送真实请求，服务器执行后续业务
+    ```http
+    OPTIONS /api/student HTTP/1.1
+    ...
+    Access-Control-Request-Headers: a,b,content-type
+    Access-Control-Request-Method: POST
+    ...
+    Host: localhost:5003
+    Origin: http://127.0.0.1:5500
+    ...
+    ```
 
-        ```ts
-        next();
-        ```
+    响应头信息
 
-        
+    ```http
+    HTTP/1.1 204 No Content
+    Access-Control-Allow-Origin: http://127.0.0.1:5500
+    Access-Control-Allow-Methods: POST
+    Access-Control-Allow-Headers: a,b,content-type
+    Access-Control-Max-Age: 86400
+    Date: Thu, 08 Jan 2026 20:54:19 GMT
+    ...
+    ```
+
+    浏览器发送真实请求，服务器执行后续业务
+
+    ```ts
+    next();
+    ```
 
 #### 4. 附带身份凭证的请求
 
-默认情况下，ajax的跨域请求并不会附带cookie，因此导致某些需要权限的操作就无法进行。通过如下的配置，就可以实现附带cookie
+默认情况下，ajax 的跨域请求并不会附带 cookie，因此导致某些需要权限的操作就无法进行。通过如下的配置，就可以实现附带 cookie
 
 - 前端配置：显式要求携带凭证
 
-    无论是使用传统的 `XMLHttpRequest` 还是现代的 `fetch`，你都需要手动开启凭证开关。
+  无论是使用传统的 `XMLHttpRequest` 还是现代的 `fetch`，你都需要手动开启凭证开关。
 
-    - 使用 `fetch` API：在 `fetch` 的第二个参数中，设置 `credentials` 属性。
+  - 使用 `fetch` API：在 `fetch` 的第二个参数中，设置 `credentials` 属性。
 
-        ```js
-        fetch("http://something.com/api/userinfo", {
-          method: "GET",
-          // 关键配置：include 表示请求无论同源还是跨域都会携带 Cookie
-          credentials: "include" 
-        });
-        ```
+    ```js
+    fetch("http://something.com/api/userinfo", {
+      method: "GET",
+      // 关键配置：include 表示请求无论同源还是跨域都会携带 Cookie
+      credentials: "include",
+    });
+    ```
 
-        **credentials 可选值：**
+    **credentials 可选值：**
 
-        - `omit`: 从不发送 Cookie（默认值）。
-        - `same-origin`: 只有同源请求才发送（旧版浏览器默认值）。
-        - `include`: 无论同源还是跨域都发送。
+    - `omit`: 从不发送 Cookie（默认值）。
+    - `same-origin`: 只有同源请求才发送（旧版浏览器默认值）。
+    - `include`: 无论同源还是跨域都发送。
 
-    - 使用 `XMLHttpRequest`：
+  - 使用 `XMLHttpRequest`：
 
-        ```js
-        const xhr = new XMLHttpRequest();
-        xhr.withCredentials = true; // 开启凭证
-        xhr.open("GET", "http://something.com/api/userinfo");
-        xhr.send();
-        ```
+    ```js
+    const xhr = new XMLHttpRequest();
+    xhr.withCredentials = true; // 开启凭证
+    xhr.open("GET", "http://something.com/api/userinfo");
+    xhr.send();
+    ```
 
 - 后端配置：明确允许凭证
 
-    当浏览器发现请求要求携带 Cookie 时，它会检查服务器响应头。服务器必须返回以下特定的 Header：
+  当浏览器发现请求要求携带 Cookie 时，它会检查服务器响应头。服务器必须返回以下特定的 Header：
 
-    ```http
-    Access-Control-Allow-Credentials: true
-    ```
+  ```http
+  Access-Control-Allow-Credentials: true
+  ```
 
 - **极其重要的限制：**
 
-    一旦开启了凭证请求，CORS 规范为了防止隐私泄露，会增加两个严苛的限制：
+  一旦开启了凭证请求，CORS 规范为了防止隐私泄露，会增加两个严苛的限制：
 
-    1. **Origin 不能为通配符 `\*`**： `Access-Control-Allow-Origin` 的值必须是**具体的、与请求头 Origin 完全一致的域名**。如果返回 `*`，浏览器会直接报错并拒绝该响应。
-    2. **Headers 和 Methods 不能为通配符**： 在预检请求中，`Access-Control-Allow-Headers` 和 `Access-Control-Allow-Methods` 同样不能使用 `*`
+  1. **Origin 不能为通配符 `\*`**： `Access-Control-Allow-Origin` 的值必须是**具体的、与请求头 Origin 完全一致的域名**。如果返回 `*`，浏览器会直接报错并拒绝该响应。
+  2. **Headers 和 Methods 不能为通配符**： 在预检请求中，`Access-Control-Allow-Headers` 和 `Access-Control-Allow-Methods` 同样不能使用 `*`
 
 - 代码实现
 
-    - 静态资源发送请求 ：显式要求携带凭证
+  - 静态资源发送请求 ：显式要求携带凭证
 
-        ```ts
-        /* ------------ 附带身份凭证的请求 ----------- */
-        
-        fetch("http://localhost:5003/api/student", {
-          method: 'POST',
-          headers: {
-            a: 1,
-            b: 2,
-            'content-type': "application/json"
-          },
-          body: JSON.stringify({
-            "name": "Semit",
-            "dob": "2025-11-11",
-            "sex": "false",
-            "mobile": "021-2323454353",
-            "ClassId": "1"
-          }),
-          credentials: "include", // 显式要求携带凭证
-        }).then(resp => resp.json()).then(resp => {
-          console.log(resp)
-        })
-        ```
+    ```ts
+    /* ------------ 附带身份凭证的请求 ----------- */
 
-    - 后端配置：明确允许凭证
+    fetch("http://localhost:5003/api/student", {
+      method: "POST",
+      headers: {
+        a: 1,
+        b: 2,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        name: "Semit",
+        dob: "2025-11-11",
+        sex: "false",
+        mobile: "021-2323454353",
+        ClassId: "1",
+      }),
+      credentials: "include", // 显式要求携带凭证
+    })
+      .then((resp) => resp.json())
+      .then((resp) => {
+        console.log(resp);
+      });
+    ```
 
-        ```ts
-        const allowCorsOrigins = ["http://127.0.0.1:5500", "null"];
-        
-        export const corsMiddleWare = (req, res, next) => {
-          /* ------------- 1.处理简单请求 ------------- */
-          if (
-            "origin" in req.headers &&
-            allowCorsOrigins.includes(req.headers.origin)
-          ) {
-            res.header("Access-Control-Allow-Origin", req.headers.origin);
-        
-            /* ------------ 3.允许附带身份凭证的请求 ----------- */
-            res.header("Access-Control-Allow-Credentials", "true");
-          }
-            
-          /* ------------- 2.处理预检请求 ------------- */
-        
-          if (req.method === "OPTIONS") {
-            // 从 Request 字段读取，写入 Allow 字段
-            res.header(
-              "Access-Control-Allow-Methods",
-              req.headers["access-control-request-method"]
-            );
-            res.header(
-              "Access-Control-Allow-Headers",
-              req.headers["access-control-request-headers"]
-            );
-            res.header("Access-Control-Max-Age", 86400);
-          }
-        
-          next();
-        };
-        
-        ```
+  - 后端配置：明确允许凭证
 
-        注意：
+    ```ts
+    const allowCorsOrigins = ["http://127.0.0.1:5500", "null"];
 
-        - **`credentials` 是前端的配置**：`credentials: 'include'` 是你在浏览器 `fetch` 函数中写的一个参数，它告诉浏览器：“发请求时请带上 Cookie”。
-        - **它不会出现在请求头里**：浏览器发出的 HTTP 报文里，并没有一个叫 `credentials` 的 Header。浏览器只会默默地把 `Cookie: xxx` 加入到请求头中。
-        - **后端如何判断？**：如果你想知道前端是否开启了凭证模式，在后端中间件里，你**不需要判断请求是否有这个属性**。你作为服务端，任务是**“表态”**：告诉浏览器你允不允许带凭证。
+    export const corsMiddleWare = (req, res, next) => {
+      /* ------------- 1.处理简单请求 ------------- */
+      if (
+        "origin" in req.headers &&
+        allowCorsOrigins.includes(req.headers.origin)
+      ) {
+        res.header("Access-Control-Allow-Origin", req.headers.origin);
+
+        /* ------------ 3.允许附带身份凭证的请求 ----------- */
+        res.header("Access-Control-Allow-Credentials", "true");
+      }
+
+      /* ------------- 2.处理预检请求 ------------- */
+
+      if (req.method === "OPTIONS") {
+        // 从 Request 字段读取，写入 Allow 字段
+        res.header(
+          "Access-Control-Allow-Methods",
+          req.headers["access-control-request-method"]
+        );
+        res.header(
+          "Access-Control-Allow-Headers",
+          req.headers["access-control-request-headers"]
+        );
+        res.header("Access-Control-Max-Age", 86400);
+      }
+
+      next();
+    };
+    ```
+
+    注意：
+
+    - **`credentials` 是前端的配置**：`credentials: 'include'` 是你在浏览器 `fetch` 函数中写的一个参数，它告诉浏览器：“发请求时请带上 Cookie”。
+    - **它不会出现在请求头里**：浏览器发出的 HTTP 报文里，并没有一个叫 `credentials` 的 Header。浏览器只会默默地把 `Cookie: xxx` 加入到请求头中。
+    - **后端如何判断？**：如果你想知道前端是否开启了凭证模式，在后端中间件里，你**不需要判断请求是否有这个属性**。你作为服务端，任务是**“表态”**：告诉浏览器你允不允许带凭证。
 
 #### 5. 补充
 
@@ -10657,43 +10743,45 @@ fetch("http://something.com/api/news",{
 
 - 默认情况下，跨域请求的 JS 只能访问以下 6 个“安全”响应头：
 
-    - Cache-Control
-    - Content-Language
-    - Content-Type
-    - Expires
-    - Last-Modified
-    - Pragma
+  - Cache-Control
+  - Content-Language
+  - Content-Type
+  - Expires
+  - Last-Modified
+  - Pragma
 
 - 如何设置：`Access-Control-Expose-Headers`
 
-    如果想让前端访问其他的 Header，服务器必须在响应头中明确列出这些 Header 的名称。
+  如果想让前端访问其他的 Header，服务器必须在响应头中明确列出这些 Header 的名称。
 
-    ```ts
-    export const corsMiddleWare = (req, res, next) => {
-      const origin = req.headers.origin;
-      
-      if (origin && allowCorsOrigins.includes(origin)) {
-        res.header("Access-Control-Allow-Origin", origin);
-        
-        // 关键配置：暴露自定义头
-        // 这样前端 JS 才能通过 get('X-Custom-Data') 拿到值
-        res.header("Access-Control-Expose-Headers", "X-Custom-Data, Content-Length, Token");
-      }
-      
-      // ... 其他逻辑
-      next();
-    };
-    ```
+  ```ts
+  export const corsMiddleWare = (req, res, next) => {
+    const origin = req.headers.origin;
 
-    前端读取
+    if (origin && allowCorsOrigins.includes(origin)) {
+      res.header("Access-Control-Allow-Origin", origin);
 
-    ```ts
-    fetch("http://localhost:5003/api/student")
-      .then(resp => {
-        // 只有在后端设置了 Expose-Headers，这里才能拿到值
-        console.log(resp.headers.get("X-Custom-Data")); 
-      });
-    ```
+      // 关键配置：暴露自定义头
+      // 这样前端 JS 才能通过 get('X-Custom-Data') 拿到值
+      res.header(
+        "Access-Control-Expose-Headers",
+        "X-Custom-Data, Content-Length, Token"
+      );
+    }
+
+    // ... 其他逻辑
+    next();
+  };
+  ```
+
+  前端读取
+
+  ```ts
+  fetch("http://localhost:5003/api/student").then((resp) => {
+    // 只有在后端设置了 Expose-Headers，这里才能拿到值
+    console.log(resp.headers.get("X-Custom-Data"));
+  });
+  ```
 
 #### 6. 总结
 
@@ -10710,334 +10798,330 @@ CORS 响应头全家桶总结
 
 ### 4-11 CORS 中间件
 
-针对跨域，express封装了中间件cors可以直接使用
+针对跨域，express 封装了中间件 cors 可以直接使用
 
 - 安装
 
-    ```bash
-    npm i cors
-    ```
+  ```bash
+  npm i cors
+  ```
 
 - 导入并使用
 
-    ```ts
-    import express from "express";
-    ...
-    import cors from "cors";
-    
-    /* ---------- 创建一个express应用 --------- */
-    const app = express();
-    
-    /* -------------- 跨域中间件 ------------- */
-    app.use(cors());
-    
-    ...
-    
-    /* -------------- 监听端口 -------------- */
-    const port = 5003;
-    app.listen(port, () => {
-      console.log(`server is listened on ${port}`);
-    });
-    
-    ```
+  ```ts
+  import express from "express";
+  ...
+  import cors from "cors";
 
-    **默认情况：不支持带cookie的请求**
+  /* ---------- 创建一个express应用 --------- */
+  const app = express();
+
+  /* -------------- 跨域中间件 ------------- */
+  app.use(cors());
+
+  ...
+
+  /* -------------- 监听端口 -------------- */
+  const port = 5003;
+  app.listen(port, () => {
+    console.log(`server is listened on ${port}`);
+  });
+
+  ```
+
+  **默认情况：不支持带 cookie 的请求**
 
 - 用法
 
-    - 所有接口跨域
+  - 所有接口跨域
 
-        ```
-        app.use(cors());
-        ```
+    ```
+    app.use(cors());
+    ```
 
-    - 部分接口跨域: 单独使用中间件
+  - 部分接口跨域: 单独使用中间件
 
-        ```ts
-        app.use("/api/student",cors(), studentRouter);
-        ```
+    ```ts
+    app.use("/api/student", cors(), studentRouter);
+    ```
 
-    - 跨域配置对象
+  - 跨域配置对象
 
-        ```ts
-        var corsOptions = {
-          origin: 'http://example.com', // 设置某个请求源
-          optionsSuccessStatus: 200 
+    ```ts
+    var corsOptions = {
+      origin: "http://example.com", // 设置某个请求源
+      optionsSuccessStatus: 200,
+    };
+    app.use(cors(corsOptions));
+    ```
+
+  - 配置白名单
+
+    ```ts
+    const allowCorsOrigins = ["http://127.0.0.1:5500", "null"];
+
+    var corsOptions = {
+      origin: (origin, callback) => {
+        console.log(origin);
+        if (allowCorsOrigins.includes(origin)) {
+          // 在白名单中
+          callback(null, true); // error:null, allowCors:true
+        } else {
+          callback(new Error("Not allowed by CORS"));
         }
-        app.use(cors(corsOptions));
-        ```
+      },
+      optionsSuccessStatus: 200,
+    };
 
-    - 配置白名单
+    /* -------------- 跨域中间件 ------------- */
+    app.use(cors(corsOptions));
+    ```
 
-        ```ts
-        const allowCorsOrigins = ["http://127.0.0.1:5500", "null"];
-        
-        var corsOptions = {
-          origin: (origin, callback) => {
-            console.log(origin);
-            if (allowCorsOrigins.includes(origin)) {
-              // 在白名单中
-              callback(null, true); // error:null, allowCors:true
-            } else {
-              callback(new Error("Not allowed by CORS"));
-            }
-          },
-          optionsSuccessStatus: 200,
-        };
-        
-        /* -------------- 跨域中间件 ------------- */
-        app.use(cors(corsOptions));
-        ```
+  - 允许带 cookie 身份认证
 
-    - 允许带cookie身份认证
-
-        ```ts
-        var corsOptions = {
-          origin: (origin, callback) => {
-            console.log(origin);
-            if (allowCorsOrigins.includes(origin)) {
-              // 在白名单中
-              callback(null, true); // error:null, allowCors:true
-            } else {
-              callback(new Error("Not allowed by CORS"));
-            }
-          },
-          optionsSuccessStatus: 200,
-          credentials: true, // 运行带身份认证跨域
-        };
-        ```
+    ```ts
+    var corsOptions = {
+      origin: (origin, callback) => {
+        console.log(origin);
+        if (allowCorsOrigins.includes(origin)) {
+          // 在白名单中
+          callback(null, true); // error:null, allowCors:true
+        } else {
+          callback(new Error("Not allowed by CORS"));
+        }
+      },
+      optionsSuccessStatus: 200,
+      credentials: true, // 运行带身份认证跨域
+    };
+    ```
 
 ### 4-12 session
 
-#### 1. 对比cookie
+#### 1. 对比 cookie
 
 - 存储在客户端
 - 优点
-    - 存储在客户端，不占用服务器资源
+  - 存储在客户端，不占用服务器资源
 - 缺点
-    - 只能存储字符串（键值对）
-    - 存储量有限（只有几kb）
-    - 数据容易被获取
-    - 数据容易被篡改
-    - 容易丢失
+  - 只能存储字符串（键值对）
+  - 存储量有限（只有几 kb）
+  - 数据容易被获取
+  - 数据容易被篡改
+  - 容易丢失
 
-#### 2. 对比session
+#### 2. 对比 session
 
 Cookie 的核心痛点在于**“不安全”**和**“存不下”**。**Session（会话）** 的出现，本质上就是为了解决这些问题。它的核心逻辑是：**数据存在服务器（安全），客户端只拿一把“钥匙”（简洁）。**
 
 - 存储在服务器端
 - 优点
-    - 可以是任何形式
-    - 存储量理论上是无限的
-    - 数据难以被获取
-    - 数据难以被篡改
+  - 可以是任何形式
+  - 存储量理论上是无限的
+  - 数据难以被获取
+  - 数据难以被篡改
 - 缺点
-    - 显著占用服务器资源
+  - 显著占用服务器资源
 
-#### 3. session交互规范（流程）
+#### 3. session 交互规范（流程）
 
 - **初次访问**：客户端发送登录请求（如 POST 用户名密码）。
 - **创建存储**：服务器验证通过，在内存（或数据库）中开辟一块空间，存入用户信息。
 - **生成 ID**：服务器生成一个唯一的、随机的字符串，称为 **Session ID**。
-- **下发钥匙**：服务器通过cookie(响应头的 `Set-Cookie` )，将这个 Session ID 发给浏览器。
-    - 例如：`Set-Cookie: SESSION_ID=abc12345; HttpOnly`。
+- **下发钥匙**：服务器通过 cookie(响应头的 `Set-Cookie` )，将这个 Session ID 发给浏览器。
+  - 例如：`Set-Cookie: SESSION_ID=abc12345; HttpOnly`。
 - **后续访问**：浏览器自动在请求头带上这个 Cookie。
 - **识别身份**：服务器取出 Session ID，去自己的内存里“查表”，找到对应的信息。
 
-#### 4. session用法
+#### 4. session 用法
 
-使用express中间件 `express-session`， 来实现session的使用
+使用 express 中间件 `express-session`， 来实现 session 的使用
 
 - 安装并使用中间件
 
-    ```ts
-    import express from "express";
-    import cookieParser from "cookie-parser";
-    import { studentRouter } from "./student";
-    import { adminRouter } from "./admin";
-    import { errorMiddleWare } from "./errorMiddleWare";
-    import { tokenMiddleWare } from "./tokenMiddleWare";
-    import path from "path";
-    import { corsMiddleWare } from "./corsMiddleWare";
-    import cors from "cors";
-    import session from "express-session";
-    
-    /* ---------- 创建一个express应用 --------- */
-    const app = express();
-    
-    ...
-    
-    /* ---------- 使用session中间件 ---------- */
-    app.use(
-      session({
-        secret: "haha", // 加密密钥
-      })
-    );
-    ...
-    
-    /* -------------- 监听端口 -------------- */
-    const port = 5003;
-    app.listen(port, () => {
-      console.log(`server is listened on ${port}`);
-    });
-    
-    ```
+  ```ts
+  import express from "express";
+  import cookieParser from "cookie-parser";
+  import { studentRouter } from "./student";
+  import { adminRouter } from "./admin";
+  import { errorMiddleWare } from "./errorMiddleWare";
+  import { tokenMiddleWare } from "./tokenMiddleWare";
+  import path from "path";
+  import { corsMiddleWare } from "./corsMiddleWare";
+  import cors from "cors";
+  import session from "express-session";
+
+  /* ---------- 创建一个express应用 --------- */
+  const app = express();
+
+  ...
+
+  /* ---------- 使用session中间件 ---------- */
+  app.use(
+    session({
+      secret: "haha", // 加密密钥
+    })
+  );
+  ...
+
+  /* -------------- 监听端口 -------------- */
+  const port = 5003;
+  app.listen(port, () => {
+    console.log(`server is listened on ${port}`);
+  });
+
+  ```
 
 - 一些配置
 
-    ```ts
-    app.use(
-      session({
-        secret: "hehe", // 加密密钥
-        name: "sessionID", // 默认是'connect.sid'.
-      })
-    );
-    ```
+  ```ts
+  app.use(
+    session({
+      secret: "hehe", // 加密密钥
+      name: "sessionID", // 默认是'connect.sid'.
+    })
+  );
+  ```
 
-    发送请求后，请求头信息
+  发送请求后，请求头信息
 
-    ```http
-    POST /api/student HTTP/1.1
-    ...
-    Cookie: token=15dd2a94e9d298458e2dfad3ecd324d3; sessionID=s%3A0Mm5yq-9cFCBiIP9kwI9Twuv7EQTxMIV.wWdFEHNsD3zJrl8xW9XCL0S73ZwFeVHuP%2FbYP0aHxbU
-    Host: localhost:5003
-    Origin: http://localhost:5003
-    ...
-    ```
+  ```http
+  POST /api/student HTTP/1.1
+  ...
+  Cookie: token=15dd2a94e9d298458e2dfad3ecd324d3; sessionID=s%3A0Mm5yq-9cFCBiIP9kwI9Twuv7EQTxMIV.wWdFEHNsD3zJrl8xW9XCL0S73ZwFeVHuP%2FbYP0aHxbU
+  Host: localhost:5003
+  Origin: http://localhost:5003
+  ...
+  ```
 
 #### 5. 代码实现
 
 - 静态页面创建登录和修改学生的按钮功能
 
-    ```js
-    
-    // 登录
-    login.onclick = () => {
-      fetch("http://localhost:5003/api/admin/login", {
-        method: 'POST',
-        headers: {
-          'content-type': "application/json"
-        },
-        body: JSON.stringify({
-          loginID: "admin2",
-          loginPwd: "000000"
-        }),
-        credentials: "include", // 显式要求携带凭证
-      }).then(resp => resp.json()).then(resp => {
-        console.log(resp)
-      })
-    }
-    
-    updateStudent.onclick = () => {
-    
-      fetch("http://localhost:5003/api/student/111", {
-        method: 'PUT',
-        headers: {
-          'content-type': "application/json"
-        },
-        body: JSON.stringify({
-          "dob": "2022-11-22"
-        }),
-        credentials: "include", // 显式要求携带凭证
-      }).then(resp => resp.json()).then(resp => {
-        console.log(resp)
-      })
-    }
-    ```
-
-    
-
-- 服务端修改使用session身份认证
-
-    登录成功后，处理session（登录信息保存进session里）
-
-    ```ts
-    import express from "express";
-    import { login } from "../servers/admin";
-    
-    declare module "express-session" {
-      interface SessionData {
-        loginUser?: any;
-      }
-    }
-    
-    /* ------------- 创建路由实例 ------------- */
-    const router = express.Router();
-    
-    /* -------------- 定义路由表 ------------- */
-    
-    /**
-     * admin 登录
-     */
-    router.post("/login", async (req, res) => {
-      const data = await login(req.body?.loginID, req.body?.loginPwd);
-      if (data) {
-        /* --------- 登录成功后，响应session -------- */
-        //保存信息到session
-        req.session.loginUser = data;
-      }
-    
-      res.send({
-        code: 0,
-        data,
+  ```js
+  // 登录
+  login.onclick = () => {
+    fetch("http://localhost:5003/api/admin/login", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        loginID: "admin2",
+        loginPwd: "000000",
+      }),
+      credentials: "include", // 显式要求携带凭证
+    })
+      .then((resp) => resp.json())
+      .then((resp) => {
+        console.log(resp);
       });
+  };
+
+  updateStudent.onclick = () => {
+    fetch("http://localhost:5003/api/student/111", {
+      method: "PUT",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        dob: "2022-11-22",
+      }),
+      credentials: "include", // 显式要求携带凭证
+    })
+      .then((resp) => resp.json())
+      .then((resp) => {
+        console.log(resp);
+      });
+  };
+  ```
+
+- 服务端修改使用 session 身份认证
+
+  登录成功后，处理 session（登录信息保存进 session 里）
+
+  ```ts
+  import express from "express";
+  import { login } from "../servers/admin";
+
+  declare module "express-session" {
+    interface SessionData {
+      loginUser?: any;
+    }
+  }
+
+  /* ------------- 创建路由实例 ------------- */
+  const router = express.Router();
+
+  /* -------------- 定义路由表 ------------- */
+
+  /**
+   * admin 登录
+   */
+  router.post("/login", async (req, res) => {
+    const data = await login(req.body?.loginID, req.body?.loginPwd);
+    if (data) {
+      /* --------- 登录成功后，响应session -------- */
+      //保存信息到session
+      req.session.loginUser = data;
+    }
+
+    res.send({
+      code: 0,
+      data,
     });
-    
-    export { router as adminRouter };
-    
-    ```
+  });
 
-    后续请求，读取session，进行身份验证
+  export { router as adminRouter };
+  ```
 
-    ```ts
-    import { ForbiddenError } from "../utils/errors";
-    import { match } from "path-to-regexp";
-    import { studentRouters } from "./student";
-    import { decrypt } from "../utils/crypt";
-    
-    export const tokenMiddleWare = (req, res, next) => {
-      /* ------------ 匹配是否需要验证 ------------ */
-    
-      const authRequired = studentRouters.find((router) => {
-        return (
-          router.method === req.method &&
-          isPathMatch(`/api/student` + router.path, req.path) &&
-          router.authRequired
-        );
-      });
-    
-      if (!authRequired) {
-        // 不在需要token的列表里，不执行后面的token验证
-        next();
-        return;
-      }
-    
-      /* ------------ 需要token验证 ----------- */
-      // 使用session验证
-      // console.log(req.session);
-      if (!req.session.loginUser) {
-        // 没有登录
-        throw ForbiddenError("you can not access the api");
-      }
-      // 登录，认证通过
+  后续请求，读取 session，进行身份验证
+
+  ```ts
+  import { ForbiddenError } from "../utils/errors";
+  import { match } from "path-to-regexp";
+  import { studentRouters } from "./student";
+  import { decrypt } from "../utils/crypt";
+
+  export const tokenMiddleWare = (req, res, next) => {
+    /* ------------ 匹配是否需要验证 ------------ */
+
+    const authRequired = studentRouters.find((router) => {
+      return (
+        router.method === req.method &&
+        isPathMatch(`/api/student` + router.path, req.path) &&
+        router.authRequired
+      );
+    });
+
+    if (!authRequired) {
+      // 不在需要token的列表里，不执行后面的token验证
       next();
-    };
-    
-    /**
-     * 检测2个path是否匹配
-     * 比如："/api/student/:id" 和 "/api/student/17"
-     * @param pathPattern
-     * @param url
-     * @returns
-     */
-    function isPathMatch(pathPattern: string, url: string) {
-      const matcher = match(pathPattern, { decode: decodeURIComponent });
-      return !!matcher(url); // 返回 true / false
+      return;
     }
-    
-    ```
 
-    
+    /* ------------ 需要token验证 ----------- */
+    // 使用session验证
+    // console.log(req.session);
+    if (!req.session.loginUser) {
+      // 没有登录
+      throw ForbiddenError("you can not access the api");
+    }
+    // 登录，认证通过
+    next();
+  };
+
+  /**
+   * 检测2个path是否匹配
+   * 比如："/api/student/:id" 和 "/api/student/17"
+   * @param pathPattern
+   * @param url
+   * @returns
+   */
+  function isPathMatch(pathPattern: string, url: string) {
+    const matcher = match(pathPattern, { decode: decodeURIComponent });
+    return !!matcher(url); // 返回 true / false
+  }
+  ```
 
 ### 4-13 jwt
 
@@ -11045,69 +11129,69 @@ Cookie 的核心痛点在于**“不安全”**和**“存不下”**。**Sessio
 
 - 背景
 
-    - 随着前后端的发展，以及数据中心的建立，越来越多的公司会创建一个中心服务器，服务于各种产品线。而这些产品可能有着各种终端设备，比如浏览器，桌面，移动端，平板，甚至只能家居。
+  - 随着前后端的发展，以及数据中心的建立，越来越多的公司会创建一个中心服务器，服务于各种产品线。而这些产品可能有着各种终端设备，比如浏览器，桌面，移动端，平板，甚至只能家居。
 
-        > 实际上，不同的产品线通常有自己的服务器，产品内部的数据一般和自己的服务器交互。
-        >
-        > 但是中心服务器仍然有必要存在，因为同一家公司的产品总是会存在共享的数据，比如用户数据。**这些设备与中心服务器直接会进行http通信**。
+    > 实际上，不同的产品线通常有自己的服务器，产品内部的数据一般和自己的服务器交互。
+    >
+    > 但是中心服务器仍然有必要存在，因为同一家公司的产品总是会存在共享的数据，比如用户数据。**这些设备与中心服务器直接会进行 http 通信**。
 
-    - **一般来说，中心服务器至少承担着认证和授权的功能，例如登录：各种设备发送消息到中心服务器，然后中心服务器响应一个省份令牌**， 当这种结构出现后，就出现一个问题：它们之间还能使用传统的cookie的方式传递令牌信息吗？
+  - **一般来说，中心服务器至少承担着认证和授权的功能，例如登录：各种设备发送消息到中心服务器，然后中心服务器响应一个省份令牌**， 当这种结构出现后，就出现一个问题：它们之间还能使用传统的 cookie 的方式传递令牌信息吗？
 
-        > 其实，也是可以的，因为cookie在传递过程中无非是一个消息头属性而已，知识浏览器会对这个消息头有着特殊处理而已。
-        >
-        > 但是，浏览器之外的设备肯定不喜欢cookie， 因为没有对cookie的完善管理机制，需要开发者手动处理
+    > 其实，也是可以的，因为 cookie 在传递过程中无非是一个消息头属性而已，知识浏览器会对这个消息头有着特殊处理而已。
+    >
+    > 但是，浏览器之外的设备肯定不喜欢 cookie， 因为没有对 cookie 的完善管理机制，需要开发者手动处理
 
-    - JWT的出现，就是为了解决这个问题
+  - JWT 的出现，就是为了解决这个问题
 
 - JWT
 
-    - jwt（json web token)， 为多种终端设备，规范统一的，安全的令牌格式。
+  - jwt（json web token)， 为多种终端设备，规范统一的，安全的令牌格式。
 
-    - jwt只是一个令牌的格式而已，可以存储到cookie里，也可以存储到localstorage，没有任何限制
+  - jwt 只是一个令牌的格式而已，可以存储到 cookie 里，也可以存储到 localstorage，没有任何限制
 
-    - 同样，对于令牌的传输，可以使用任何传输方式。一般来说，使用消息头来传输。比如，当登录成功后，服务器给客户端响应一个jwt: 
+  - 同样，对于令牌的传输，可以使用任何传输方式。一般来说，使用消息头来传输。比如，当登录成功后，服务器给客户端响应一个 jwt:
 
-        ```http
-        HTTP/1.1 200 ok
-        ...
-        set-cookie:token=jwt令牌
-        authorization:jwt令牌
-        ...
-        {..., token:jwt令牌}
-        ```
+    ```http
+    HTTP/1.1 200 ok
+    ...
+    set-cookie:token=jwt令牌
+    authorization:jwt令牌
+    ...
+    {..., token:jwt令牌}
+    ```
 
-        可以看到，jwt令牌可以出现在响应的任何一个地方，客户端和服务器自行约定即可
+    可以看到，jwt 令牌可以出现在响应的任何一个地方，客户端和服务器自行约定即可
 
-        >为了充分利用浏览器的cookie，同时为了照顾其他设备，也可以让jwt出现在set-cookie， authorization或者body中，尽管会增加格外的传输量
+    > 为了充分利用浏览器的 cookie，同时为了照顾其他设备，也可以让 jwt 出现在 set-cookie， authorization 或者 body 中，尽管会增加格外的传输量
 
-    - 当客户端拿到令牌后，它要做的只有一件事，存储它。可以存储到任何位置，比如手机文件，pc文件，cookie等等。后续请求发送时，只需将它作为请求的一部分发送即可。
+  - 当客户端拿到令牌后，它要做的只有一件事，存储它。可以存储到任何位置，比如手机文件，pc 文件，cookie 等等。后续请求发送时，只需将它作为请求的一部分发送即可。
 
-    - 虽然jwt没有明确要求应该呵呵附带到请求中，但通常会使用如下的格式：
+  - 虽然 jwt 没有明确要求应该呵呵附带到请求中，但通常会使用如下的格式：
 
-        ```http
-        GET api/resources HTTP/1.1
-        ...
-        authorization: bearer jwt令牌
-        ...
-        ```
+    ```http
+    GET api/resources HTTP/1.1
+    ...
+    authorization: bearer jwt令牌
+    ...
+    ```
 
-        >这种格式是OAuth2附带token的一种规范
+    > 这种格式是 OAuth2 附带 token 的一种规范
 
-        这样一来，服务器就能够收到这个令牌，并通过对令牌的验证，即可知道该令牌是否有效。
+    这样一来，服务器就能够收到这个令牌，并通过对令牌的验证，即可知道该令牌是否有效。
 
 - ==**交互流程**==
 
-    整个交互流程非常简单清新：
+  整个交互流程非常简单清新：
 
-    - **用户登录**：客户端发送账号密码到服务器。
-    - **签发令牌**：服务器验证通过，生成一个 **JWT 字符串**返回给客户端。
-    - **客户端存储**：客户端将 JWT 存入 `localStorage` 或 `Cookie`。
-    - **携带令牌**：后续请求时，客户端手动将 JWT 放入请求头的 `Authorization` 字段中。
-    - **服务端验证**：服务器解密并校验 JWT 的签名。如果合法，直接返回数据。
+  - **用户登录**：客户端发送账号密码到服务器。
+  - **签发令牌**：服务器验证通过，生成一个 **JWT 字符串**返回给客户端。
+  - **客户端存储**：客户端将 JWT 存入 `localStorage` 或 `Cookie`。
+  - **携带令牌**：后续请求时，客户端手动将 JWT 放入请求头的 `Authorization` 字段中。
+  - **服务端验证**：服务器解密并校验 JWT 的签名。如果合法，直接返回数据。
 
 #### 2. 令牌的组成
 
-为了保证令牌的安全性，JWT令牌有三部分组成：
+为了保证令牌的安全性，JWT 令牌有三部分组成：
 
 ```bash
 1. header: 头部，记录了整个令牌的类型和签名算法
@@ -11121,80 +11205,80 @@ Cookie 的核心痛点在于**“不安全”**和**“存不下”**。**Sessio
 
 - **Header（头部）**
 
-    描述令牌的元数据，告诉服务器如何处理这个令牌。它是一个 JSON 对象，通常包含两部分：
+  描述令牌的元数据，告诉服务器如何处理这个令牌。它是一个 JSON 对象，通常包含两部分：
 
-    - **typ**：声明令牌类型，这里固定为 `JWT`。
-    - **alg**：声明使用的签名算法，比如 `HS256`。
+  - **typ**：声明令牌类型，这里固定为 `JWT`。
+  - **alg**：声明使用的签名算法，比如 `HS256`。
 
-    格式示例：`{ "alg": "HS256", "typ": "JWT" }` 
+  格式示例：`{ "alg": "HS256", "typ": "JWT" }`
 
-    **处理方式**：将该 JSON 进行 **Base64Url** 编码，得到 JWT 的第一部分。
+  **处理方式**：将该 JSON 进行 **Base64Url** 编码，得到 JWT 的第一部分。
 
-    > 浏览器提供了btoa函数，可以实现转码
-    >
-    > ```ts
-    > window.btoa(JSON.stringify({
-    >     "alg": "HS256",
-    >     "typ": "JWT"
-    > })) // 得到 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9'
-    > ```
-    >
-    > aotb函数可以实现解码
-    >
-    > ```ts
-    > window.atob('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9')
-    > // 得到 '{"alg":"HS256","typ":"JWT"}'
-    > ```
-    >
-    > 
+  > 浏览器提供了 btoa 函数，可以实现转码
+  >
+  > ```ts
+  > window.btoa(
+  >   JSON.stringify({
+  >     alg: "HS256",
+  >     typ: "JWT",
+  >   })
+  > ); // 得到 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9'
+  > ```
+  >
+  > aotb 函数可以实现解码
+  >
+  > ```ts
+  > window.atob("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9");
+  > // 得到 '{"alg":"HS256","typ":"JWT"}'
+  > ```
 
 - **Payload（负载）**
 
-    这是令牌的“实体内容”，也是一个 JSON 对象，用于存放实际需要传递的数据。 它可以包含：
+  这是令牌的“实体内容”，也是一个 JSON 对象，用于存放实际需要传递的数据。 它可以包含：
 
-    - **公有字段（标准字段）**：JWT 建议但非强制的字段。
-        - `iss` (Issuer)：签发人
-        - `exp` (Expiration time)：过期时间（重要！）
-        - `sub` (Subject)：主题
-        - `iat` (Issued at)：签发时间
-    - **私有字段（业务字段）**：你自己定义的业务数据。
-        - 例如：`"userId": "123"`, `"role": "admin"`。
+  - **公有字段（标准字段）**：JWT 建议但非强制的字段。
+    - `iss` (Issuer)：签发人
+    - `exp` (Expiration time)：过期时间（重要！）
+    - `sub` (Subject)：主题
+    - `iat` (Issued at)：签发时间
+  - **私有字段（业务字段）**：你自己定义的业务数据。
+    - 例如：`"userId": "123"`, `"role": "admin"`。
 
-    格式示例：`{ "userId": "1", "name": "Semit", "exp": 1736435109 }` 
+  格式示例：`{ "userId": "1", "name": "Semit", "exp": 1736435109 }`
 
-    **处理方式**：同样进行 **Base64Url** 编码，得到 JWT 的第二部分。 
+  **处理方式**：同样进行 **Base64Url** 编码，得到 JWT 的第二部分。
 
-    **注意**：由于 Base64 是可逆的，这部分**绝对不能存放密码**！
+  **注意**：由于 Base64 是可逆的，这部分**绝对不能存放密码**！
 
 - **Signature（签名）**
 
-    令牌的签名，正式它的存在，保证了整个jwt不被篡改
+  令牌的签名，正式它的存在，保证了整个 jwt 不被篡改
 
-    - 生成方式，服务器拿出一个只有自己知道的秘钥 (Secret)，然后按照以下公式进行哈希计算：
+  - 生成方式，服务器拿出一个只有自己知道的秘钥 (Secret)，然后按照以下公式进行哈希计算：
 
-        $$Signature = \text{HMACSHA256}( \text{base64(Header)} + "." + \text{base64(Payload)}, \text{secret} )$$
+    $$Signature = \text{HMACSHA256}( \text{base64(Header)} + "." + \text{base64(Payload)}, \text{secret} )$$
 
-    - 把编码后的 Header 和 Payload 用 `.` 连起来。
-    - 加入秘钥，使用指定的算法（如 HS256）计算哈希。
-    - 得到的结果就是第三部分。
-    - 将3部分组合在一起，得到完整的JWT
+  - 把编码后的 Header 和 Payload 用 `.` 连起来。
+  - 加入秘钥，使用指定的算法（如 HS256）计算哈希。
+  - 得到的结果就是第三部分。
+  - 将 3 部分组合在一起，得到完整的 JWT
 
-    **由于签名使用的密钥保存在服务器，客户端无法拿到密钥，因此，无法伪造jwt**
+  **由于签名使用的密钥保存在服务器，客户端无法拿到密钥，因此，无法伪造 jwt**
 
 #### 3. 令牌的验证
 
 验证过程极其高效，因为它**不需要查数据库**，只需在内存中做三步简单的逻辑检查：
 
 - 签名校验 (防篡改)
-    - 服务器接收到 JWT，拆出 Header 和 Payload，配合服务器端保存的**私钥（Secret）**，重新跑一遍哈希算法。
-    - **一致**：说明数据是从官方发出的，且传输过程中没被动过。
-    - **不一致**：说明令牌是伪造的，或者 Payload 里的数据（如 `userId`）被改了。服务器直接报 `401 Unauthorized`
+  - 服务器接收到 JWT，拆出 Header 和 Payload，配合服务器端保存的**私钥（Secret）**，重新跑一遍哈希算法。
+  - **一致**：说明数据是从官方发出的，且传输过程中没被动过。
+  - **不一致**：说明令牌是伪造的，或者 Payload 里的数据（如 `userId`）被改了。服务器直接报 `401 Unauthorized`
 - 时效校验 (防过期)
-    - 从解码后的 Payload 中取出 `exp`（过期时间）字段。
-    - 将 `exp` 与服务器**当前时间**对比。如果 `当前时间 > exp`，说明令牌已失效，用户需要重新登录。
+  - 从解码后的 Payload 中取出 `exp`（过期时间）字段。
+  - 将 `exp` 与服务器**当前时间**对比。如果 `当前时间 > exp`，说明令牌已失效，用户需要重新登录。
 - 业务校验 (防越权)
-    - 从 Payload 中取出业务字段（如 `userId` 或 `permissions`）。
-    - 根据这些信息判断该用户是否有权访问当前的 API 接口。
+  - 从 Payload 中取出业务字段（如 `userId` 或 `permissions`）。
+  - 根据这些信息判断该用户是否有权访问当前的 API 接口。
 
 #### 4. 总结
 
